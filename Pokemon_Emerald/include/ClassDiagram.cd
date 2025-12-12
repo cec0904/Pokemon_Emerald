@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CGameManager" Collapsed="true">
+    <Position X="11" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAQABAAACIAAAAAAEBBAABACEAAAAEAAAjACQAAAACI=</HashCode>
+      <FileName>GameManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CDevice" Collapsed="true">
+    <Position X="9.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABACEAAAEAAAAIAAACAAAEQAAgAIDACKAAAAAI=</HashCode>
+      <FileName>Device.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CTimer" Collapsed="true">
+    <Position X="7.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAAAAAAAAAAQAAAAAAAAAAgAAAAAAAAAACAAAAEAA=</HashCode>
+      <FileName>Share\Timer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CObject" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAABAAACAAAAAAAAAAAAAAAAEAAABAAAAA=</HashCode>
+      <FileName>Share\Object.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSharedPtr&lt;T&gt;" Collapsed="true">
+    <Position X="11" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAICAAAAAABAAAAAAwAAAAAAAAAAAAggAAAAEAA=</HashCode>
+      <FileName>Share\SharedPtr.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CAsset" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Asset\Asset.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CAssetManager" Collapsed="true">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAACAAAAEAA=</HashCode>
+      <FileName>Asset\AssetManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CMesh" Collapsed="true">
+    <Position X="0.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAAAAAAIACABABBAAAAEAAAg=</HashCode>
+      <FileName>Asset\Mesh\Mesh.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CMeshManager" Collapsed="true">
+    <Position X="7.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAIAAAAAAAAAAAAAAAAAAAACAAABCAAEAAAA=</HashCode>
+      <FileName>Asset\Mesh\MeshManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CStaticMesh" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Asset\Mesh\StaticMesh.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CShaderManager" Collapsed="true">
+    <Position X="9.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAEAAAAIACAAAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Shader\ShaderManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CColorMeshShader" Collapsed="true">
+    <Position X="5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAACAAAAABA=</HashCode>
+      <FileName>Shader\ColorMeshShader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CComputeShader" Collapsed="true">
+    <Position X="2.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\ComputeShader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CGraphicShader" Collapsed="true">
+    <Position X="5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAACIAAAAAoABGGAKIAAAAACAAAAAJAACECQADAA=</HashCode>
+      <FileName>Shader\GraphicShader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CShader" Collapsed="true">
+    <Position X="3.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAgAAABAACAAAAAAA=</HashCode>
+      <FileName>Shader\Shader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="FResolution" Collapsed="true">
+    <Position X="11" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Gameinfo.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FVertexBuffer" Collapsed="true">
+    <Position X="7.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAQAAAAAAQAAAAAABAAAAAQAAAAQAA=</HashCode>
+      <FileName>Gameinfo.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FIndexBuffer" Collapsed="true">
+    <Position X="7.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAgAAAAAAAAAUBAAAAABAAAAAAAAAAQAA=</HashCode>
+      <FileName>Gameinfo.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FVertexColor" Collapsed="true">
+    <Position X="9.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAAAAAAAACAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>Gameinfo.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FVector2D" Collapsed="true">
+    <Position X="7.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAoAAAAAUAEAAQBACAAAAAAAAABgAAAAAAA=</HashCode>
+      <FileName>Vector2D.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FVector3D" Collapsed="true">
+    <Position X="9.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAIAAAAAUAEAAQBACAAAAAAAAADgAQAAAAA=</HashCode>
+      <FileName>Vector3D.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FVector4D" Collapsed="true">
+    <Position X="11" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAGAAAAAAAAAgAAQAEAAQCABAAAAAAAAAhgARAAAAA=</HashCode>
+      <FileName>Vector4D.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FMeshSlot" Collapsed="true">
+    <Position X="9.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Asset\Mesh\Mesh.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Font Name="맑은 고딕" Size="9" />
+</ClassDiagram>
