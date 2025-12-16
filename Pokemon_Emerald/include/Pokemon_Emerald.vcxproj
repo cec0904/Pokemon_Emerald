@@ -198,6 +198,9 @@
     <ClCompile Include="Object\TornadoBullet.cpp" />
     <ClCompile Include="Pokemon\Npc\NpcBase.cpp" />
     <ClCompile Include="Pokemon\Npc\NpcProfessor.cpp" />
+    <ClCompile Include="Pokemon\Pokemon\PokemonManager.cpp" />
+    <ClCompile Include="Pokemon\Scene\BattleWithPokemon.cpp" />
+    <ClCompile Include="Pokemon\UI\BattleWidget.cpp" />
     <ClCompile Include="ProfileManager.cpp" />
     <ClCompile Include="Render\BlendState.cpp" />
     <ClCompile Include="Render\DepthStencilState.cpp" />
@@ -320,6 +323,9 @@
     <ClInclude Include="Object\TornadoBullet.h" />
     <ClInclude Include="Pokemon\Npc\NpcBase.h" />
     <ClInclude Include="Pokemon\Npc\NpcProfessor.h" />
+    <ClInclude Include="Pokemon\Pokemon\PokemonManager.h" />
+    <ClInclude Include="Pokemon\Scene\BattleWithPokemon.h" />
+    <ClInclude Include="Pokemon\UI\BattleWidget.h" />
     <ClInclude Include="ProfileManager.h" />
     <ClInclude Include="Render\BlendState.h" />
     <ClInclude Include="Render\DepthStencilState.h" />
@@ -378,6 +384,7 @@
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="Vector3D.h" />
     <ClInclude Include="Vector4D.h" />
+    <ClInclude Include="PokemonData.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Pokemon_Emerald.rc" />

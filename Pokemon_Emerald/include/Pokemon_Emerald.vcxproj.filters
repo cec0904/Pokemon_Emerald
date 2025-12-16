@@ -561,6 +561,15 @@
     <ClCompile Include="Pokemon\Npc\NpcProfessor.cpp">
       <Filter>Pokemon\02.Npc</Filter>
     </ClCompile>
+    <ClCompile Include="Pokemon\Scene\BattleWithPokemon.cpp">
+      <Filter>Pokemon\03.Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Pokemon\UI\BattleWidget.cpp">
+      <Filter>Pokemon\04.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Pokemon\Pokemon\PokemonManager.cpp">
+      <Filter>Pokemon\01.Pokemon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameManager.h">
@@ -937,6 +946,18 @@
     </ClInclude>
     <ClInclude Include="Pokemon\Npc\NpcProfessor.h">
       <Filter>Pokemon\02.Npc</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\Scene\BattleWithPokemon.h">
+      <Filter>Pokemon\03.Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\UI\BattleWidget.h">
+      <Filter>Pokemon\04.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\Pokemon\PokemonManager.h">
+      <Filter>Pokemon\01.Pokemon</Filter>
+    </ClInclude>
+    <ClInclude Include="PokemonData.h">
+      <Filter>Pokemon\01.Pokemon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,8 @@
 #pragma once
-#include "WindowWidget.h"
+#include "UserWidget.h"
 
 class CMainWidget :
-    public CWindowWidget
+    public CUserWidget
 {
 	friend class CSceneUIManager;
 
@@ -10,9 +10,9 @@ protected:
 	CMainWidget();
 	virtual ~CMainWidget();
 
-public:
-	CSharedPtr<class CButton> mButton;
-	CSharedPtr<class CProgressBar> HPBar;
+protected:
+	CSharedPtr<class CButton> mStartButton;
+	CSharedPtr<class CButton> mBackButton;
 
 public:
 
@@ -21,7 +21,9 @@ public:
 	virtual bool Init();
 
 
-
+private:
+	void StartButtonClick();
+	void BackButtonClick();
 
 };
 

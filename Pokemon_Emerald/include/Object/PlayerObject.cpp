@@ -28,6 +28,9 @@
 #include "../Scene/SceneUIManager.h"
 #include "../UI/Common/ProgressBar.h"
 
+#include "../Pokemon/Scene/BattleWithPokemon.h"
+#include "../Pokemon/UI/BattleWidget.h"
+
 
 
 CPlayerObject::CPlayerObject()
@@ -55,7 +58,9 @@ bool CPlayerObject::Init()
 	//UI 생성
 	class CMainWidget* MainWidget = mScene->GetUIManager()->CreateWidget<CMainWidget>("Main");
 	mScene->GetUIManager()->AddToViewport(MainWidget);
-	mHPBar = MainWidget->HPBar;
+
+	
+
 
 	// 게임 매니져 -> 씬매니져를 통해 -> 현재 씬을 실행시키고
 	// 씬에서는 씬에 포함된 오브젝트들을 전부 순회하면서 시점 함수들을 호출해준다. 
