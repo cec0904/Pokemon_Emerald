@@ -42,7 +42,7 @@ bool CStartWidget::Init()
 	Back->SetBrushAnimation(true);
 	for (int i = 0; i < 5; ++i)
 	{
-		Back->AddBurshFrame(i * 200.f, 0.f, 200.f, 200.f);
+		Back->AddBrushFrame(i * 200.f, 0.f, 200.f, 200.f);
 	}
 
 

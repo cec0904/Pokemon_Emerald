@@ -201,6 +201,7 @@
     <ClCompile Include="Pokemon\Pokemon\PokemonManager.cpp" />
     <ClCompile Include="Pokemon\Scene\BattleWithPokemon.cpp" />
     <ClCompile Include="Pokemon\UI\BattleWidget.cpp" />
+    <ClCompile Include="Pokemon\UI\MenuUI.cpp" />
     <ClCompile Include="ProfileManager.cpp" />
     <ClCompile Include="Render\BlendState.cpp" />
     <ClCompile Include="Render\DepthStencilState.cpp" />
@@ -326,6 +327,7 @@
     <ClInclude Include="Pokemon\Pokemon\PokemonManager.h" />
     <ClInclude Include="Pokemon\Scene\BattleWithPokemon.h" />
     <ClInclude Include="Pokemon\UI\BattleWidget.h" />
+    <ClInclude Include="Pokemon\UI\MenuUI.h" />
     <ClInclude Include="ProfileManager.h" />
     <ClInclude Include="Render\BlendState.h" />
     <ClInclude Include="Render\DepthStencilState.h" />

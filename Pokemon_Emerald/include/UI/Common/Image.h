@@ -32,8 +32,8 @@ public:
 	void SetBrushAnimation(bool Animation);
 
 	//애니메이션 프레임
-	void AddBurshFrame(const FVector2D& Start, const FVector2D& Size);
-	void AddBurshFrame(float StartX, float StartY, float SizeX, float SizeY);
+	void AddBrushFrame(const FVector2D& Start, const FVector2D& Size);
+	void AddBrushFrame(float StartX, float StartY, float SizeX, float SizeY);
 
 	// 출력할 프레임
 	void SetCurrentFrame(int Frame);

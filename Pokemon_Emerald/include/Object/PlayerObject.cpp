@@ -30,6 +30,7 @@
 
 #include "../Pokemon/Scene/BattleWithPokemon.h"
 #include "../Pokemon/UI/BattleWidget.h"
+#include "../Pokemon/UI/MenuUI.h"
 
 
 
@@ -132,19 +133,32 @@ bool CPlayerObject::Init()
 	mRoot->AddChild(mCamera);
 
 	//입력
-	mScene->GetInput()->AddBindKey("MoveUp", 'W');
+	mScene->GetInput()->AddBindKey("MoveUp", VK_UP);
 	mScene->GetInput()->AddBindFunction("MoveUp", EInputType::Hold, this, &CPlayerObject::MoveUp);
 
-	mScene->GetInput()->AddBindKey("MoveDown", 'S');
+	mScene->GetInput()->AddBindKey("MoveDown", VK_DOWN);
 	mScene->GetInput()->AddBindFunction("MoveDown", EInputType::Hold, this, &CPlayerObject::MoveDown);
 
-	mScene->GetInput()->AddBindKey("MoveRight", 'D');
+	mScene->GetInput()->AddBindKey("MoveRight", VK_RIGHT);
 	mScene->GetInput()->AddBindFunction("MoveRight", EInputType::Hold, this, &CPlayerObject::MoveRight);
 
-	mScene->GetInput()->AddBindKey("MoveLeft", 'A');
+	mScene->GetInput()->AddBindKey("MoveLeft", VK_LEFT);
 	mScene->GetInput()->AddBindFunction("MoveLeft", EInputType::Hold, this, &CPlayerObject::MoveLeft);
 
+	mScene->GetInput()->AddBindKey("Menu", VK_TAB);
+	mScene->GetInput()->AddBindFunction("Menu", EInputType::Down, this, &CPlayerObject::Menu);
 
+	mScene->GetInput()->AddBindKey("Accept", 'D');
+	mScene->GetInput()->AddBindFunction("Accept", EInputType::Down, this, &CPlayerObject::Accept);
+
+	mScene->GetInput()->AddBindKey("Cancel", 'S');
+	mScene->GetInput()->AddBindFunction("Cancel", EInputType::Down, this, &CPlayerObject::Cancel);
+
+	mScene->GetInput()->AddBindKey("MenuUp", VK_UP);
+	mScene->GetInput()->AddBindFunction("MenuUp", EInputType::Down, this, &CPlayerObject::MenuUp);
+
+	mScene->GetInput()->AddBindKey("MenuDown", VK_DOWN);
+	mScene->GetInput()->AddBindFunction("MenuDown", EInputType::Down, this, &CPlayerObject::MenuDown);
 
 	return true;
 }
@@ -171,7 +185,10 @@ void CPlayerObject::MoveUp(float DeltaTime)
 	//FVector3D Dir = mRootComponent->GetAxis(EAxis::Y);
 
 	//mRootComponent->SetWorldPos(Pos + Dir*DeltaTime * 3.f);
-
+	if (IsMenuOpen)
+	{
+		return;
+	}
 	mAnimation->ChangeAnimation("PlayerWalkUp");
 	mRoot->SetFlip(false);
 
@@ -188,6 +205,11 @@ void CPlayerObject::MoveDown(float DeltaTime)
 	/*FVector3D Pos = mRootComponent->GetWorldPosition();
 	FVector3D Dir = mRootComponent->GetAxis(EAxis::Y);
 	mRootComponent->SetWorldPos(Pos + Dir * DeltaTime * -3.f);*/
+
+	if (IsMenuOpen)
+	{
+		return;
+	}
 	mAnimation->ChangeAnimation("PlayerWalkDown");
 	mRoot->SetFlip(false);
 
@@ -201,6 +223,10 @@ void CPlayerObject::MoveDown(float DeltaTime)
 
 void CPlayerObject::MoveRight(float DeltaTime)
 {
+	if (IsMenuOpen)
+	{
+		return;
+	}
 	mAnimation->ChangeAnimation("PlayerWalkRight");
 	mRoot->SetFlip(false);
 	if (Block)
@@ -213,6 +239,10 @@ void CPlayerObject::MoveRight(float DeltaTime)
 
 void CPlayerObject::MoveLeft(float DeltaTime)
 {
+	if (IsMenuOpen)
+	{
+		return;
+	}
 	mAnimation->ChangeAnimation("PlayerWalkLeft");
 	mRoot->SetFlip(false);
 	if (Block)
@@ -220,6 +250,55 @@ void CPlayerObject::MoveLeft(float DeltaTime)
 		return;
 	}
 	mMovement->AddMove(mRootComponent->GetAxis(EAxis::X) * -1);
+}
+
+void CPlayerObject::Menu(float DeltaTime)
+{
+	if (IsMenuOpen)
+	{
+		// 닫기
+		if (mMenuUI) mMenuUI->SetEnable(false);
+		IsMenuOpen = false;
+		return;
+	}
+
+	// 열기
+	mMenuUI = mScene->GetUIManager()->CreateWidget<CMenuUI>("FieldMenu");
+	mScene->GetUIManager()->AddToViewport(mMenuUI);
+	IsMenuOpen = true;
+}
+
+void CPlayerObject::Accept(float DeltaTime)
+{
+	if (!IsMenuOpen)
+		return;
+
+	mMenuUI->Select();
+}
+
+void CPlayerObject::Cancel(float DeltaTime)
+{
+	if (!IsMenuOpen)
+		return;
+
+	mMenuUI->SetEnable(false);
+	IsMenuOpen = false;
+}
+
+void CPlayerObject::MenuUp(float DeltaTime)
+{
+	if (IsMenuOpen && mMenuUI)
+	{
+		mMenuUI->MoveUp();
+	}
+}
+
+void CPlayerObject::MenuDown(float DeltaTime)
+{
+	if (IsMenuOpen && mMenuUI)
+	{
+		mMenuUI->MoveDown();
+	}
 }
 
 void CPlayerObject::IsOnCollision(const FVector3D& HitPoint, CColliderBase* Dest)

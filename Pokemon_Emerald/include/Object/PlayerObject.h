@@ -60,6 +60,18 @@ private:
 	void MoveDown(float DeltaTime);
 	void MoveRight(float DeltaTime);
 	void MoveLeft(float DeltaTime);
+	
+	void Menu(float DeltaTime);
+	void Accept(float DeltaTime);
+	void Cancel(float DeltaTime);
+
+	void MenuUp(float DeltaTime);
+	void MenuDown(float DeltaTime);
+
+	bool IsMenuOpen = false;
+	CSharedPtr<class CMenuUI> mMenuUI;
+
+
 
 	bool Block = false;
 	void IsOnCollision(const FVector3D& HitPoint, class CColliderBase* Dest);

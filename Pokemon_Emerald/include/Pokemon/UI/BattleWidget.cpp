@@ -51,7 +51,7 @@ bool CBattleWidget::Init()
 	BattleArena->SetTexture("BattleBack", TEXT("Texture/Pokemon/BackGround/BattleArenas.png"));
 	BattleArena->SetBrushAnimation(true);
 	// 시작지점x, 시작지점y, 얼마나할지x(이미지가로크기), 얼마나할지(이미지세로크기)y
-	BattleArena->AddBurshFrame(2.f, 22.f, 240.f, 112.f);
+	BattleArena->AddBrushFrame(2.f, 22.f, 240.f, 112.f);
 	BattleArena->SetSize(960.f, 448.f);		// 4배
 	BattleArena->SetPivot(FVector2D(0.5f, 0.f));
 	BattleArena->SetPos(ScreenW * 0.5f, ScreenH - 448.f);
@@ -62,14 +62,14 @@ bool CBattleWidget::Init()
 	// 이미지 240*48
 	BattleUIBack->SetTexture("BattleUIBack", TEXT("Texture/Pokemon/BackGround/BattleMenu.png"));
 	BattleUIBack->SetBrushAnimation(true);
-	BattleUIBack->AddBurshFrame(297.f, 56.f, 240.f, 48.f);
+	BattleUIBack->AddBrushFrame(297.f, 56.f, 240.f, 48.f);
 	BattleUIBack->SetSize(960.f, 192.f);
 	BattleUIBack->SetPivot(FVector2D(0.5f, 0.f));
 	BattleUIBack->SetPos(ScreenW * 0.5f, ScreenH - 640.f);
 
 	BehaviorSelect->SetTexture("BehaviorSelect", TEXT("Texture/Pokemon/BackGround/BattleMenu.png"));
 	BehaviorSelect->SetBrushAnimation(true);
-	BehaviorSelect->AddBurshFrame(146.f, 4.f, 120.f, 48.f);
+	BehaviorSelect->AddBrushFrame(146.f, 4.f, 120.f, 48.f);
 	BehaviorSelect->SetSize(480.f, 192.f);
 	BehaviorSelect->SetPivot(FVector2D(0.5f, 0.f));
 	BehaviorSelect->SetPos(ScreenW * 0.5f + 240.f, ScreenH - 640.f);

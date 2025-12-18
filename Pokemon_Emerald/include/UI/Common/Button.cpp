@@ -73,7 +73,7 @@ void CButton::SetTint(EButtonState::Type State, float r, float g, float b, float
 	mBrush[State].Tint.w = a;
 }
 
-void CButton::AddBurshFrame(EButtonState::Type State, const FVector2D& Start, const FVector2D& Size)
+void CButton::AddBrushFrame(EButtonState::Type State, const FVector2D& Start, const FVector2D& Size)
 {
 	FAnimationFrame Frame;
 	Frame.Start = Start;
@@ -84,7 +84,7 @@ void CButton::AddBurshFrame(EButtonState::Type State, const FVector2D& Start, co
 	mBrush[State].FrameTime = mBrush[State].PlayTime / mBrush[State].Frames.size();
 }
 
-void CButton::AddBurshFrame(EButtonState::Type State, float StartX, float StartY, float SizeX, float SizeY)
+void CButton::AddBrushFrame(EButtonState::Type State, float StartX, float StartY, float SizeX, float SizeY)
 {
 	FAnimationFrame Frame;
 	Frame.Start.x = StartX;

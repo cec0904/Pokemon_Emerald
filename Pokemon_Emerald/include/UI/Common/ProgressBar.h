@@ -54,8 +54,8 @@ public:
 	void SetBrushAnimation(EProgressBarImageType Type,  bool Animation);
 
 	//애니메이션 프레임
-	void AddBurshFrame(EProgressBarImageType Type, const FVector2D& Start, const FVector2D& Size);
-	void AddBurshFrame(EProgressBarImageType Type, float StartX, float StartY, float SizeX, float SizeY);
+	void AddBrushFrame(EProgressBarImageType Type, const FVector2D& Start, const FVector2D& Size);
+	void AddBrushFrame(EProgressBarImageType Type, float StartX, float StartY, float SizeX, float SizeY);
 
 	// 출력할 프레임
 	void SetCurrentFrame(EProgressBarImageType Type, int Frame);

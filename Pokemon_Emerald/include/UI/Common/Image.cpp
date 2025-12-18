@@ -74,7 +74,7 @@ void CImage::SetBrushAnimation(bool Animation)
 	mBrush.AnimationEnable = Animation;
 }
 
-void CImage::AddBurshFrame(const FVector2D& Start, const FVector2D& Size)
+void CImage::AddBrushFrame(const FVector2D& Start, const FVector2D& Size)
 {
 	FAnimationFrame Frame;
 	Frame.Start = Start;
@@ -85,7 +85,7 @@ void CImage::AddBurshFrame(const FVector2D& Start, const FVector2D& Size)
 	mBrush.FrameTime = mBrush.PlayTime / mBrush.Frames.size();
 }
 
-void CImage::AddBurshFrame(float StartX, float StartY, float SizeX, float SizeY)
+void CImage::AddBrushFrame(float StartX, float StartY, float SizeX, float SizeY)
 {
 	FAnimationFrame Frame;
 	Frame.Start.x = StartX;

@@ -100,8 +100,8 @@ public:
 	void SetTint(EButtonState::Type State, float r, float g, float b, float a = 1.f);
 
 	//애니메이션 프레임
-	void AddBurshFrame(EButtonState::Type State, const FVector2D& Start, const FVector2D& Size);
-	void AddBurshFrame(EButtonState::Type State, float StartX, float StartY, float SizeX, float SizeY);
+	void AddBrushFrame(EButtonState::Type State, const FVector2D& Start, const FVector2D& Size);
+	void AddBrushFrame(EButtonState::Type State, float StartX, float StartY, float SizeX, float SizeY);
 
 
 	// 애니메이션 사용 유무

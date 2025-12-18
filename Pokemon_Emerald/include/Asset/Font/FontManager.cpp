@@ -34,7 +34,7 @@ bool CFontManager::Init()
 
 	//폰트 불러오기
 	//LoadFontCollection("Default", TEXT("Font\\WantedSans-Regular.otf"));
-	LoadFontCollection("Default", TEXT("Font\\Griu.ttf"));
+	LoadFontCollection("Default", TEXT("Font\\pokemon-dppt.otf"));
 
 	//폰터 정보를 넣어준다.
 

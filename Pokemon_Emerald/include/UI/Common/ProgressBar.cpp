@@ -131,7 +131,7 @@ void CProgressBar::SetBrushAnimation(EProgressBarImageType Type, bool Animation)
 	}
 }
 
-void CProgressBar::AddBurshFrame(EProgressBarImageType Type, const FVector2D& Start, const FVector2D& Size)
+void CProgressBar::AddBrushFrame(EProgressBarImageType Type, const FVector2D& Start, const FVector2D& Size)
 {
 	FAnimationFrame Frame;
 	Frame.Start = Start;
@@ -153,9 +153,9 @@ void CProgressBar::AddBurshFrame(EProgressBarImageType Type, const FVector2D& St
 	}
 }
 
-void CProgressBar::AddBurshFrame(EProgressBarImageType Type, float StartX, float StartY, float SizeX, float SizeY)
+void CProgressBar::AddBrushFrame(EProgressBarImageType Type, float StartX, float StartY, float SizeX, float SizeY)
 {
-	AddBurshFrame(Type, FVector2D(StartX, StartY), FVector2D(SizeX, SizeY));
+	AddBrushFrame(Type, FVector2D(StartX, StartY), FVector2D(SizeX, SizeY));
 }
 
 void CProgressBar::SetCurrentFrame(EProgressBarImageType Type, int Frame)
