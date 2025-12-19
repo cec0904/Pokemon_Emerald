@@ -59,6 +59,7 @@ void CMenuUI::UpdateCursor()
 	float gapY = 52.f;
 
 	float y = baseY - gapY * mSelectIndex;
+	y += 10.f;
 	mCursor->SetPos(cursorX, y);
 }
 
@@ -98,8 +99,8 @@ bool CMenuUI::Init()
 	CUserWidget::Init();
 
 	FResolution RS = CDevice::GetInst()->GetResolution();
-	float W = RS.Width;
-	float H = RS.Height;
+	float W = (float)RS.Width;
+	float H = (float)RS.Height;
 
 	CSharedPtr<CImage> Panel = mScene->GetUIManager()->CreateWidget<CImage>("MenuPanel");
 
@@ -127,33 +128,8 @@ bool CMenuUI::Init()
 
 	UpdateCursor();
 
-	return true;
-}
-
-void CMenuUI::Render()
-{
-
-	CUserWidget::Render();
-
-	CFont* Font = CAssetManager::GetInst()->GetFontManager()->FindFont("Default");
-	if (!Font)
-	{
-		return;
-	}
-
-	ID2D1SolidColorBrush* Brush =
-		CAssetManager::GetInst()->GetFontManager()->FindFontColor(0, 0, 0, 255);
-	if (!Brush)
-	{
-		return;
-	}
-
-	FResolution RS = CDevice::GetInst()->GetResolution();
-	float W = RS.Width;
-	float H = RS.Height;
 
 	float panelW = 384.f;
-	float panelH = 576.f;
 	float panelRight = W - 16.f;
 	float panelTop = H - 16.f;
 	float panelLeft = panelRight - panelW;
@@ -162,31 +138,38 @@ void CMenuUI::Render()
 	float baseY = panelTop - 130.f;
 	float gapY = 52.f;
 
+	mTextList.clear();
+	mTextList.reserve(Index.size());
+
 	for (int i = 0; i < (int)Index.size(); i++)
 	{
-		const wstring& txt = Index[i];
-		IDWriteTextLayout* Layout = Font->CreateLayout(txt.c_str(), (int)txt.size(), 220.f, 40.f);
+		string name = "MenuText_" + to_string(i);
 
-		if (!Layout)
-		{
-			continue;
-		}
+		CSharedPtr<CTextBlock> Text = mScene->GetUIManager()->CreateWidget<CTextBlock>(name);
 
-		float uiY = baseY - gapY * i;
-		float d2dY = H - uiY - 40.f;
+		// 글씨 박스 크기
+		Text->SetSize(260.f, 60.f);
+		Text->SetFontSize(40.f);
 
-		CDevice::GetInst()->Get2DTarget()->BeginDraw();
-		CDevice::GetInst()->Get2DTarget()->DrawTextLayout(
-			D2D1::Point2F(textX, d2dY),
-			Layout,
-			Brush
-		);
-		CDevice::GetInst()->Get2DTarget()->EndDraw();
+		// 폰트/텍스트/색
+		Text->SetFont("Default");
+		Text->SetText(Index[i].c_str());
+		Text->SetTextColor(0, 0, 0, 255);
 
+		
+		float y = baseY - gapY * i;
+		Text->SetPos(textX, y);
 
+		Text->SetZOrder(102); 
+		AddWidget(Text);
 
-
-		Layout->Release();
+		mTextList.push_back(Text);
 	}
+
+	return true;
 }
 
+void CMenuUI::Render()
+{
+	CUserWidget::Render();
+}

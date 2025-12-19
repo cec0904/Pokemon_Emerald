@@ -124,5 +124,6 @@ public:
 	virtual void Render(const FVector3D& Pos);
 	// 텍스트블록도 충돌 할거면 만들수도 있다. 
 	//virtual bool CollisionMouse(float DeltaTime, const FVector2D& MousePos);
+	
 };
 

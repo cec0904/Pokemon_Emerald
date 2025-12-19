@@ -12,6 +12,8 @@
 
 
 #include <string>
+#include <fstream>
+#include <sstream>
 
 #include "Share/SharedPtr.h"
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "Gameinfo.h"
+
 #include <string>
 #include <array>
 #include <vector>
@@ -6,6 +8,8 @@
 
 using PokemonID = int;
 using MoveID = int;
+
+#define IMAGE_SIZE 64
 
 // 타입
 enum class EPokemonType : uint8_t
@@ -127,15 +131,43 @@ struct FPokemonSpeciesData
 
 };
 
+
+
+//포켓몬 기본 정보
+struct FPokemonDefaultInfo
+{
+	std::string Name;
+	EPokemonType Type1;
+	EPokemonType Type2;
+};
+
+//포켓몬 스프라이트위치
+struct FPokemonSpritePos
+{
+	//전면 이미지1
+	FVector2D Front1;
+	//전면 이미지1
+	FVector2D Front2;
+	//후면 이미지1
+	FVector2D Back1;
+};
+
 // 런타임 포켓몬 개체
 struct FPokemonInstance
 {
 	PokemonID SpeciesID = 0;
+	FPokemonDefaultInfo Info;
 	int Level = 1;
 
+	FBaseStats CurrentState;
 	int CurrentHP = 1;
 	int Exp = 0;
+	int CurrentExp = 0;
+
+	//그려질 이미지 정보 
+	FPokemonSpritePos ImageInfo;
+
 
 	// 고정 4슬롯: 0이면 빈 슬롯
-	std::array<MoveID, 4> MoveSlots{ 0,0,0,0 };
+	//std::array<MoveID, 4> MoveSlots{ 0,0,0,0 };
 };

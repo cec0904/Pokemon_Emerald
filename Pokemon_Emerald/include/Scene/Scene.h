@@ -1,6 +1,7 @@
 #pragma once
 #include "../Gameinfo.h"
 #include "../Object/SceneObject.h"
+#include "../Pokemon/Pokemon/Pokemon.h"
 
 //월드를 구상하는 클래스이다. 
 class CScene
@@ -92,6 +93,32 @@ public:
 
 		mObjList.push_back(Obj);
 		return Obj;
+	}
+
+	template<typename T>
+	T* CreatePokemon(int ID)
+	{
+		T* Obj = new T;
+
+		Obj->mScene = this;
+		//Obj->SetName(Name);
+
+		CPokemon* pokemon = dynamic_cast<CPokemon*>(Obj);
+
+		if (pokemon == nullptr)
+		{
+			SAFE_DELETE(Obj);
+			return nullptr;
+		}
+
+		if (!pokemon->Init(ID))
+		{
+			SAFE_DELETE(pokemon);
+			return nullptr;
+		}
+
+		mObjList.push_back(pokemon);
+		return pokemon;
 	}
 
 	template<typename T>
