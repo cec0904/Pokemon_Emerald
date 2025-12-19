@@ -13,6 +13,8 @@
 #include "../../Asset/Font/Font.h"
 #include "../../Asset/Font/FontManager.h"
 #include "../../UI/Common/TextBlock.h"
+#include "Inventory.h"
+#include "Party.h"
 
 CMenuUI::CMenuUI()
 {
@@ -21,6 +23,7 @@ CMenuUI::CMenuUI()
 CMenuUI::~CMenuUI()
 {
 }
+
 
 void CMenuUI::MoveUp()
 {
@@ -71,7 +74,15 @@ void CMenuUI::Select()
 		CLog::PrintLog("도감 선택");
 		break;
 	case 1:
+	{
 		CLog::PrintLog("포켓몬 선택");
+
+		CSharedPtr<CParty> PartyUI = mScene->GetUIManager()->CreateWidget<CParty>("Party");
+		mScene->GetUIManager()->AddToViewport(PartyUI);
+
+		SetEnable(false);
+	}
+
 		break;
 	case 2:
 		CLog::PrintLog("가방 선택");

@@ -31,6 +31,8 @@
 #include "../Pokemon/Scene/BattleWithPokemon.h"
 #include "../Pokemon/UI/BattleWidget.h"
 #include "../Pokemon/UI/MenuUI.h"
+#include "../Pokemon/UI/Inventory.h"
+#include "../Pokemon/UI/Party.h"
 
 
 
@@ -268,10 +270,25 @@ void CPlayerObject::Menu(float DeltaTime)
 	IsMenuOpen = true;
 }
 
+void CPlayerObject::Party(float DeltaTime)
+{
+	if (IsPartyOpen)
+	{
+		// 닫기
+		if (mParty) mParty->SetEnable(false);
+		IsPartyOpen = false;
+		return;
+	}
+
+	
+}
+
 void CPlayerObject::Accept(float DeltaTime)
 {
 	if (!IsMenuOpen)
 		return;
+
+	
 
 	mMenuUI->Select();
 }
@@ -283,6 +300,13 @@ void CPlayerObject::Cancel(float DeltaTime)
 
 	mMenuUI->SetEnable(false);
 	IsMenuOpen = false;
+
+	if (!IsPartyOpen)
+	{
+		return;
+	}
+	mParty->SetEnable(false);
+	IsPartyOpen = false;
 }
 
 void CPlayerObject::MenuUp(float DeltaTime)

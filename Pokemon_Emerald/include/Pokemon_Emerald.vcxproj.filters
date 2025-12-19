@@ -229,6 +229,9 @@
     <Filter Include="FrameWork\10.UI\02.UserWidget\01.Main">
       <UniqueIdentifier>{a8e6bb5c-f81c-40f3-aadd-dac89938276a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Pokemon\05.Map">
+      <UniqueIdentifier>{81d6d974-bbb9-4731-aa51-94fe0634a1b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -575,6 +578,12 @@
     </ClCompile>
     <ClCompile Include="Pokemon\Pokemon\Pokemon.cpp">
       <Filter>Pokemon\01.Pokemon</Filter>
+    </ClCompile>
+    <ClCompile Include="Pokemon\UI\Inventory.cpp">
+      <Filter>Pokemon\04.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Pokemon\UI\Party.cpp">
+      <Filter>Pokemon\04.UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -970,6 +979,12 @@
     </ClInclude>
     <ClInclude Include="Pokemon\Pokemon\Pokemon.h">
       <Filter>Pokemon\01.Pokemon</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\UI\Inventory.h">
+      <Filter>Pokemon\04.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\UI\Party.h">
+      <Filter>Pokemon\04.UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

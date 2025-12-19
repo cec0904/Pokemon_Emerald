@@ -59,7 +59,9 @@ E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\include\Pokemon\Pokemon\Pokemon.cpp;E
 E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\include\Pokemon\Pokemon\PokemonManager.cpp;E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\BinObj\PokemonManager.obj
 E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\include\Pokemon\Scene\BattleWithPokemon.cpp;E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\BinObj\BattleWithPokemon.obj
 E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\include\Pokemon\UI\BattleWidget.cpp;E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\BinObj\BattleWidget.obj
+E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\include\Pokemon\UI\Inventory.cpp;E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\BinObj\Inventory.obj
 E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\include\Pokemon\UI\MenuUI.cpp;E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\BinObj\MenuUI.obj
+E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\include\Pokemon\UI\Party.cpp;E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\BinObj\Party.obj
 E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\include\ProfileManager.cpp;E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\BinObj\ProfileManager.obj
 E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\include\Render\BlendState.cpp;E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\BinObj\BlendState.obj
 E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\include\Render\DepthStencilState.cpp;E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\BinObj\DepthStencilState.obj

@@ -2,9 +2,9 @@
 #include "../../Gameinfo.h"
 #include "../../PokemonData.h"
 
-class CPokemonManager
+class CPokemonManager 
 {
-
+	DECLARE_SINGLETON(CPokemonManager)
 
 private:
 	CPokemonManager();
@@ -16,19 +16,21 @@ private:
 	unordered_map<PokemonID, FBaseStats> PokemonDefaultStateMap;
 	unordered_map<PokemonID, FPokemonSpritePos> PokemonSpritePosInfoMap;
 
-	//스킬 리스트
-
-	/*unordered_map<PokemonID, FPokemonAilment> PokemonAilMap;
-	unordered_map<PokemonID, FPokemonInstance> PokemonInstMap;
-	unordered_map<PokemonID, FPokemonSpeciesData> PokemonSpecMap;
-	unordered_map<PokemonID, FPokemonSpriteKey> PokemonSprMap;
-	unordered_map<string, EPokemonType> MapTypeTable;*/
 public:
 	bool Init();
 
-private:
+public:
 	void LoadFile();
-	void InitTypeTable();
+	
+	
+	const unordered_map<int, FPokemonDefaultInfo>& GetIDMap() const
+	{
+		return PokemonIDMap;
+	}
+	const unordered_map<int, FPokemonSpritePos>& GetPosMap() const
+	{
+		return PokemonSpritePosInfoMap;
+	}
 
 	EPokemonType GetTypeFromString(const string& _typeStr);
 };

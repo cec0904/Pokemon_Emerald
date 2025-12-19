@@ -15,6 +15,7 @@ protected:
 
 protected:
 	CSharedPtr<class CSpriteComponent>		mSprite;
+	class CAnimation2D* mAnimation = nullptr;
 
 protected:
 	//능력치 

@@ -24,6 +24,9 @@
 #include "Asset/Sound/SoundManager.h"
 #include "UI/Widget.h"
 
+#include "Pokemon/Pokemon/Pokemon.h"
+#include "Pokemon/Pokemon/PokemonManager.h"
+
 //Gameinfo에 extern을 선언해준다.
 //그럼 Gameinfo를 받아간 파일들은 모두 gRootPath를 사용할수있다.
 TCHAR gRootPath[MAX_PATH];
@@ -115,7 +118,8 @@ bool CGameManager::Init(HINSTANCE hInst)
 	//이때 UI전용 Proj 행렬 초기화
 	FResolution RS = CDevice::GetInst()->GetResolution();
 	CWidget::CreateUIProjection(static_cast<float>(RS.Width), static_cast<float>(RS.Height), 1000.f);
-
+	
+	
 	return true;
 }
 

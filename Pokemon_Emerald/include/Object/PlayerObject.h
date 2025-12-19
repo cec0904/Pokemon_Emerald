@@ -62,6 +62,7 @@ private:
 	void MoveLeft(float DeltaTime);
 	
 	void Menu(float DeltaTime);
+	void Party(float DeltaTime);
 	void Accept(float DeltaTime);
 	void Cancel(float DeltaTime);
 
@@ -70,6 +71,9 @@ private:
 
 	bool IsMenuOpen = false;
 	CSharedPtr<class CMenuUI> mMenuUI;
+
+	bool IsPartyOpen = false;
+	CSharedPtr<class CParty> mParty;
 
 
 
