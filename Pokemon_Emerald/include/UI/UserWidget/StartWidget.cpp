@@ -9,6 +9,13 @@
 #include "../Common/Button.h"
 #include "../Common/Image.h"
 #include "../../Share/Log.h"
+#include "../../Object/SpriteEffect.h"
+#include "../../Component/SpriteComponent.h"
+#include "../../Asset/Animation/Animation2DData.h"
+#include "../../Asset/Animation/Animation2DManager.h"
+#include "../../Animation/Animation2D.h"
+#include "../../Animation/Animation2DSequence.h"
+
 
 CStartWidget::CStartWidget()
 {
@@ -30,25 +37,28 @@ bool CStartWidget::Init()
 	//버튼을 추가하기 
 	mButton = mScene->GetUIManager()->CreateWidget<CButton>("TestButton");
 	mEditorButton = mScene->GetUIManager()->CreateWidget<CButton>("SceneEditorButton");
-	/*Back->SetTexture("StartBakc", TEXT("Texture/Back.png"));
-	Back->SetSize((float)RS.Width, (float)RS.Height);*/
 
 
 
 
-
-	Back->SetTexture("StartBakc", TEXT("Texture/Player/Player.png"));
-	Back->SetSize((float)RS.Width, (float)RS.Height);
-	Back->SetBrushAnimation(true);
-	for (int i = 0; i < 5; ++i)
-	{
-		Back->AddBrushFrame(i * 200.f, 0.f, 200.f, 200.f);
-	}
+	
+	CSpriteEffect* TitleBackGround = mScene->CreateObj<CSpriteEffect>("TitleBackGround");
+	TitleBackGround->SetAnimation("TitleBackGround");
+	TitleBackGround->SetWorldPos(0.f, 0.f);
+	TitleBackGround->SetWorldScale(1280.f, 720.f);
 
 
+	//Back->SetTexture("StartBakc", TEXT("Texture/Pokemon/Title/TitleBackGround.gif"));
+	//Back->SetSize((float)RS.Width, (float)RS.Height);
+	//Back->SetBrushAnimation(true);
+	
+	
 
-	Title->SetTexture("StartTitle", TEXT("Texture/Title.png"));
-	Title->SetSize((float)RS.Width, (float)RS.Height);
+
+	Title->SetTexture("StartTitle", TEXT("Texture/Pokemon/Title/TitleName.png"));
+	Title->SetSize(512.f, 128.f);
+	Title->SetPivot(FVector2D(0.5f, 0.5f));
+	Title->SetPos(RS.Width / 2.f, 500.f);
 
 	Back->SetZOrder(5);
 	Title->SetZOrder(7);

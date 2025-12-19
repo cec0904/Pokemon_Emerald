@@ -93,6 +93,23 @@ bool CAnimation2DManager::Init()
 	AddFrameCount("Explosion", 89, 0.f, 0.f, 320.f, 240.f);
 
 
+	CreateAnimation("TitleBackGround");
+	vector<const TCHAR*> TitleBack;
+	SetAnimationTextureType("TitleBackGround", EAnimationTextureType::Frame);
+	TitleBack.clear();
+
+	static TCHAR TitlePath[160][MAX_PATH] = {};
+
+	//Texture\\Explosion\\Explosion1.png
+	for (int i = 1; i <= 160; ++i)
+	{
+		wsprintf(TitlePath[i - 1], TEXT("Texture\\Pokemon\\Title\\TitleBack\\frame_%04d.png"), i);
+		TitleBack.emplace_back(TitlePath[i - 1]);
+	}
+	SetTexture("TitleBackGround", "TitleBackGround", TitleBack);
+	AddFrameCount("TitleBackGround", 160, 190.f, 51.f, 256.f, 256.f);
+
+
 	////////////////////////////////////////////
 
 

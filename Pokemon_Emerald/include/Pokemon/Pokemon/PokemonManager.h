@@ -4,7 +4,6 @@
 
 class CPokemonManager 
 {
-	DECLARE_SINGLETON(CPokemonManager)
 
 private:
 	CPokemonManager();

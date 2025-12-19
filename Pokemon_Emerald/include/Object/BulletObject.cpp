@@ -7,8 +7,7 @@
 #include "../Share/Log.h"
 #include "../Component/SpriteComponent.h"
 #include "../Scene/Scene.h"
-#include "SpriteEffect.h"
-#include "../Scene/Scene.h"
+
 
 
 CBulletObject::CBulletObject()
