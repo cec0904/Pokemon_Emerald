@@ -136,6 +136,7 @@ struct FPokemonSpeciesData
 //포켓몬 기본 정보
 struct FPokemonDefaultInfo
 {
+	int id = 0;
 	std::string Name;
 	EPokemonType Type1;
 	EPokemonType Type2;

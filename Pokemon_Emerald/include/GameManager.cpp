@@ -100,6 +100,11 @@ bool CGameManager::Init(HINSTANCE hInst)
 		return false;
 	}
 
+	if (!CPokemonManager::GetInst()->Init())
+	{
+		return false;
+	}
+
 	//Collision Profile 매니져 초기화
 	if (!CProfileManager::GetInst()->Init())
 	{

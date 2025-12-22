@@ -64,6 +64,7 @@ bool CPlayerObject::Init()
 
 	mParty = mScene->GetUIManager()->CreateWidget<CParty>("Party");
 	mParty->SetEnable(false);
+	m_pParty = mParty.Get();
 	if (m_pParty)
 	{
 		m_pParty->AddPokemon(1, 5);		// 1번 포켓몬 5레벨 생성
