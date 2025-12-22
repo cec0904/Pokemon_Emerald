@@ -48,22 +48,27 @@ bool CPokemon::Init(int ID)
 
 	const auto& IDMap = CPokemonManager::GetInst()->GetIDMap();
 	const auto& PosMap = CPokemonManager::GetInst()->GetPosMap();
+
+	auto itInfo = IDMap.find(ID);
+	auto itPos = PosMap.find(ID);
+
 	
-	if (IDMap.find(ID) != IDMap.end())
+	if (itInfo == IDMap.end() || itPos == PosMap.end())
 	{
-		mInfo.SpeciesID = ID;
-		mInfo.Info = IDMap.at(ID);
-		mInfo.ImageInfo = PosMap.at(ID);
-
-		mSprite = CreateComponent<CSpriteComponent>("PokemonSprite");
-
+		return false;
 	}
+
+	mInfo.SpeciesID = ID;
+	mInfo.Info = itInfo->second;
+	mInfo.ImageInfo = itPos->second;
+
 	
+	mSprite = CreateComponent<CSpriteComponent>("PokemonSprite");
 
 	return true;
 }
 
-void CPokemon::SetPokemonName(const std::string& Name)
+void CPokemon::SetPokemonName(const string& Name)
 {
 	mName = Name;
 	mInfo.Info.Name = Name;

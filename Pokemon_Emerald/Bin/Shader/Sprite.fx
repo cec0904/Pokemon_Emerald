@@ -20,7 +20,13 @@ cbuffer Sprite : register(b3)
     int gTimeUse; // 0이면 사용안함 그외 사용함
     float gmsTime; //밀리 초 가져가기
     float2 gEmpty;
-}
+    
+    float3 gColorKey;
+    float gKeyThreshold;
+    int gUseColorKey;
+    float3 gPad;
+    
+};
 
 
 VS_Output_Tex SpriteVS(VS_Input_Tex input)
@@ -57,6 +63,12 @@ PS_Output_Single SpritePS(VS_Output_Tex input)
     //float4 Color = gBaseTexture.Sample(gBaseSampler, input.UV);
     float4 Color = gBaseTexture.Sample(gBaseSampler, UV);
 
+    if (gUseColorKey != 0)
+    {
+        float diff = distance(Color.rgb, gColorKey);
+        clip(diff - gKeyThreshold); // diff < threshold면 픽셀 버림(=배경 제거)
+    }
+    
     output.Color = Color * gSpriteTint;
 
     return output;

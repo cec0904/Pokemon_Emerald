@@ -35,6 +35,19 @@ public:
         mData.msTime = Time;
     }
 
+public:
+    void SetColorKey(const FVector3D& Key)
+    {
+        mData.ColorKey = Key;
+    }
+    void SetKeyThreshold(float Threshold)
+    {
+        mData.KeyThreshold = Threshold;
+    }
+    void SetUseColorKey(int Use)
+    {
+        mData.UseColorKey = Use;
+    }
 
 };
 

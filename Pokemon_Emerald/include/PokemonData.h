@@ -51,6 +51,7 @@ struct FBaseStats
 	int SpAtk = 1;
 	int SpDef = 1;
 	int Spd = 1;
+	int CatchRate = 0;
 };
 
 // 이미지 키 값
@@ -123,8 +124,6 @@ struct FPokemonSpeciesData
 	EPokemonType Type2 = EPokemonType::None;
 
 	FBaseStats Base;
-
-	int CatchRate = 0;
 	int ExpYield = 0;
 
 	FPokemonSpriteKey Sprite;

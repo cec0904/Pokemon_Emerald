@@ -85,6 +85,11 @@ struct FSpriteCBufferInfo
 	int TimeUse;	// 0이면 사용안함 그외 사용함
 	float msTime;		//밀리 초 가져가기
 	FVector2D Empty;
+
+	FVector3D ColorKey;   // float3 gColorKey
+	float KeyThreshold;   // float  gKeyThreshold
+	int UseColorKey;      // int    gUseColorKey
+	FVector3D Pad;        // float3 gPad (16바이트 정렬용)
 };
 
 //레지스터 3

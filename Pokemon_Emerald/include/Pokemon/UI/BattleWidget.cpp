@@ -8,6 +8,9 @@
 #include "../../UI/Common/Button.h"
 #include "../../UI/Common/Image.h"
 #include "../../Share/Log.h"
+#include "../../PokemonData.h"
+#include "../../Pokemon/Pokemon/Pokemon.h"
+#include "../../Pokemon/Pokemon/PokemonManager.h"
 
 CBattleWidget::CBattleWidget()
 {
@@ -126,16 +129,61 @@ bool CBattleWidget::Init()
 	PokemonPartyUI->SetSize(960.f, 448.f);
 	PokemonPartyUI->SetPivot(FVector2D(0.5f, 0.f));
 
-
-
 	
+
+	const auto& PosMap = CPokemonManager::GetInst()->GetPosMap();
+
+	PokemonID MyID = (PokemonID)1;	// 나무지기
+	PokemonID EnemyID = (PokemonID)4;	// 아차모
+
+	auto itMy = PosMap.find(MyID);
+	auto itEnemy = PosMap.find(EnemyID);
+
+	if (itMy != PosMap.end() && itEnemy != PosMap.end())
+	{
+		// 내 포켓몬 (Back)
+		CSharedPtr<CImage> MyPokemon =
+			mScene->GetUIManager()->CreateWidget<CImage>("MyPokemon");
+
+		MyPokemon->SetTexture("MyPokemonTex",
+			TEXT("Texture/Pokemon/Pokemon/BackSprite.png"));
+		MyPokemon->SetBrushAnimation(true);
+		MyPokemon->AddBrushFrame(
+			itMy->second.Back1.x,
+			itMy->second.Back1.y,
+			64.f, 64.f
+		);
+		MyPokemon->SetSize(352.f, 352.f);
+		MyPokemon->SetPivot(FVector2D(0.5f, 0.5f));
+		MyPokemon->SetPos(410.f, ScreenH-272.f);
+		MyPokemon->SetZOrder(10);
+		AddWidget(MyPokemon);
+
+		// 적 포켓몬 (Front)
+		CSharedPtr<CImage> EnemyPokemon =
+			mScene->GetUIManager()->CreateWidget<CImage>("EnemyPokemon");
+
+		EnemyPokemon->SetTexture("EnemyPokemonTex",
+			TEXT("Texture/Pokemon/Pokemon/FrontSprite.png"));
+		EnemyPokemon->SetBrushAnimation(true);
+		EnemyPokemon->AddBrushFrame(
+			itEnemy->second.Front1.x,
+			itEnemy->second.Front1.y,
+			64.f, 64.f
+		);
+		EnemyPokemon->SetSize(256.f, 256.f);
+		EnemyPokemon->SetPivot(FVector2D(0.5f, 1.f));
+		EnemyPokemon->SetPos(860.f, 700.f);
+		EnemyPokemon->SetZOrder(10);
+		AddWidget(EnemyPokemon);
+	}
+
 
 	BattleArena->SetZOrder(0);
 	BattleUIBack->SetZOrder(0);
 	BehaviorSelect->SetZOrder(1);
 
 	AddWidget(BattleArena);
-	AddWidget(BattleUIBack);
 	AddWidget(BattleUIBack);
 	AddWidget(BehaviorSelect);
 

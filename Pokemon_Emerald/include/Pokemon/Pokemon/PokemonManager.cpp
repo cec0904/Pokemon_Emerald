@@ -90,9 +90,9 @@ void CPokemonManager::LoadFile()
 		}
 
 		stringstream ss(line);
-		string row[16];
+		string row[17];
 
-		for (int i = 0; i < 16; i++)
+		for (int i = 0; i < 17; i++)
 		{
 			getline(ss, row[i], ',');
 
@@ -126,23 +126,25 @@ void CPokemonManager::LoadFile()
 		stats.SpAtk = stoi(row[7]);
 		stats.SpDef = stoi(row[8]);
 		stats.Spd = stoi(row[9]);
+		stats.CatchRate = stoi(row[10]);
+		
 
 		PokemonDefaultStateMap.emplace(pid, stats);
 
 		// 3. 스프라이트 좌표
 		FPokemonSpritePos pos;
-		pos.Front1.x = (float)stoi(row[10]);
-		pos.Front1.y = (float)stoi(row[11]);
-		pos.Front2.x = (float)stoi(row[12]);
-		pos.Front2.y = (float)stoi(row[13]);
-		pos.Back1.x = (float)stoi(row[14]);
-		pos.Back1.y = (float)stoi(row[15]);
+		pos.Front1.x = (float)stoi(row[11]);
+		pos.Front1.y = (float)stoi(row[12]);
+		pos.Front2.x = (float)stoi(row[13]);
+		pos.Front2.y = (float)stoi(row[14]);
+		pos.Back1.x = (float)stoi(row[15]);
+		pos.Back1.y = (float)stoi(row[16]);
 
 		PokemonSpritePosInfoMap.emplace(pid, pos);
 	}
 
 	file.close();
-
+	CLog::PrintLog("PokemonSpecies.csv loaded\n");
 }
 
 
