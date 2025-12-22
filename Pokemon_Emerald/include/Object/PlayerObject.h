@@ -48,7 +48,15 @@ protected:
 	class CPedometer* mPedometer;
 
 
+private:
+	// 포켓몬
+	class CParty* m_pParty;
 
+public:
+	class CParty* GetParty() const
+	{
+		return m_pParty;
+	}
 
 public:
 	virtual bool Init();

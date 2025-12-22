@@ -91,7 +91,7 @@ public:
 
 
 public:
-	DECLARE_SINGLETON(CDevice);
+	DECLARE_SINGLETON(CDevice)
 
 };
 

@@ -1,9 +1,6 @@
 #include "PokemonManager.h"
 #include "../../PokemonData.h"
 
-
-
-
 CPokemonManager::CPokemonManager()
 {
 }
@@ -12,11 +9,9 @@ CPokemonManager::~CPokemonManager()
 {
 }
 
-
-
-
 bool CPokemonManager::Init()
 {
+	LoadFile();
 	return true;
 }
 
@@ -35,10 +30,10 @@ void CPokemonManager::LoadFile()
 	while (getline(file, line))
 	{
 		stringstream ss(line);
-		string row[10];
+		string row[20];
 		string item;
 		int i = 0;
-		while (getline(ss, item, ',') && i< 10)
+		while (getline(ss, item, ',') && i< 20)
 		{
 			row[i++] = item;
 		}
@@ -75,7 +70,25 @@ void CPokemonManager::LoadFile()
 
 EPokemonType CPokemonManager::GetTypeFromString(const string& _typeStr)
 {
-	return EPokemonType();
+	if (_typeStr == "Normal") return EPokemonType::Normal;
+	if (_typeStr == "Fight") return EPokemonType::Fight;
+	if (_typeStr == "Flying") return EPokemonType::Flying;
+	if (_typeStr == "Poison") return EPokemonType::Poison;
+	if (_typeStr == "Ground") return EPokemonType::Ground;
+	if (_typeStr == "Rock") return EPokemonType::Rock;
+	if (_typeStr == "Bug") return EPokemonType::Bug;
+	if (_typeStr == "Ghost") return EPokemonType::Ghost;
+	if (_typeStr == "Steel") return EPokemonType::Steel;
+	if (_typeStr == "Fire") return EPokemonType::Fire;
+	if (_typeStr == "Water") return EPokemonType::Water;
+	if (_typeStr == "Grass") return EPokemonType::Grass;
+	if (_typeStr == "Electr") return EPokemonType::Electr;
+	if (_typeStr == "Psychc") return EPokemonType::Psychc;
+	if (_typeStr == "Ice") return EPokemonType::Ice;
+	if (_typeStr == "Dragon") return EPokemonType::Dragon;
+	if (_typeStr == "Dark") return EPokemonType::Dark;
+
+	return EPokemonType::None;
 }
 
 

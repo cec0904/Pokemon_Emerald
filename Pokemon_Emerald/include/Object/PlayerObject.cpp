@@ -62,7 +62,17 @@ bool CPlayerObject::Init()
 	class CMainWidget* MainWidget = mScene->GetUIManager()->CreateWidget<CMainWidget>("Main");
 	mScene->GetUIManager()->AddToViewport(MainWidget);
 
-	
+	mParty = mScene->GetUIManager()->CreateWidget<CParty>("Party");
+	mParty->SetEnable(false);
+	if (m_pParty)
+	{
+		m_pParty->AddPokemon(1, 5);		// 1번 포켓몬 5레벨 생성
+		m_pParty->AddPokemon(4, 5);
+		m_pParty->AddPokemon(7, 5);
+		m_pParty->AddPokemon(10, 5);
+		m_pParty->AddPokemon(13, 5);
+		m_pParty->AddPokemon(16, 5);
+	}
 
 
 	// 게임 매니져 -> 씬매니져를 통해 -> 현재 씬을 실행시키고
@@ -175,6 +185,8 @@ void CPlayerObject::Update(float DeltaTime)
 	{
 		mAnimation->ChangeAnimation("PlayerIdle");
 	}
+
+	
 
 }
 

@@ -5,9 +5,6 @@
 class CPokemonManager 
 {
 
-private:
-	CPokemonManager();
-	~CPokemonManager();
 
 private:
 	//포켓몬 도감 
@@ -26,11 +23,20 @@ public:
 	{
 		return PokemonIDMap;
 	}
+
+	const unordered_map<int, FBaseStats>& GetDefaultStatMap() const
+	{
+		return PokemonDefaultStateMap;
+	}
+
 	const unordered_map<int, FPokemonSpritePos>& GetPosMap() const
 	{
 		return PokemonSpritePosInfoMap;
 	}
 
+
 	EPokemonType GetTypeFromString(const string& _typeStr);
+public:
+	DECLARE_SINGLETON(CPokemonManager)
 };
 

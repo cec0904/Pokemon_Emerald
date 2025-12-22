@@ -46,6 +46,19 @@ bool CPokemon::Init(int ID)
 		return false;
 	}
 
+	const auto& IDMap = CPokemonManager::GetInst()->GetIDMap();
+	const auto& PosMap = CPokemonManager::GetInst()->GetPosMap();
+	
+	if (IDMap.find(ID) != IDMap.end())
+	{
+		mInfo.SpeciesID = ID;
+		mInfo.Info = IDMap.at(ID);
+		mInfo.ImageInfo = PosMap.at(ID);
+
+		mSprite = CreateComponent<CSpriteComponent>("PokemonSprite");
+
+	}
+	
 
 	return true;
 }

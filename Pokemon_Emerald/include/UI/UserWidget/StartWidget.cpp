@@ -32,7 +32,7 @@ bool CStartWidget::Init()
 	FResolution RS = CDevice::GetInst()->GetResolution();
 
 	//배경
-	CSharedPtr<CImage> Back = mScene->GetUIManager()->CreateWidget<CImage>("Back");
+	//CSharedPtr<CImage> Back = mScene->GetUIManager()->CreateWidget<CImage>("Back");
 	CSharedPtr<CImage> Title = mScene->GetUIManager()->CreateWidget<CImage>("Title");
 	//버튼을 추가하기 
 	mButton = mScene->GetUIManager()->CreateWidget<CButton>("TestButton");
@@ -43,9 +43,12 @@ bool CStartWidget::Init()
 
 	
 	CSpriteEffect* TitleBackGround = mScene->CreateObj<CSpriteEffect>("TitleBackGround");
-	TitleBackGround->SetAnimation("TitleBackGround");
+	TitleBackGround->SetAnimation("TitleBackGround", 8.f, 1.f, true, false);
+	TitleBackGround->GetRootComponent()->SetPivot(0.5f, 0.5f);
 	TitleBackGround->SetWorldPos(0.f, 0.f);
-	TitleBackGround->SetWorldScale(1280.f, 720.f);
+	TitleBackGround->SetWorldScale(2.f, 2.f);
+	
+
 
 
 	//Back->SetTexture("StartBakc", TEXT("Texture/Pokemon/Title/TitleBackGround.gif"));
@@ -56,16 +59,16 @@ bool CStartWidget::Init()
 
 
 	Title->SetTexture("StartTitle", TEXT("Texture/Pokemon/Title/TitleName.png"));
-	Title->SetSize(512.f, 128.f);
+	Title->SetSize(768.f, 192.f);
 	Title->SetPivot(FVector2D(0.5f, 0.5f));
 	Title->SetPos(RS.Width / 2.f, 500.f);
 
-	Back->SetZOrder(5);
+	//Back->SetZOrder(5);
 	Title->SetZOrder(7);
 	mButton->SetZOrder(10);
 	mEditorButton->SetZOrder(10);
 
-	AddWidget(Back);
+	//AddWidget(Back);
 	AddWidget(Title);
 	AddWidget(mButton);
 	AddWidget(mEditorButton);

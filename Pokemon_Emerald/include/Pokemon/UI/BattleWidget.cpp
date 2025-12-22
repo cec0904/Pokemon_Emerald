@@ -142,3 +142,4 @@ bool CBattleWidget::Init()
 	return true;
 }
 
+

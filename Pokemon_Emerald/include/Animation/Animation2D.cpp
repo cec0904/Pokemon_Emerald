@@ -273,6 +273,12 @@ void CAnimation2D::SetShader()
 		mOwner->SetTextureIndex(0);
 		break;
 	case EAnimationTextureType::Frame:
+		const FTextureInfo* CurTex = Texture->GetTexture(mCurrentSequence->mFrame);
+
+		LTX = Frame.Start.x / CurTex->Width;
+		LTY = Frame.Start.y / CurTex->Height;
+		RBX = LTX + Frame.Size.x / CurTex->Width;
+		RBY = LTY + Frame.Size.y / CurTex->Height;
 		mOwner->SetTextureIndex(mCurrentSequence->mFrame);
 		break;
 	}

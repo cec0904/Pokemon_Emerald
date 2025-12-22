@@ -11,12 +11,12 @@ protected:
 	virtual ~CBattleWidget();
 
 
-protected:
-
+private:
+	
 
 public:
 	virtual bool Init();
-
+	//virtual void SetPlayerPokemonUI(const FPokemonInstance& data);
 private:
 
 };

@@ -108,6 +108,7 @@ bool CAnimation2DManager::Init()
 	}
 	SetTexture("TitleBackGround", "TitleBackGround", TitleBack);
 	AddFrameCount("TitleBackGround", 160, 190.f, 51.f, 256.f, 256.f);
+	
 
 
 	////////////////////////////////////////////
