@@ -71,7 +71,12 @@ struct FUICBufferInfo
 	int BrushAnimEnable; // 4
 	// 텍스쳐 사용 여부 
 	int BrushTextureEnable; // 4
-	FVector2D BrushEmpty;     //8
+	//FVector2D BrushEmpty;     //8
+
+	//UI 플립
+	int UIFlip;
+	//Empty
+	float BrushEmpty;     //8
 };
 
 

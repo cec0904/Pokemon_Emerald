@@ -676,12 +676,14 @@ void CTileMapComponent::Update(float DeltaTime)
 	//X End
 	if (mViewEndX < 0)
 	{
-		mViewStartX = 0;
+		mViewEndX = 0;
 	}
 	else if (mViewEndX >= mCountX)
 	{
-		mViewStartX = mCountX - 1;
+		mViewEndX = mCountX - 1;
 	}
+
+
 	//Y Start
 	if (mViewStartY < 0)
 	{
@@ -760,7 +762,7 @@ void CTileMapComponent::Save(const char* FileName)
 	{
 		return;
 	}
-	
+
 	fwrite(&mTileSize, sizeof(FVector2D), 1, File);
 	fwrite(&mCountX, sizeof(int), 1, File);
 	fwrite(&mCountY, sizeof(int), 1, File);
@@ -781,7 +783,7 @@ void CTileMapComponent::Save(const char* FileName)
 
 	int TileCount = static_cast<int>(mTileList.size());
 
-	for (int i = 0; i< TileCount; ++i)
+	for (int i = 0; i < TileCount; ++i)
 	{
 		mTileList[i]->Save(File);
 	}
@@ -811,7 +813,7 @@ void CTileMapComponent::Save(const char* FileName)
 		{
 			fwrite(&TextureEnable, sizeof(bool), 1, File);
 		}
-		
+
 		TextureEnable = false;
 		Texture = Renderer->GetTileTexture();
 		if (Texture)
@@ -877,7 +879,7 @@ void CTileMapComponent::Load(const char* FileName)
 	fread(&mCountX, sizeof(int), 1, File);
 	fread(&mCountY, sizeof(int), 1, File);
 
-	
+
 	int FrameCount = 0;
 
 	fread(&FrameCount, sizeof(int), 1, File);

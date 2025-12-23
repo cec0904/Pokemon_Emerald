@@ -59,6 +59,7 @@ protected:
 	//마우스가 들어와있나 
 	bool mMouseOn = false;
 
+	bool mIsFlip = false;
 public:
 	void SetParent(CWidget* Widget)
 	{
@@ -107,6 +108,10 @@ public:
 	}
 
 public:
+	void SetFlip(bool Flip)
+	{
+		mIsFlip = Flip;
+	}
 	void SetPos(const FVector2D& Pos)
 	{
 		mPos = Pos;

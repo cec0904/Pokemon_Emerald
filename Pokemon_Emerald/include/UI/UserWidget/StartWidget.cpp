@@ -1,6 +1,7 @@
 #include "StartWidget.h"
 
 #include "../../Device.h"
+#include "../../Scene/Input.h"
 #include "../../Scene/Scene.h"
 #include "../../Scene/SceneMain.h"
 #include "../../Scene/SceneEditor.h"
@@ -15,7 +16,11 @@
 #include "../../Asset/Animation/Animation2DManager.h"
 #include "../../Animation/Animation2D.h"
 #include "../../Animation/Animation2DSequence.h"
-
+#include "../../UI/Common/TextBlock.h"
+#include "../../Asset/Asset.h"
+#include "../../Asset/AssetManager.h"
+#include "../../Asset/Font/Font.h"
+#include "../../Asset/Font/FontManager.h"
 
 CStartWidget::CStartWidget()
 {
@@ -65,12 +70,12 @@ bool CStartWidget::Init()
 
 	//Back->SetZOrder(5);
 	Title->SetZOrder(7);
-	mButton->SetZOrder(10);
+	//mButton->SetZOrder(10);
 	mEditorButton->SetZOrder(10);
 
 	//AddWidget(Back);
 	AddWidget(Title);
-	AddWidget(mButton);
+	//AddWidget(mButton);
 	AddWidget(mEditorButton);
 
 
@@ -108,6 +113,30 @@ bool CStartWidget::Init()
 	mEditorButton->SetEventCallBack(EButtonEventState::Click, this, &CStartWidget::StartEidtButtonClick);
 
 
+	mScene->GetInput()->AddBindKey("StartAccept", 'D');
+	mScene->GetInput()->AddBindFunction("StartAccept", EInputType::Down, this, &CStartWidget::SelectKey);
+
+
+	mPushText = mScene->GetUIManager()->CreateWidget<CTextBlock>("PushText");
+	mPushText->SetSize(300.f, 100.f);
+	mPushText->SetFontSize(60.f);
+
+	mPushText->SetFont("Default");
+	mPushText->SetText(TEXT("Push D Button"));
+	// 또는
+	//PushText->SetText(L"Default");
+
+	mPushText->SetTextColor(255, 255, 255, 255);
+	mPushText->SetPivot(FVector2D(0.5f, 0.5f));
+	mPushText->SetPos(510.f, 150.f);
+
+	mPushText->EnableTransparency(true);
+	mPushText->SetOpacity(1.f);
+
+	mPushText->SetZOrder(5);
+	AddWidget(mPushText);
+
+
 
 	return true;
 }
@@ -125,4 +154,42 @@ void CStartWidget::StartEidtButtonClick()
 	CLog::PrintLog("Start SceneEditor Button Click");
 
 	CSceneManager::GetInst()->CreateLoadScene<CSceneEditor>();
+}
+
+void CStartWidget::Update(float DeltaTime)
+{
+	CUserWidget::Update(DeltaTime);
+
+	if (!mPushText)
+	{
+		return;
+	}
+
+	mBlinkTimer += DeltaTime;
+
+	if (mBlinkTimer>=1.f)
+	{
+		mBlinkTimer = 0.f;
+		mBlinkOn = !mBlinkOn;
+
+		if (mBlinkOn)
+		{
+			mPushText->SetOpacity(1.f);
+		}
+		else
+		{
+			mPushText->SetOpacity(0.f);
+		}
+	}
+}
+
+void CStartWidget::SelectKey(float DeltaTime)
+{
+	Select();
+}
+
+void CStartWidget::Select()
+{
+	CLog::PrintLog("Select Key Click");
+	CSceneManager::GetInst()->CreateLoadScene<CSceneMain>();
 }

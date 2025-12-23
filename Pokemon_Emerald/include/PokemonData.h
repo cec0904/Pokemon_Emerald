@@ -57,22 +57,22 @@ struct FBaseStats
 // 이미지 키 값
 struct FPokemonSpriteKey
 {
-	std::string FrontKey;	// 앞모습
-	std::string BackKey;	// 뒷모습
+	string FrontKey;	// 앞모습
+	string BackKey;	// 뒷모습
 };
 
 // 기술 애니메이션 키 값
 struct FMoveAnimKey
 {
-	std::string CasterAnimKey; // 기술 쓰는 쪽
-	std::string TargetAnimKey; // 맞는 쪽
+	string CasterAnimKey; // 기술 쓰는 쪽
+	string TargetAnimKey; // 맞는 쪽
 };
 
 // 기술 데이터
 struct FMoveData
 {
 	MoveID ID = 0;
-	std::string Name;
+	string Name;
 
 	EPokemonType Type = EPokemonType::None;
 	EMoveCategory Category = EMoveCategory::Special;
@@ -118,7 +118,7 @@ struct FBattleStatStage
 struct FPokemonSpeciesData
 {
 	PokemonID ID = 0;
-	std::string Name;
+	string Name;
 
 	EPokemonType Type1 = EPokemonType::None;
 	EPokemonType Type2 = EPokemonType::None;
@@ -136,7 +136,7 @@ struct FPokemonSpeciesData
 struct FPokemonDefaultInfo
 {
 	int id = 0;
-	std::string Name;
+	string Name;
 	EPokemonType Type1;
 	EPokemonType Type2;
 };
@@ -169,5 +169,5 @@ struct FPokemonInstance
 
 
 	// 고정 4슬롯: 0이면 빈 슬롯
-	//std::array<MoveID, 4> MoveSlots{ 0,0,0,0 };
+	//array<MoveID, 4> MoveSlots{ 0,0,0,0 };
 };

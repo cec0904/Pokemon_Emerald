@@ -64,12 +64,15 @@ void CWidget::Render()
 {
 	if (mParent)
 	{
-		mRenderPos = mParent->GetRenderPos() + mPos; 
+		mRenderPos = mParent->GetRenderPos() + mPos;
 	}
 	else
 	{
 		mRenderPos = mPos;
 	}
+
+	mUICBuffer->SetFlip(mIsFlip);
+
 }
 
 void CWidget::Render(const FVector3D& Pos)
@@ -82,6 +85,9 @@ void CWidget::Render(const FVector3D& Pos)
 	{
 		mRenderPos = mPos;
 	}
+
+	mUICBuffer->SetFlip(mIsFlip);
+
 }
 
 bool CWidget::CollisionMouse(CWidget** Result, const FVector2D& MousePos)
@@ -141,7 +147,7 @@ bool CWidget::CollisionMouse(CWidget** Result, const FVector2D& MousePos)
 	// OBB
 	//점과 OBB 충돌
 	//사각형의 축
-	FVector2D Axis[2];	
+	FVector2D Axis[2];
 	//하프사이즈
 	FVector2D HalfSize = mSize * 0.5f;
 	//중심점

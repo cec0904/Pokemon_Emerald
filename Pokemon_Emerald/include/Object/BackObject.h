@@ -1,5 +1,7 @@
 #pragma once
 #include "SceneObject.h"
+#include "../Component/SpriteComponent.h"
+
 class CBackObject :
     public CSceneObject
 {
@@ -17,6 +19,11 @@ protected:
 
 public:
 	virtual bool Init();
+public:
+	void setFlip(bool Flip)
+	{
+		mRoot->SetFlip(Flip);
+	}
 
 };
 

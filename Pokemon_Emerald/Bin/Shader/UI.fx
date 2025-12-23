@@ -16,9 +16,9 @@ struct VS_Output_Tex
 cbuffer UI : register(b3)
 {
 	//텍스쳐에 대한 보정 색상 
-    float4 gBrushTint;      //16
+    float4 gBrushTint; //16
 	//Widget에 대한 보정 색상 
-    float4 gWidgetColor;     //16
+    float4 gWidgetColor; //16
 	//LT Left-Top
     float2 gBrushAnimLTUV; //8
 	//RB Right-Bottom
@@ -28,9 +28,9 @@ cbuffer UI : register(b3)
 	// 텍스쳐 사용 여부 
     int gBrushTextureEnable; // 4
 	//// 애니메이션 반전 여부
-	//  int gAnim2DFlip;
+    int gUI2DFlip;
 	//빈 데이터 16 배수로 보내줘야한다. 
-    float2 gBrushEmpty;     //8
+    float gBrushEmpty; //8
 }
 
 
@@ -71,6 +71,12 @@ VS_Output_Tex UIVS(VS_Input_Tex input)
 
     float3 Pos = input.Pos - gPivot;
 
+      //반전여부
+    if (gUI2DFlip)
+    {
+        Pos.x = -Pos.x;
+    }
+
     output.Pos = mul(float4(Pos, 1.f), gmatWVP);
 
     output.UV = UpdateAnimationUI(input.UV);
@@ -86,7 +92,7 @@ PS_Output_Single UIPS(VS_Output_Tex input)
 
     if (gBrushTextureEnable)
     {
-    	Color = gBaseTexture.Sample(gBaseSampler, input.UV);
+        Color = gBaseTexture.Sample(gBaseSampler, input.UV);
     }
 
     output.Color = Color * gBrushTint * gWidgetColor;

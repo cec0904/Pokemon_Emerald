@@ -49,5 +49,9 @@ public:
         mData.BrushAnimEnable = Enable ? 1 : 0;
     }
 
+    void SetFlip(bool Flip)
+    {
+        mData.UIFlip = Flip;
+    }
 };
 

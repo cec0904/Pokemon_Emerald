@@ -60,7 +60,7 @@ bool CSoundManager::Init()
 	LoadSound("Effect1", "Effect", false, "Sound/TeemoSmile.mp3");
 
 	//사운드 플레이
-	Play("SceneMainBGM");
+	//Play("SceneMainBGM");
 	//Play("Effect1");
 
 	SetGroupVolume("BGM", 1);
