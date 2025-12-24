@@ -39,6 +39,11 @@ public:
 		mEditorMode = Mode;
 	}
 
+	CTileMapComponent* GetTileMapComponent() const
+	{
+		return mTileMap.Get();
+	}
+
 	void AddTileType();
 	void AddTileFrame();
 

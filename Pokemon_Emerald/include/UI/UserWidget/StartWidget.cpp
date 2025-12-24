@@ -167,7 +167,7 @@ void CStartWidget::Update(float DeltaTime)
 
 	mBlinkTimer += DeltaTime;
 
-	if (mBlinkTimer>=1.f)
+	if (mBlinkTimer>=0.6f)
 	{
 		mBlinkTimer = 0.f;
 		mBlinkOn = !mBlinkOn;

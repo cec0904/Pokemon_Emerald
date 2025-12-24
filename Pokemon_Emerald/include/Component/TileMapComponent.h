@@ -163,5 +163,28 @@ public:
 	void Load(const TCHAR* FullPath);
 	void Load(const char* FileName);
 
+
+public:
+	ETileType GetTileType(int Index) const
+	{
+		if (Index < 0 || Index >= (int)mTileList.size())
+		{
+			return ETileType::None;
+		}
+		return mTileList[Index]->GetTileType();
+	}
+
+	FVector2D GetTileCenter(int x, int y) const
+	{
+		if (x < 0 || x >= mCountX || y < 0 || y >= mCountY)
+			return FVector2D(-1.f, -1.f);
+
+		int Index = y * mCountX + x;
+		return mTileList[Index]->GetCenter();
+	}
+
+
+
+
 };
 

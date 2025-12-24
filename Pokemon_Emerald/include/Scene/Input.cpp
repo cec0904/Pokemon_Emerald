@@ -283,6 +283,7 @@ void CInput::UpdateMousePos(float DeltaTime)
 	POINT MousePT;
 	// GetCursorPos : 모니터 화면(스크린) 좌표를 구해준다. 
 	GetCursorPos(&MousePT);
+	
 
 	// 스크린 좌표를 클라이언트 좌표로 변환시켜준다.
 	// 기준은 좌상단.
@@ -429,6 +430,7 @@ void CInput::UpdateInput(float DeltaTime)
 				{
 					mMouseDown[i] = true;
 					mMouseHold[i] = true;
+					
 				}
 				else
 				{

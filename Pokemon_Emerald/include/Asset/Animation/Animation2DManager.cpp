@@ -1,6 +1,7 @@
 #include "Animation2DManager.h"
 #include "Animation2DData.h"
 #include "../../Animation/Animation2D.h"
+#include "../../Share/Log.h"
 
 CAnimation2DManager::CAnimation2DManager()
 {
@@ -31,48 +32,54 @@ bool CAnimation2DManager::Init()
 	}*/
 
 	// 플레이어 위로 걷기
+	// May(또는 Player) 스프라이트시트
+	CreateAnimation("PlayerIdleUp");
+	SetAnimationTextureType("PlayerIdleUp", EAnimationTextureType::SpriteSheet);
+	SetTexture("PlayerIdleUp", "PlayerSheet", TEXT("Texture\\Pokemon\\Player\\May.png"));
+	// Idle = col 2, Down = row 0
+	AddFrame("PlayerIdleUp", 0.f, 33.f, 16.f, 32.f);
+
+	// 걷기 Up (col 0,1)
 	CreateAnimation("PlayerWalkUp");
-	SetAnimationTextureType("PlayerWalkUp", EAnimationTextureType::Frame);
+	SetAnimationTextureType("PlayerWalkUp", EAnimationTextureType::SpriteSheet);
+	SetTexture("PlayerWalkUp", "PlayerSheet", TEXT("Texture\\Pokemon\\Player\\May.png"));
+	AddFrame("PlayerWalkUp", 17.f, 33.f, 16.f, 32.f);
+	AddFrame("PlayerWalkUp", 34.f, 33.f, 16.f, 32.f);
 
-	vector<const TCHAR*> PlayerWalk;
-	PlayerWalk.emplace_back(TEXT("Texture\\Pokemon\\Player\\Player_Up_01.png"));
-	PlayerWalk.emplace_back(TEXT("Texture\\Pokemon\\Player\\Player_Up_Idle.png"));
 
-	SetTexture("PlayerWalkUp", "PlayerWalk", PlayerWalk);
-	AddFrameCount("PlayerWalkUp", 2, 0.f, 0.f, 14.f, 20.f);
 
-	// 플레이어 아래로로 걷기
+	// 플레이어 아래로 걷기
+	// May(또는 Player) 스프라이트시트
+	CreateAnimation("PlayerIdleDown");
+	SetAnimationTextureType("PlayerIdleDown", EAnimationTextureType::SpriteSheet);
+	SetTexture("PlayerIdleDown", "PlayerSheet", TEXT("Texture\\Pokemon\\Player\\May.png"));
+	// Idle = col 2, Down = row 0
+	AddFrame("PlayerIdleDown", 0.f, 0.f, 16.f, 32.f);
+
+	// 걷기 Down (col 0,1)
 	CreateAnimation("PlayerWalkDown");
-	SetAnimationTextureType("PlayerWalkDown", EAnimationTextureType::Frame);
+	SetAnimationTextureType("PlayerWalkDown", EAnimationTextureType::SpriteSheet);
+	SetTexture("PlayerWalkDown", "PlayerSheet", TEXT("Texture\\Pokemon\\Player\\May.png"));
+	AddFrame("PlayerWalkDown", 17.f, 0.f, 16.f, 32.f);
+	AddFrame("PlayerWalkDown", 34.f, 0.f, 16.f, 32.f);
 
-	PlayerWalk.clear();
-	PlayerWalk.emplace_back(TEXT("Texture\\Pokemon\\Player\\Player_Down_01.png"));
-	PlayerWalk.emplace_back(TEXT("Texture\\Pokemon\\Player\\Player_Down_Idle.png"));
-
-	SetTexture("PlayerWalkDown", "PlayerWalkDown", PlayerWalk);
-	AddFrameCount("PlayerWalkDown", 2, 0.f, 0.f, 14.f, 20.f);
 
 	// 플레이어 오른쪽으로 걷기
-	CreateAnimation("PlayerWalkRight");
-	SetAnimationTextureType("PlayerWalkRight", EAnimationTextureType::Frame);
+	CreateAnimation("PlayerIdleLeft");
+	SetAnimationTextureType("PlayerIdleLeft", EAnimationTextureType::SpriteSheet);
+	SetTexture("PlayerIdleLeft", "PlayerSheet", TEXT("Texture\\Pokemon\\Player\\May.png"));
 
-	PlayerWalk.clear();
-	PlayerWalk.emplace_back(TEXT("Texture\\Pokemon\\Player\\Player_Right_01.png"));
-	PlayerWalk.emplace_back(TEXT("Texture\\Pokemon\\Player\\Player_Right_Idle.png"));
+	AddFrame("PlayerIdleLeft", 0.f, 66.f, 16.f, 32.f);
 
-	SetTexture("PlayerWalkRight", "PlayerWalkRight", PlayerWalk);
-	AddFrameCount("PlayerWalkRight", 2, 0.f, 0.f, 14.f, 20.f);
-
-	// 플레이어 왼쪽으로 걷기
+	// 걷기 Left (col 0,1)
 	CreateAnimation("PlayerWalkLeft");
-	SetAnimationTextureType("PlayerWalkLeft", EAnimationTextureType::Frame);
+	SetAnimationTextureType("PlayerWalkLeft", EAnimationTextureType::SpriteSheet);
+	SetTexture("PlayerWalkLeft", "PlayerSheet", TEXT("Texture\\Pokemon\\Player\\May.png"));
+	AddFrame("PlayerWalkLeft", 17.f, 66.f, 16.f, 32.f);
+	AddFrame("PlayerWalkLeft", 34.f, 66.f, 16.f, 32.f);
 
-	PlayerWalk.clear();
-	PlayerWalk.emplace_back(TEXT("Texture\\Pokemon\\Player\\Player_Left_01.png"));
-	PlayerWalk.emplace_back(TEXT("Texture\\Pokemon\\Player\\Player_Left_Idle.png"));
 
-	SetTexture("PlayerWalkLeft", "PlayerWalkLeft", PlayerWalk);
-	AddFrameCount("PlayerWalkLeft", 2, 0.f, 0.f, 14.f, 20.f);
+
 
 
 	//폭발 이펙트

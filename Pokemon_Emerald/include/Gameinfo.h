@@ -364,6 +364,7 @@ enum class ETileType
 	MouseOver,
 	Nomal = 0,
 	UnableToMove,
+	Portal,
 	End
 };
 

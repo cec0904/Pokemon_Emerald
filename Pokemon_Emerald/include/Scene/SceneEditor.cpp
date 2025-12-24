@@ -3,6 +3,7 @@
 #include "../Object/TileMapObj.h"
 #include "Input.h"
 #include "../GameManager.h"
+#include "../Share/Log.h"
 
 CSceneEditor::CSceneEditor()
 {
@@ -47,6 +48,8 @@ void CSceneEditor::Update(float DeltaTime)
 {
 	CScene::Update(DeltaTime);
 }
+
+
 
 void CSceneEditor::EditorMode(float DeltaTime)
 {

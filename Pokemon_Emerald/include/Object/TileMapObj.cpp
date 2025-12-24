@@ -2,6 +2,7 @@
 
 #include "../Scene/Input.h"
 #include "../Scene/Scene.h"
+#include "../Share/Log.h"
 
 CTileMapObj::CTileMapObj()
 {
@@ -45,7 +46,7 @@ bool CTileMapObj::Init()
 	// 아웃라인 그리기 -> 쉐이더랑 메쉬 설정 까지 
 	mTileMap->SetTileOutLineRender(true);
 
-	mTileMapRender->SetBackTexture("TileMapBack", TEXT("Texture/MapBackGround.png"));
+	mTileMapRender->SetBackTexture("TileMapBack", TEXT("Texture/Pokemon/BackGround/WorldMap.png"));
 
 	//타일 스프라이트 텍스쳐 설정 
 	mTileMapRender->SetTileTexture("Tile", TEXT("Texture/Floors.png"));
@@ -58,7 +59,10 @@ bool CTileMapObj::Init()
 
 	SetRootComponent(mTileMapRender);
 
-	mTileMap->CreateTile(100, 100, FVector2D(64.f, 64.f));
+
+	// 타일개수 가로세로, 타일크기 가로세로
+	// 
+	mTileMap->CreateTile(178, 149, FVector2D(64.f, 64.f));
 
 	return true;
 }
@@ -75,6 +79,19 @@ void CTileMapObj::Update(float DeltaTime)
 		{
 			mTileMap->ChangeTileType(mEditTileType, MousePos);
 		}
+
+		if (mScene->GetInput()->GetMouseDown(EMouseButtonType::LButton))
+		{
+			int idx = mTileMap->GetTileIndex(MousePos);
+			if (idx != -1)
+			{
+				int x = idx % mTileMap->GetTileCountX();
+				int y = idx / mTileMap->GetTileCountX();
+
+				CLog::PrintLog("TileClick x=%d y=%d idx=%d :		" + to_string(x) + ", " + to_string(y) + ", " + to_string(idx));
+			}
+		}
+
 		//마우스가 올려져 있을때
 		else if (!mScene->GetInput()->GetMouseDown(EMouseButtonType::LButton))
 		{

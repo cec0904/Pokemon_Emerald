@@ -13,6 +13,7 @@
 #include "../UI/UserWidget/MainWidget.h"
 #include "../Asset/Sound/SoundManager.h"
 #include "../Asset/AssetManager.h"
+#include "../Component/TileMapComponent.h"
 
 CSceneMain::CSceneMain()
 {
@@ -58,7 +59,7 @@ bool CSceneMain::Init()
 	BackGorundObject->setFlip(true);*/
 
 	CTileMapObj* BackTileObject = CreateObj<CTileMapObj>("BackTileObj");
-	BackTileObject->Load("Second2222.tlm");
+	BackTileObject->Load("WorldMap.tlm");
 
 
 
@@ -68,7 +69,7 @@ bool CSceneMain::Init()
 	if (Player == nullptr)
 		return false;
 
-	
+	Player->SetTileMap(BackTileObject->GetTileMapComponent());
 
 	return true;
 }

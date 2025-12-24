@@ -8,6 +8,17 @@ enum class ESkill4State
 	Reduction	//축소
 };
 
+enum class MoveState
+{
+	Up,
+	Down,
+	Right,
+	Left
+};
+
+
+class CTileMapComponent;
+
 class CPlayerObject :
 	public CSceneObject
 {
@@ -48,6 +59,27 @@ protected:
 	class CPedometer* mPedometer;
 
 
+
+	CTileMapComponent* mTileMap = nullptr;
+	bool mTileMoving = false;
+	FVector3D mTileTargetPos;
+	float mTileMoveSpeed = 300.f;
+
+
+	MoveState mMoveState = MoveState::Down;
+
+public:
+	void SetTileMap(class CTileMapComponent* TileMap)
+	{
+		mTileMap = TileMap;
+	}
+
+	void TransPort()
+	{
+
+	}
+	
+
 private:
 	// 포켓몬
 	class CParty* m_pParty;
@@ -64,6 +96,7 @@ public:
 
 
 private:
+
 	void MoveUp(float DeltaTime);
 	void MoveDown(float DeltaTime);
 	void MoveRight(float DeltaTime);
@@ -90,15 +123,5 @@ private:
 	void IsOffCollision(class CColliderBase* Dest);
 
 
-
-
-	void rotationZ(float DeltaTime);
-	void rotationZInv(float DeltaTime);
-
-
-
-	//애니메이션 바인드 함수 
-	void AttackEnd();
-	void AttackNotify();
 };
 

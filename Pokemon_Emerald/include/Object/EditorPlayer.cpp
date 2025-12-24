@@ -36,7 +36,7 @@ bool CEditorPlayer::Init()
 	SetRootComponent(mCamera);
 
 	mMovement->SetUpdateComponent(mCamera);
-	mMovement->SetMoveSpeed(500.f);
+	mMovement->SetMoveSpeed(1500.f);
 
 	mScene->GetInput()->AddBindKey("MoveUp", 'W');
 	mScene->GetInput()->AddBindKey("MoveDown", 'S');

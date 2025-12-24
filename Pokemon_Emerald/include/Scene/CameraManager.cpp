@@ -57,7 +57,7 @@ void CCameraManager::Update(float DeltaTime)
 	{
 		if (!mViewTarget->IsActive())
 		{
-			mViewTarget == nullptr;
+			mViewTarget = nullptr;
 		}
 	}
 }

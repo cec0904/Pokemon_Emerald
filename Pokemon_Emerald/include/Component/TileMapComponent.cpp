@@ -170,6 +170,8 @@ void CTileMapComponent::RenderTileOutLine()
 			case ETileType::MouseOver:
 				mCBuffer->SetColor(1.f, 1.f, 0.f, 1.f);
 				break;
+			case ETileType::Portal:
+				mCBuffer->SetColor(10.f, 10.f, 10.f, 10.f);
 			}
 
 			mCBuffer->UpdateBuffer();
@@ -960,3 +962,4 @@ void CTileMapComponent::Load(const char* FileName)
 	}
 	fclose(File);
 }
+

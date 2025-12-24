@@ -34,6 +34,8 @@
 #include "../Pokemon/UI/Inventory.h"
 #include "../Pokemon/UI/Party.h"
 
+#include "../Component/TileMapComponent.h"
+
 
 
 CPlayerObject::CPlayerObject()
@@ -96,12 +98,12 @@ bool CPlayerObject::Init()
 	//mRoot->SetMesh("CenterTexRect");
 	mRoot->SetTexture("BonoBono", TEXT("Texture/BonoBono.png"), 0);
 	//mRoot->SetTint(0.1f, 0.1f, 0.8f);
-	mRoot->SetPivot(0.5f, 0.5f);
+	mRoot->SetPivot(0.5f, 0.25f);
 	//mRoot->SetOpacity(1.f);
 	//mRoot->SetShader("ColorMeshShader");
 
-	mRoot->SetWorldPos(0.f, 0.f, 0.f);
-	mRoot->SetWorldScale(100.f, 100.f, 1.f);
+	mRoot->SetWorldPos(352.f, 160.f, 0.f);
+	mRoot->SetWorldScale(64.f, 128.f, 1.f);
 	SetRootComponent(mRoot);
 
 	mBody->SetCollisionBeginFunc<CPlayerObject>(this, &CPlayerObject::IsOnCollision);
@@ -110,31 +112,20 @@ bool CPlayerObject::Init()
 	mAnimation = mRoot->CreateAnimation2D<CAnimation2D>();
 	/*mAnimation->AddSequence("PlayerIdle", 1.f, 1.f, true, false);*/
 
-	mAnimation->AddSequence("PlayerWalkDown", 1.f, 1.f, true, false);
-	mAnimation->AddSequence("PlayerWalkUp", 1.f, 1.f, true, false);
-	mAnimation->AddSequence("PlayerWalkRight", 1.f, 1.f, true, false);
-	mAnimation->AddSequence("PlayerWalkLeft", 1.f, 1.f, true, false);
+	mAnimation->AddSequence("PlayerWalkDown", 1.f, 0.08f, true, false);
+	mAnimation->AddSequence("PlayerWalkUp", 1.f, 0.08f, true, false);
+	mAnimation->AddSequence("PlayerWalkLeft", 1.f, 0.08f, true, false);
 
-	mAnimation->AddSequence("PlayerAttack", 1.f, 0.6f, true, false);
 
-	mAnimation->SetEndFunction("PlayerAttack", this, &CPlayerObject::AttackEnd);
-	mAnimation->AddNotify("PlayerAttack", 1, this, &CPlayerObject::AttackNotify);
+	mAnimation->AddSequence("PlayerIdleDown", 1.f, 1.f, true, false);
+	mAnimation->AddSequence("PlayerIdleUp", 1.f, 1.f, true, false);
+	mAnimation->AddSequence("PlayerIdleLeft", 1.f, 1.f, true, false);
 
 	mRoot->SetFlip(false);
 
 	mRoot->AddChild(mBody);
-	mBody->SetBoxSize(100.f, 100.f);
+	mBody->SetBoxSize(64.f, 64.f);
 	mBody->SetCollisionProfile("Player");
-	//mBody->SetRadius(50.f);
-
-	//mBody->AddChild(mLine);
-	//mLine->SetCollisionProfile("Player");
-	//mLine->SetLineDistance(300.f);
-	//mLine->SetRelativePos(0.f, 50.f);
-
-
-
-
 
 	mMovement->SetUpdateComponent(mRoot);
 	mMovement->SetMoveSpeed(200.f);
@@ -173,6 +164,8 @@ bool CPlayerObject::Init()
 	mScene->GetInput()->AddBindKey("MenuDown", VK_DOWN);
 	mScene->GetInput()->AddBindFunction("MenuDown", EInputType::Down, this, &CPlayerObject::MenuDown);
 
+	mAnimation->ChangeAnimation("PlayerIdleDown");
+	mRoot->SetFlip(false);
 	return true;
 }
 
@@ -180,16 +173,55 @@ void CPlayerObject::Update(float DeltaTime)
 {
 	CSceneObject::Update(DeltaTime);
 
-
-
-	if (mMovement->GetVelocityLength() == 0.f && mAutoBasePose)
+	if (mTileMoving)
 	{
-		mAnimation->ChangeAnimation("PlayerIdle");
+		FVector3D CurPos = mRoot->GetWorldPosition();
+		FVector3D Dir = mTileTargetPos - CurPos;
+
+		float Dist = Dir.Length();
+		float Step = mTileMoveSpeed * DeltaTime;
+
+		if (Dist <= Step)
+		{
+			// 정확히 타일 중앙에 스냅
+			mRoot->SetWorldPos(mTileTargetPos);
+			mTileMoving = false;
+
+			if (mAutoBasePose)
+			{
+				switch (mMoveState)
+				{
+				case MoveState::Up:
+					mAnimation->ChangeAnimation("PlayerIdleUp");
+					mRoot->SetFlip(false);
+					break;
+				case MoveState::Down:
+					mAnimation->ChangeAnimation("PlayerIdleDown");
+					mRoot->SetFlip(false);
+					break;
+				case MoveState::Left:
+					mAnimation->ChangeAnimation("PlayerIdleLeft");
+					mRoot->SetFlip(false);
+					break;
+				case MoveState::Right:
+					mAnimation->ChangeAnimation("PlayerIdleLeft");
+					mRoot->SetFlip(true);
+					break;
+				}
+			}
+		}
+		else
+		{
+			Dir.Normalize();
+			mRoot->SetWorldPos(CurPos + Dir * Step);
+		}
+
+		return;
 	}
-
-	
-
 }
+
+
+
 
 
 
@@ -204,83 +236,196 @@ void CPlayerObject::MoveUp(float DeltaTime)
 	{
 		return;
 	}
-	mAnimation->ChangeAnimation("PlayerWalkUp");
-	mRoot->SetFlip(false);
-
 	if (Block)
 	{
 		return;
 	}
+	if (mTileMoving) return;
+	if (!mTileMap) return;
 
-	mMovement->AddMove(mRootComponent->GetAxis(EAxis::Y));
+	FVector3D CurPos = mRoot->GetWorldPosition();
+
+	int CurIndex = mTileMap->GetTileIndex(FVector2D(CurPos.x, CurPos.y));
+	if (CurIndex == -1) return;
+
+	int CountX = mTileMap->GetTileCountX();
+	int CurX = CurIndex % CountX;
+	int CurY = CurIndex / CountX;
+
+	int NextX = CurX;
+	int NextY = CurY + 1;
+
+
+	int NextIndex = NextY * CountX + NextX;
+
+	if (mTileMap->GetTileType(NextIndex) == ETileType::UnableToMove)
+	{
+		return;
+	}
+
+	FVector2D Center = mTileMap->GetTileCenter(NextX, NextY);
+	if (Center.x < 0.f || Center.y < 0.f)
+	{
+		return;
+	}
+	mTileTargetPos = FVector3D(Center.x, Center.y, CurPos.z);
+	mTileMoving = true;
+
+	CLog::PrintLog("Change Walk");
+	mAnimation->ChangeAnimation("PlayerWalkUp");
+	mRoot->SetFlip(false);
+	mMoveState = MoveState::Up;
 }
 
 void CPlayerObject::MoveDown(float DeltaTime)
 {
-	/*FVector3D Pos = mRootComponent->GetWorldPosition();
-	FVector3D Dir = mRootComponent->GetAxis(EAxis::Y);
-	mRootComponent->SetWorldPos(Pos + Dir * DeltaTime * -3.f);*/
+	if (IsMenuOpen) return;
+	if (mTileMoving) return;
+	if (!mTileMap) return;
 
-	if (IsMenuOpen)
+	FVector3D CurPos = mRoot->GetWorldPosition();
+
+	int CurIndex = mTileMap->GetTileIndex(FVector2D(CurPos.x, CurPos.y));
+	if (CurIndex == -1)
 	{
 		return;
 	}
+	int CountX = mTileMap->GetTileCountX();
+	int CurX = CurIndex % CountX;
+	int CurY = CurIndex / CountX;
+
+	int NextX = CurX;
+	int NextY = CurY - 1;
+
+	if (NextY < 0)
+	{
+		return;
+	}
+	int NextIndex = NextY * CountX + NextX;
+
+	if (mTileMap->GetTileType(NextIndex) == ETileType::UnableToMove)
+	{
+		return;
+	}
+
+	FVector2D Center = mTileMap->GetTileCenter(NextX, NextY);
+	if (Center.x < 0.f || Center.y < 0.f)
+	{
+		return;
+	}
+	mTileTargetPos = FVector3D(Center.x, Center.y, CurPos.z);
+	mTileMoving = true;
+
+
 	mAnimation->ChangeAnimation("PlayerWalkDown");
 	mRoot->SetFlip(false);
+	mMoveState = MoveState::Down;
 
-	if (Block)
-	{
-		return;
-	}
-
-	mMovement->AddMove(mRootComponent->GetAxis(EAxis::Y) * -1);
 }
+
 
 void CPlayerObject::MoveRight(float DeltaTime)
 {
-	if (IsMenuOpen)
+	if (IsMenuOpen) return;
+	if (mTileMoving) return;
+	if (!mTileMap) return;
+
+	FVector3D CurPos = mRoot->GetWorldPosition();
+
+	int CurIndex = mTileMap->GetTileIndex(FVector2D(CurPos.x, CurPos.y));
+	if (CurIndex == -1)
 	{
 		return;
 	}
-	mAnimation->ChangeAnimation("PlayerWalkRight");
-	mRoot->SetFlip(false);
-	if (Block)
+	int CountX = mTileMap->GetTileCountX();
+	int CurX = CurIndex % CountX;
+	int CurY = CurIndex / CountX;
+
+	int NextX = CurX + 1;
+	int NextY = CurY;
+
+	if (NextX >= mTileMap->GetTileCountX())
+	{
+		return;
+	}
+	int NextIndex = NextY * CountX + NextX;
+
+	if (mTileMap->GetTileType(NextIndex) == ETileType::UnableToMove)
 	{
 		return;
 	}
 
-	mMovement->AddMove(mRootComponent->GetAxis(EAxis::X) * 1);
+	FVector2D Center = mTileMap->GetTileCenter(NextX, NextY);
+	if (Center.x < 0.f || Center.y < 0.f)
+	{
+		return;
+	}
+	mTileTargetPos = FVector3D(Center.x, Center.y, CurPos.z);
+	mTileMoving = true;
+
+	mAnimation->ChangeAnimation("PlayerWalkLeft");
+	mRoot->SetFlip(true);
+
+	mMoveState = MoveState::Right;
 }
+
 
 void CPlayerObject::MoveLeft(float DeltaTime)
 {
-	if (IsMenuOpen)
+	if (IsMenuOpen) return;
+	if (mTileMoving) return;
+	if (!mTileMap) return;
+
+	FVector3D CurPos = mRoot->GetWorldPosition();
+
+	int CurIndex = mTileMap->GetTileIndex(FVector2D(CurPos.x, CurPos.y));
+	if (CurIndex == -1)
 	{
 		return;
 	}
+	int CountX = mTileMap->GetTileCountX();
+	int CurX = CurIndex % CountX;
+	int CurY = CurIndex / CountX;
+
+	int NextX = CurX - 1;
+	int NextY = CurY;
+
+	if (NextX < 0)
+	{
+		return;
+	}
+	int NextIndex = NextY * CountX + NextX;
+
+	if (mTileMap->GetTileType(NextIndex) == ETileType::UnableToMove)
+	{
+		return;
+	}
+	FVector2D Center = mTileMap->GetTileCenter(NextX, NextY);
+	if (Center.x < 0.f || Center.y < 0.f)
+	{
+		return;
+	}
+	mTileTargetPos = FVector3D(Center.x, Center.y, CurPos.z);
+	mTileMoving = true;
+
 	mAnimation->ChangeAnimation("PlayerWalkLeft");
 	mRoot->SetFlip(false);
-	if (Block)
-	{
-		return;
-	}
-	mMovement->AddMove(mRootComponent->GetAxis(EAxis::X) * -1);
+
+	mMoveState = MoveState::Left;
 }
+
 
 void CPlayerObject::Menu(float DeltaTime)
 {
-	if (IsMenuOpen)
+	if (!mMenuUI)
 	{
-		// 닫기
-		if (mMenuUI) mMenuUI->SetEnable(false);
-		IsMenuOpen = false;
-		return;
+		mMenuUI = mScene->GetUIManager()->CreateWidget<CMenuUI>("FieldMenu");
+		mScene->GetUIManager()->AddToViewport(mMenuUI);
+		mMenuUI->SetEnable(false);
 	}
 
-	// 열기
-	mMenuUI = mScene->GetUIManager()->CreateWidget<CMenuUI>("FieldMenu");
-	mScene->GetUIManager()->AddToViewport(mMenuUI);
-	IsMenuOpen = true;
+	IsMenuOpen = !IsMenuOpen;
+	mMenuUI->SetEnable(IsMenuOpen);
 }
 
 void CPlayerObject::Party(float DeltaTime)
@@ -352,30 +497,5 @@ void CPlayerObject::IsOffCollision(CColliderBase* Dest)
 
 
 
-void CPlayerObject::rotationZ(float DeltaTime)
-{
-	//FVector3D Rot = mRootComponent->GetWorldRotation();
-	//mRootComponent->SetWorldRotationZ(Rot.z + 90.f * DeltaTime);
 
-	mRotation->AddMoveZ(-90.f);
-}
-
-void CPlayerObject::rotationZInv(float DeltaTime)
-{
-	/*FVector3D Rot = mRootComponent->GetWorldRotation();
-	mRootComponent->SetWorldRotationZ(Rot.z + -90.f * DeltaTime);*/
-
-	mRotation->AddMoveZ(90.f);
-}
-
-
-
-void CPlayerObject::AttackEnd()
-{
-	mAutoBasePose = true;
-}
-
-void CPlayerObject::AttackNotify()
-{
-}
 
