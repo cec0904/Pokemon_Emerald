@@ -16,6 +16,12 @@ enum class MoveState
 	Left
 };
 
+struct FPortal
+{
+	int PortalIndex = -1;
+	int SpawnIndex = 1;
+};
+
 
 class CTileMapComponent;
 
@@ -68,16 +74,19 @@ protected:
 
 	MoveState mMoveState = MoveState::Down;
 
+
+private:
+	vector<FPortal> mPortals;
+
+
+
 public:
 	void SetTileMap(class CTileMapComponent* TileMap)
 	{
 		mTileMap = TileMap;
 	}
 
-	void TransPort()
-	{
-
-	}
+	void TransPort(int SpawnIndex);
 	
 
 private:

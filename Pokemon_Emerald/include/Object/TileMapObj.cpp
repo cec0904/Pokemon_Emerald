@@ -88,7 +88,7 @@ void CTileMapObj::Update(float DeltaTime)
 				int x = idx % mTileMap->GetTileCountX();
 				int y = idx / mTileMap->GetTileCountX();
 
-				CLog::PrintLog("TileClick x=%d y=%d idx=%d :		" + to_string(x) + ", " + to_string(y) + ", " + to_string(idx));
+				CLog::PrintLog(to_string(x) + ", " + to_string(y) + ", " + to_string(idx));
 			}
 		}
 

@@ -203,6 +203,7 @@
     <ClCompile Include="Pokemon\Pokemon\PokemonManager.cpp" />
     <ClCompile Include="Pokemon\Scene\BattleWithPokemon.cpp" />
     <ClCompile Include="Pokemon\UI\BattleWidget.cpp" />
+    <ClCompile Include="Pokemon\UI\FadeWidget.cpp" />
     <ClCompile Include="Pokemon\UI\Inventory.cpp" />
     <ClCompile Include="Pokemon\UI\MenuUI.cpp" />
     <ClCompile Include="Pokemon\UI\Party.cpp" />
@@ -332,6 +333,7 @@
     <ClInclude Include="Pokemon\Pokemon\PokemonManager.h" />
     <ClInclude Include="Pokemon\Scene\BattleWithPokemon.h" />
     <ClInclude Include="Pokemon\UI\BattleWidget.h" />
+    <ClInclude Include="Pokemon\UI\FadeWidget.h" />
     <ClInclude Include="Pokemon\UI\Inventory.h" />
     <ClInclude Include="Pokemon\UI\MenuUI.h" />
     <ClInclude Include="Pokemon\UI\Party.h" />

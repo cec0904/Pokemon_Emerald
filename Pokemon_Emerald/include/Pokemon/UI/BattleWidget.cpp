@@ -159,6 +159,10 @@ bool CBattleWidget::Init()
 		MyPokemon->SetZOrder(10);
 		AddWidget(MyPokemon);
 
+		MyPokemon->SetUseColorKey(true);
+		MyPokemon->SetColorKey(FVector3D(255.f / 255.f, 200.f / 255.f, 106.f / 255.f));
+		MyPokemon->SetKeyThreshold(0.10f);
+
 		// 적 포켓몬 (Front)
 		CSharedPtr<CImage> EnemyPokemon =
 			mScene->GetUIManager()->CreateWidget<CImage>("EnemyPokemon");
@@ -176,7 +180,15 @@ bool CBattleWidget::Init()
 		EnemyPokemon->SetPos(860.f, 700.f);
 		EnemyPokemon->SetZOrder(10);
 		AddWidget(EnemyPokemon);
+
+		EnemyPokemon->SetUseColorKey(true);
+		EnemyPokemon->SetColorKey(FVector3D(165.f / 255.f, 235.f / 255.f, 255.f / 255.f));
+		EnemyPokemon->SetKeyThreshold(0.10f);
+
 	}
+
+	
+
 
 
 	BattleArena->SetZOrder(0);

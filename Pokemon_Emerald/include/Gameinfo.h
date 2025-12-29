@@ -365,6 +365,7 @@ enum class ETileType
 	Nomal = 0,
 	UnableToMove,
 	Portal,
+	Bush,
 	End
 };
 
@@ -374,3 +375,4 @@ enum class EEditorMode
 	TileImage,
 	End
 };
+

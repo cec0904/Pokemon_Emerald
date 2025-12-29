@@ -172,6 +172,10 @@ void CTileMapComponent::RenderTileOutLine()
 				break;
 			case ETileType::Portal:
 				mCBuffer->SetColor(10.f, 10.f, 10.f, 10.f);
+				break;
+			case ETileType::Bush:
+				mCBuffer->SetColor(0.f, 0.f, 1.f, 1.f);
+				break;
 			}
 
 			mCBuffer->UpdateBuffer();

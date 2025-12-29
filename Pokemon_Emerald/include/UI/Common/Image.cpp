@@ -172,6 +172,10 @@ void CImage::Render()
 	///////////////////////////////////////////////////////////////////
 	mUICBuffer->SetTint(mBrush.Tint);
 
+	mUICBuffer->SetUseColorKey(mUseColorKey);
+	mUICBuffer->SetColorKey(mColorKey);
+	mUICBuffer->SetKeyThreshold(mKeyThreshold);
+
 	//만약 텍스쳐가 있다면 
 	if (mBrush.Texture)
 	{

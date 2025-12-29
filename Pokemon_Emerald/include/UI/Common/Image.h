@@ -49,5 +49,24 @@ public:
 	virtual void Render();
 	virtual void Render(const FVector3D& Pos);
 
+protected:
+	bool mUseColorKey = true;
+	FVector3D mColorKey = FVector3D(165.f / 255.f, 235.f / 255.f, 255.f / 255.f);
+	float mKeyThreshold = 0.10f;
+
+public:
+	void SetUseColorKey(bool Use)
+	{
+		mUseColorKey = Use;
+	}
+	void SetColorKey(const FVector3D& Key)
+	{
+		mColorKey = Key;
+	}
+	void SetKeyThreshold(float T)
+	{
+		mKeyThreshold = T;
+	}
+
 };
 

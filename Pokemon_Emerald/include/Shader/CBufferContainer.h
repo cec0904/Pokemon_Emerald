@@ -77,6 +77,12 @@ struct FUICBufferInfo
 	int UIFlip;
 	//Empty
 	float BrushEmpty;     //8
+
+	FVector3D ColorKey;         //12
+	float KeyThreshold;         //4
+
+	int UseColorKey;            //4
+	FVector3D Pad;
 };
 
 

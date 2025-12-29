@@ -233,15 +233,14 @@ void CSpriteComponent::Render()
 	mSpriteCBuffer->SetTint(mTint);
 	mSpriteCBuffer->SetUseTime(mUseTime);
 
-	mSpriteCBuffer->SetUseColorKey(1);
-	mSpriteCBuffer->SetKeyThreshold(0.08f);
+	mSpriteCBuffer->SetUseColorKey(mUseColorKey ? 1 : 0);
+	mSpriteCBuffer->SetKeyThreshold(mKeyThreshold);
+	mSpriteCBuffer->SetColorKey(mColorKey);
 	
 	// rgb
 	// 앞 165 235 255
 	// 뒤 255 200 106
-	mSpriteCBuffer->SetColorKey(FVector3D(165.f / 255.f, 232.f / 255.f, 255.f / 255.f));
-
-	/*mSpriteCBuffer->SetColorKey(FVector3D(255.f / 255.f, 200.f / 255.f, 106.f / 255.f));*/
+	
 
 
 	if (mUseTime)

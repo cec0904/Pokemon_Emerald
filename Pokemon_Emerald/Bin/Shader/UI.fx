@@ -31,6 +31,11 @@ cbuffer UI : register(b3)
     int gUI2DFlip;
 	//빈 데이터 16 배수로 보내줘야한다. 
     float gBrushEmpty; //8
+    
+    float3 gColorKey;
+    float gKeyThreshold;
+    int gUseColorKey;
+    float3 gPad;
 }
 
 
@@ -93,6 +98,13 @@ PS_Output_Single UIPS(VS_Output_Tex input)
     if (gBrushTextureEnable)
     {
         Color = gBaseTexture.Sample(gBaseSampler, input.UV);
+    }
+
+
+    if (gUseColorKey == 1)
+    {
+        float d = distance(Color.rgb, gColorKey);
+        clip(d - gKeyThreshold);
     }
 
     output.Color = Color * gBrushTint * gWidgetColor;

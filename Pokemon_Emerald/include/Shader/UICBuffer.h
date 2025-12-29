@@ -53,5 +53,21 @@ public:
     {
         mData.UIFlip = Flip;
     }
+
+    void SetUseColorKey(bool Use)
+    {
+        mData.UseColorKey = Use ? 1 : 0;
+    }
+
+    void SetKeyThreshold(float T)
+    {
+        mData.KeyThreshold = T;
+    }
+
+    void SetColorKey(const FVector3D& Key)
+    {
+        mData.ColorKey = Key;
+    }
+
 };
 

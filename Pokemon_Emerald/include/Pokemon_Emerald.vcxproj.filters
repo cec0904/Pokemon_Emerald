@@ -585,6 +585,9 @@
     <ClCompile Include="Pokemon\UI\Party.cpp">
       <Filter>Pokemon\04.UI</Filter>
     </ClCompile>
+    <ClCompile Include="Pokemon\UI\FadeWidget.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameManager.h">
@@ -985,6 +988,9 @@
     </ClInclude>
     <ClInclude Include="Pokemon\UI\Party.h">
       <Filter>Pokemon\04.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\UI\FadeWidget.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

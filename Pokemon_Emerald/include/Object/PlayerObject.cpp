@@ -33,6 +33,7 @@
 #include "../Pokemon/UI/MenuUI.h"
 #include "../Pokemon/UI/Inventory.h"
 #include "../Pokemon/UI/Party.h"
+#include "../Pokemon/UI/FadeWidget.h"
 
 #include "../Component/TileMapComponent.h"
 
@@ -56,6 +57,27 @@ CPlayerObject::CPlayerObject(CPlayerObject&& Obj)
 
 CPlayerObject::~CPlayerObject()
 {
+}
+
+void CPlayerObject::TransPort(int SpawnIndex)
+{
+	if (!mTileMap) return;
+
+	int CountX = mTileMap->GetTileCountX();
+	int X = SpawnIndex % CountX;
+	int Y = SpawnIndex / CountX;
+
+	FVector2D Center = mTileMap->GetTileCenter(X, Y);
+	if (Center.x < 0.f || Center.y < 0.f)
+	{
+		return;
+	}
+
+
+	FVector3D CurPos = mRoot->GetWorldPosition();
+	mRoot->SetWorldPos(Center.x, Center.y, CurPos.z);
+
+	mTileMoving = false;
 }
 
 bool CPlayerObject::Init()
@@ -166,6 +188,46 @@ bool CPlayerObject::Init()
 
 	mAnimation->ChangeAnimation("PlayerIdleDown");
 	mRoot->SetFlip(false);
+
+
+	mPortals.clear();
+
+	// 포탈 위치, 포탈 타고 왔을 때
+	// 집 거실
+	mPortals.push_back({ 1069, 911 });
+	mPortals.push_back({ 1089, 891 });
+
+	// 거실 밖
+	mPortals.push_back({ 20, 4769 });
+	mPortals.push_back({ 4947, 199 });
+
+	// 포켓몬 센터
+	mPortals.push_back({ 10991, 25028 });
+	mPortals.push_back({ 24850, 10813 });
+
+	mPortals.push_back({ 8569, 25028 });
+	mPortals.push_back({ 24850, 8391 });
+
+	mPortals.push_back({ 12705, 25028 });
+	mPortals.push_back({ 24850, 12527 });
+
+	mPortals.push_back({ 25379, 25534 });
+	mPortals.push_back({ 25533, 25380 });
+
+
+	// 포켓스토어
+	mPortals.push_back({12779, 25227});
+	mPortals.push_back({25049, 12601});
+	
+	mPortals.push_back({ 7323, 25227 });
+	mPortals.push_back({ 25049, 7145 });
+
+	mPortals.push_back({ 13422, 25227 });
+	mPortals.push_back({ 25049, 13244 });
+
+
+
+
 	return true;
 }
 
@@ -186,6 +248,30 @@ void CPlayerObject::Update(float DeltaTime)
 			// 정확히 타일 중앙에 스냅
 			mRoot->SetWorldPos(mTileTargetPos);
 			mTileMoving = false;
+
+			int CurrentIndex = mTileMap->GetTileIndex(FVector2D(mTileTargetPos.x, mTileTargetPos.y));
+
+			for (const FPortal& P : mPortals)
+			{
+				if (CurrentIndex == P.PortalIndex)
+				{
+					TransPort(P.SpawnIndex);
+
+					break;
+				}
+			}
+
+			/*for (int i = 0; i < mPortals.size(); ++i)
+			{
+				const FPortal& P = mPortals[i];
+
+				if (CurrentIndex == P.PortalIndex)
+				{
+					TransPort(P.SpawnIndex);
+					break;
+				}
+			}*/
+
 
 			if (mAutoBasePose)
 			{
@@ -215,6 +301,7 @@ void CPlayerObject::Update(float DeltaTime)
 			Dir.Normalize();
 			mRoot->SetWorldPos(CurPos + Dir * Step);
 		}
+
 
 		return;
 	}
@@ -271,7 +358,7 @@ void CPlayerObject::MoveUp(float DeltaTime)
 	mTileTargetPos = FVector3D(Center.x, Center.y, CurPos.z);
 	mTileMoving = true;
 
-	CLog::PrintLog("Change Walk");
+	//CLog::PrintLog("Change Walk");
 	mAnimation->ChangeAnimation("PlayerWalkUp");
 	mRoot->SetFlip(false);
 	mMoveState = MoveState::Up;

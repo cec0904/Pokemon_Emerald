@@ -5,6 +5,10 @@ CUICBuffer::CUICBuffer()
 {
 	mData.BrushTint = FVector4D::White;
 	mData.BrushAnimEnable = 0;
+
+	mData.UseColorKey = 0;
+	mData.KeyThreshold = 0.10f;
+	mData.ColorKey = FVector3D(165.f / 255.f, 235.f / 255.f, 255.f / 255.f);
 }
 
 CUICBuffer::CUICBuffer(const CUICBuffer& Data)
