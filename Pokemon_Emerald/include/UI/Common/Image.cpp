@@ -1,5 +1,7 @@
 #include "Image.h"
 
+#include "../../Device.h"
+#include "../../Asset/Material/Material.h"
 #include "../../Asset/AssetManager.h"
 #include "../../Asset/Mesh/Mesh.h"
 #include "../../Asset/Texture/Texture.h"
@@ -170,11 +172,19 @@ void CImage::Render()
 
 	//여기 까지가 Transform 셋팅 
 	///////////////////////////////////////////////////////////////////
+	auto Context = CDevice::GetInst()->GetContext();
+    ID3D11SamplerState* PointSampler = CMaterial::GetSampler(ETextureSamplerType::Point);
+    
+    // 셰이더의 register(s0) 슬롯에 Point 샘플러를 전달합니다.
+    Context->PSSetSamplers(0, 1, &PointSampler);
+
+
 	mUICBuffer->SetTint(mBrush.Tint);
 
 	mUICBuffer->SetUseColorKey(mUseColorKey);
 	mUICBuffer->SetColorKey(mColorKey);
 	mUICBuffer->SetKeyThreshold(mKeyThreshold);
+
 
 	//만약 텍스쳐가 있다면 
 	if (mBrush.Texture)
@@ -226,6 +236,7 @@ void CImage::Render()
 
 	mMesh->Render();
 
+	mUICBuffer->SetWidgetColor(FVector4D::White);
 }
 
 void CImage::Render(const FVector3D& Pos)

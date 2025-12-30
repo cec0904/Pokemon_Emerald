@@ -582,11 +582,14 @@
     <ClCompile Include="Pokemon\UI\Inventory.cpp">
       <Filter>Pokemon\04.UI</Filter>
     </ClCompile>
-    <ClCompile Include="Pokemon\UI\Party.cpp">
+    <ClCompile Include="Pokemon\UI\PartyUI.cpp">
       <Filter>Pokemon\04.UI</Filter>
     </ClCompile>
     <ClCompile Include="Pokemon\UI\FadeWidget.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Pokemon\04.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Pokemon\Pokemon\PartyData.cpp">
+      <Filter>Pokemon\01.Pokemon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -986,11 +989,14 @@
     <ClInclude Include="Pokemon\UI\Inventory.h">
       <Filter>Pokemon\04.UI</Filter>
     </ClInclude>
-    <ClInclude Include="Pokemon\UI\Party.h">
+    <ClInclude Include="Pokemon\UI\PartyUI.h">
       <Filter>Pokemon\04.UI</Filter>
     </ClInclude>
     <ClInclude Include="Pokemon\UI\FadeWidget.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>Pokemon\04.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\Pokemon\PartyData.h">
+      <Filter>Pokemon\01.Pokemon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1016,10 +1022,10 @@
     <FxCompile Include="..\Bin\Shader\Sprite.fx">
       <Filter>FrameWork\04.Shader\01.HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\Shader\UI.fx">
+    <FxCompile Include="..\Bin\Shader\TileMap.fx">
       <Filter>FrameWork\04.Shader\01.HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\Shader\TileMap.fx">
+    <FxCompile Include="..\Bin\Shader\UI.fx">
       <Filter>FrameWork\04.Shader\01.HLSL</Filter>
     </FxCompile>
   </ItemGroup>

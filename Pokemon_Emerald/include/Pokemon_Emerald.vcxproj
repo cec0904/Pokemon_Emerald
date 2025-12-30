@@ -199,6 +199,7 @@
     <ClCompile Include="Object\TornadoBullet.cpp" />
     <ClCompile Include="Pokemon\Npc\NpcBase.cpp" />
     <ClCompile Include="Pokemon\Npc\NpcProfessor.cpp" />
+    <ClCompile Include="Pokemon\Pokemon\PartyData.cpp" />
     <ClCompile Include="Pokemon\Pokemon\Pokemon.cpp" />
     <ClCompile Include="Pokemon\Pokemon\PokemonManager.cpp" />
     <ClCompile Include="Pokemon\Scene\BattleWithPokemon.cpp" />
@@ -206,7 +207,7 @@
     <ClCompile Include="Pokemon\UI\FadeWidget.cpp" />
     <ClCompile Include="Pokemon\UI\Inventory.cpp" />
     <ClCompile Include="Pokemon\UI\MenuUI.cpp" />
-    <ClCompile Include="Pokemon\UI\Party.cpp" />
+    <ClCompile Include="Pokemon\UI\PartyUI.cpp" />
     <ClCompile Include="ProfileManager.cpp" />
     <ClCompile Include="Render\BlendState.cpp" />
     <ClCompile Include="Render\DepthStencilState.cpp" />
@@ -329,6 +330,7 @@
     <ClInclude Include="Object\TornadoBullet.h" />
     <ClInclude Include="Pokemon\Npc\NpcBase.h" />
     <ClInclude Include="Pokemon\Npc\NpcProfessor.h" />
+    <ClInclude Include="Pokemon\Pokemon\PartyData.h" />
     <ClInclude Include="Pokemon\Pokemon\Pokemon.h" />
     <ClInclude Include="Pokemon\Pokemon\PokemonManager.h" />
     <ClInclude Include="Pokemon\Scene\BattleWithPokemon.h" />
@@ -336,7 +338,7 @@
     <ClInclude Include="Pokemon\UI\FadeWidget.h" />
     <ClInclude Include="Pokemon\UI\Inventory.h" />
     <ClInclude Include="Pokemon\UI\MenuUI.h" />
-    <ClInclude Include="Pokemon\UI\Party.h" />
+    <ClInclude Include="Pokemon\UI\PartyUI.h" />
     <ClInclude Include="ProfileManager.h" />
     <ClInclude Include="Render\BlendState.h" />
     <ClInclude Include="Render\DepthStencilState.h" />
@@ -475,18 +477,9 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="..\Bin\Shader\UI.fx">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">UIVS</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">UIVS</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UIVS</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TileMapVS</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UIVS</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

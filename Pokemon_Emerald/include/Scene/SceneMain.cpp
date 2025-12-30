@@ -69,6 +69,7 @@ bool CSceneMain::Init()
 	if (Player == nullptr)
 		return false;
 
+	mPlayer = Player;
 	Player->SetTileMap(BackTileObject->GetTileMapComponent());
 
 	return true;

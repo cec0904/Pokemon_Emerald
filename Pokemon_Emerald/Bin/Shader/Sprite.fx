@@ -65,8 +65,9 @@ PS_Output_Single SpritePS(VS_Output_Tex input)
 
     if (gUseColorKey != 0)
     {
-        float diff = distance(Color.rgb, gColorKey);
-        clip(diff - gKeyThreshold); // diff < threshold면 픽셀 버림(=배경 제거)
+        float3 delta = abs(Color.rgb - gColorKey);
+        float diff = max(delta.r, max(delta.g, delta.b));
+        clip(diff - gKeyThreshold);
     }
     
     output.Color = Color * gSpriteTint;

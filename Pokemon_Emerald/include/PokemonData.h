@@ -2,7 +2,6 @@
 #include "Gameinfo.h"
 
 #include <string>
-#include <array>
 #include <vector>
 #include <cstdint>
 
@@ -167,7 +166,7 @@ struct FPokemonInstance
 	//그려질 이미지 정보 
 	FPokemonSpritePos ImageInfo;
 
+	vector<MoveID> Moves;
+	vector<int> CurrentPP;
 
-	// 고정 4슬롯: 0이면 빈 슬롯
-	//array<MoveID, 4> MoveSlots{ 0,0,0,0 };
 };

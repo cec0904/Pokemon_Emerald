@@ -111,6 +111,11 @@ public:
     //샘플러 타입
     void SetSamplerType(ETextureSamplerType::Type SamplerType);
 
+    static ID3D11SamplerState* GetSampler(ETextureSamplerType::Type Type)
+    {
+        return mSampler[Type];
+    }
+
 
     //그리기 용도로 
     void SetMaterial();

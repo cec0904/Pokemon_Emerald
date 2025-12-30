@@ -12,12 +12,19 @@ private:
 	unordered_map<PokemonID, FBaseStats> PokemonDefaultStateMap;
 	unordered_map<PokemonID, FPokemonSpritePos> PokemonSpritePosInfoMap;
 
+	// 포켓몬 기술
+	unordered_map<MoveID, FMoveData> MoveDataMap;
+	unordered_map<PokemonID, vector<pair<int, MoveID>>> PokemonSkillSet;
+
 public:
 	bool Init();
 
 public:
-	void LoadFile();
-	
+	void LoadSpecies();
+	void LoadSkill();
+	void BuildSkillSetTable();
+	void Evolve(FPokemonInstance& inst, PokemonID nextID) const;
+	void LevelChange(FPokemonInstance& inst) const;
 	
 	const unordered_map<int, FPokemonDefaultInfo>& GetIDMap() const
 	{
@@ -36,6 +43,25 @@ public:
 
 
 	EPokemonType GetTypeFromString(const string& _typeStr);
+
+	const unordered_map<MoveID, FMoveData>& GetMoveDB() const
+	{
+		return MoveDataMap;
+	}
+
+	const vector<pair<int, MoveID>>& GetSkillSet(PokemonID id) const
+	{
+		static vector<pair<int, MoveID>> Empty;
+
+		auto iter = PokemonSkillSet.find(id);
+		return iter == PokemonSkillSet.end() ? Empty : iter->second;
+	}
+
+
+
+	void BuildPokemonMoves(FPokemonInstance& inst) const;
+
+
 public:
 	DECLARE_SINGLETON(CPokemonManager)
 };

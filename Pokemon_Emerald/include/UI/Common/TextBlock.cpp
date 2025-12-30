@@ -216,6 +216,7 @@ void CTextBlock::Update(float DeltaTime)
 
 void CTextBlock::Render()
 {
+
 	CWidget::Render();
 
 	mTarget->BeginDraw();
@@ -242,6 +243,7 @@ void CTextBlock::Render()
 
 void CTextBlock::Render(const FVector3D& Pos)
 {
+
 	CWidget::Render(Pos);
 
 	mTarget->BeginDraw();

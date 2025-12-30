@@ -1,5 +1,7 @@
 #pragma once
 #include "SceneObject.h"
+#include "../Pokemon/Pokemon/PartyData.h"
+#include "../Pokemon/UI/PartyUI.h"
 
 enum class ESkill4State
 {
@@ -77,7 +79,14 @@ protected:
 
 private:
 	vector<FPortal> mPortals;
+	CPartyData mPartyData;
+	class CPartyUI* m_pParty;
 
+public:
+	CPartyUI* GetParty() const
+	{
+		return mParty.Get();
+	}
 
 
 public:
@@ -88,16 +97,6 @@ public:
 
 	void TransPort(int SpawnIndex);
 	
-
-private:
-	// 포켓몬
-	class CParty* m_pParty;
-
-public:
-	class CParty* GetParty() const
-	{
-		return m_pParty;
-	}
 
 public:
 	virtual bool Init();
@@ -123,7 +122,7 @@ private:
 	CSharedPtr<class CMenuUI> mMenuUI;
 
 	bool IsPartyOpen = false;
-	CSharedPtr<class CParty> mParty;
+	CSharedPtr<class CPartyUI> mParty;
 
 
 

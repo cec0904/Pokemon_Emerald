@@ -17,6 +17,8 @@
 
 #include "../Animation/Animation2D.h"
 #include "../Asset/Animation/Animation2DData.h"
+#include "../Device.h"
+#include "../Asset/Material/Material.h"
 
 CSpriteComponent::CSpriteComponent()
 {
@@ -214,6 +216,13 @@ void CSpriteComponent::PreRender()
 void CSpriteComponent::Render()
 {
 	CSceneComponent::Render();
+
+
+	auto context = CDevice::GetInst()->GetContext();
+	// Material.h에 추가한 GetSampler 함수를 호출합니다.
+	ID3D11SamplerState* PointSampler = CMaterial::GetSampler(ETextureSamplerType::Point);
+	context->PSSetSamplers(0, 1, &PointSampler);
+
 
 	//애니메이션 상수버퍼 셋팅
 	if (mAnimation)

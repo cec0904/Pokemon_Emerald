@@ -28,11 +28,15 @@
 #include "../Scene/SceneUIManager.h"
 #include "../UI/Common/ProgressBar.h"
 
+#include "../Pokemon/Pokemon/PartyData.h"
+#include "../Pokemon/Pokemon/Pokemon.h"
+#include "../Pokemon/Pokemon/PokemonManager.h"
+
 #include "../Pokemon/Scene/BattleWithPokemon.h"
 #include "../Pokemon/UI/BattleWidget.h"
 #include "../Pokemon/UI/MenuUI.h"
 #include "../Pokemon/UI/Inventory.h"
-#include "../Pokemon/UI/Party.h"
+#include "../Pokemon/UI/PartyUI.h"
 #include "../Pokemon/UI/FadeWidget.h"
 
 #include "../Component/TileMapComponent.h"
@@ -86,18 +90,23 @@ bool CPlayerObject::Init()
 	class CMainWidget* MainWidget = mScene->GetUIManager()->CreateWidget<CMainWidget>("Main");
 	mScene->GetUIManager()->AddToViewport(MainWidget);
 
-	mParty = mScene->GetUIManager()->CreateWidget<CParty>("Party");
+	mParty = mScene->GetUIManager()->CreateWidget<CPartyUI>("Party");
+	mScene->GetUIManager()->AddToViewport(mParty.Get());
 	mParty->SetEnable(false);
+
 	m_pParty = mParty.Get();
 	if (m_pParty)
 	{
-		m_pParty->AddPokemon(1, 5);		// 1번 포켓몬 5레벨 생성
-		m_pParty->AddPokemon(4, 5);
-		m_pParty->AddPokemon(7, 5);
-		m_pParty->AddPokemon(10, 5);
-		m_pParty->AddPokemon(13, 5);
-		m_pParty->AddPokemon(16, 5);
+
+		m_pParty->SetPartyData(&mPartyData);
 	}
+
+	mPartyData.AddPokemon(1, 5);
+	mPartyData.AddPokemon(4, 5);
+	mPartyData.AddPokemon(7, 5);
+	mPartyData.AddPokemon(10, 5);
+	mPartyData.AddPokemon(13, 5);
+	mPartyData.AddPokemon(16, 5);
 
 
 	// 게임 매니져 -> 씬매니져를 통해 -> 현재 씬을 실행시키고
@@ -127,6 +136,10 @@ bool CPlayerObject::Init()
 	mRoot->SetWorldPos(352.f, 160.f, 0.f);
 	mRoot->SetWorldScale(64.f, 128.f, 1.f);
 	SetRootComponent(mRoot);
+	mRoot->SetUseColorKey(true);
+	mRoot->SetColorKey(FVector3D(44.f / 255.f, 142.f / 255.f, 95.f / 255.f));
+	mRoot->SetKeyThreshold(0.1f);
+
 
 	mBody->SetCollisionBeginFunc<CPlayerObject>(this, &CPlayerObject::IsOnCollision);
 	mBody->SetCollisionEndFunc<CPlayerObject>(this, &CPlayerObject::IsOffCollision);
@@ -153,6 +166,7 @@ bool CPlayerObject::Init()
 	mMovement->SetMoveSpeed(200.f);
 
 	mRotation->SetUpdateComponent(mRoot);
+
 
 	//카메라 셋팅 
 	mCamera->SetProjectionType(ECameraProjectionType::Ortho);
@@ -319,7 +333,7 @@ void CPlayerObject::MoveUp(float DeltaTime)
 	//FVector3D Dir = mRootComponent->GetAxis(EAxis::Y);
 
 	//mRootComponent->SetWorldPos(Pos + Dir*DeltaTime * 3.f);
-	if (IsMenuOpen)
+	if (IsMenuOpen || IsPartyOpen)
 	{
 		return;
 	}
@@ -329,6 +343,7 @@ void CPlayerObject::MoveUp(float DeltaTime)
 	}
 	if (mTileMoving) return;
 	if (!mTileMap) return;
+
 
 	FVector3D CurPos = mRoot->GetWorldPosition();
 
@@ -366,7 +381,7 @@ void CPlayerObject::MoveUp(float DeltaTime)
 
 void CPlayerObject::MoveDown(float DeltaTime)
 {
-	if (IsMenuOpen) return;
+	if (IsMenuOpen || IsPartyOpen) return;
 	if (mTileMoving) return;
 	if (!mTileMap) return;
 
@@ -413,7 +428,7 @@ void CPlayerObject::MoveDown(float DeltaTime)
 
 void CPlayerObject::MoveRight(float DeltaTime)
 {
-	if (IsMenuOpen) return;
+	if (IsMenuOpen || IsPartyOpen) return;
 	if (mTileMoving) return;
 	if (!mTileMap) return;
 
@@ -459,7 +474,7 @@ void CPlayerObject::MoveRight(float DeltaTime)
 
 void CPlayerObject::MoveLeft(float DeltaTime)
 {
-	if (IsMenuOpen) return;
+	if (IsMenuOpen || IsPartyOpen) return;
 	if (mTileMoving) return;
 	if (!mTileMap) return;
 
@@ -507,7 +522,7 @@ void CPlayerObject::Menu(float DeltaTime)
 	if (!mMenuUI)
 	{
 		mMenuUI = mScene->GetUIManager()->CreateWidget<CMenuUI>("FieldMenu");
-		mScene->GetUIManager()->AddToViewport(mMenuUI);
+		mScene->GetUIManager()->AddToViewport(mMenuUI.Get());
 		mMenuUI->SetEnable(false);
 	}
 
@@ -546,12 +561,10 @@ void CPlayerObject::Cancel(float DeltaTime)
 	mMenuUI->SetEnable(false);
 	IsMenuOpen = false;
 
-	if (!IsPartyOpen)
+	if (mParty)
 	{
-		return;
+		mParty->SetEnable(false);
 	}
-	mParty->SetEnable(false);
-	IsPartyOpen = false;
 }
 
 void CPlayerObject::MenuUp(float DeltaTime)

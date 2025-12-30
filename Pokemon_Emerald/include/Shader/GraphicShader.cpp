@@ -127,10 +127,16 @@ bool CGraphicShader::LoadVertexShader(const char* EntryName, const TCHAR* FileNa
 
 bool CGraphicShader::LoadPixelShader(const char* EntryName, const TCHAR* FileName)
 {
+	
 	//최종 경로가 나온다.
 	TCHAR FullPath[MAX_PATH] = {};
 	lstrcpy(FullPath, TEXT("../Bin/Shader/"));
 	lstrcat(FullPath, FileName);
+
+	OutputDebugString(TEXT("[LoadPixelShader] "));
+	OutputDebugString(FullPath);
+	OutputDebugString(TEXT("\n"));
+
 
 	//컴파일 했는데 에러가나면 여기에 들어올것이다. 
 	ID3DBlob* ErrorBlob = nullptr;
@@ -159,6 +165,7 @@ bool CGraphicShader::LoadPixelShader(const char* EntryName, const TCHAR* FileNam
 	{
 		return false;
 	}
+
 
 	return true;
 }

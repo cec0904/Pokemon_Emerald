@@ -14,7 +14,9 @@
 #include "../../Asset/Font/FontManager.h"
 #include "../../UI/Common/TextBlock.h"
 #include "Inventory.h"
-#include "Party.h"
+#include "PartyUI.h"
+#include "../../Object/PlayerObject.h"
+#include "BattleWidget.h"
 
 CMenuUI::CMenuUI()
 {
@@ -42,6 +44,7 @@ void CMenuUI::MoveDown()
 		UpdateCursor();
 	}
 }
+
 
 void CMenuUI::UpdateCursor()
 {
@@ -77,9 +80,15 @@ void CMenuUI::Select()
 	{
 		CLog::PrintLog("포켓몬 선택");
 
-		CSharedPtr<CParty> PartyUI = mScene->GetUIManager()->CreateWidget<CParty>("Party");
-		mScene->GetUIManager()->AddToViewport(PartyUI);
-
+		CSceneMain* Party = dynamic_cast<CSceneMain*>(mScene);
+		if (Party)
+		{
+			CPlayerObject* Player = Party->GetPlayer();
+			if (Player && Player->GetParty())
+			{
+				Player->GetParty()->SetEnable(true);
+			}
+		}
 		SetEnable(false);
 	}
 
