@@ -10,10 +10,10 @@ protected:
 	CBattleWithPokemon();
 	virtual ~CBattleWithPokemon();
 
+public:
 
 
 public:
 	virtual bool Init();
-
 };
 

@@ -11,6 +11,7 @@
 #include "../../PokemonData.h"
 #include "../../Pokemon/Pokemon/Pokemon.h"
 #include "../../Pokemon/Pokemon/PokemonManager.h"
+#include "../../Pokemon/Scene/BattleWithPokemon.h"
 #include "../../Asset/Asset.h"
 #include "../../Asset/AssetManager.h"
 #include "../../Asset/Font/Font.h"
@@ -46,6 +47,15 @@ static inline wstring Utf8ToWString(const string& s)
 	return ws;
 }
 
+static inline void FlushBattleKeys()
+{
+	GetAsyncKeyState(VK_UP);
+	GetAsyncKeyState(VK_DOWN);
+	GetAsyncKeyState(VK_LEFT);
+	GetAsyncKeyState(VK_RIGHT);
+	GetAsyncKeyState('D');
+	GetAsyncKeyState('S');
+}
 
 CBattleWidget::CBattleWidget()
 {
@@ -129,13 +139,26 @@ bool CBattleWidget::Init()
 	HoveredUI->SetSize(960.f, 448.f);
 	HoveredUI->SetPivot(FVector2D(0.5f, 0.f));
 
-	PlayerHpBar->SetTexture("BattleBack", TEXT("Texture/Pokemon/BackGround/BattleMenu.png"));
-	PlayerHpBar->SetSize(960.f, 448.f);
+	PlayerHpBar->SetTexture("PlayerHpBar", TEXT("Texture/Pokemon/BackGround/BattleMenu.png"));
+	PlayerHpBar->SetBrushAnimation(true);
+	PlayerHpBar->AddBrushFrame(3.f, 44.f, 104.f, 37.f);
+	PlayerHpBar->SetSize(416.f, 148.f);
 	PlayerHpBar->SetPivot(FVector2D(0.5f, 0.f));
+	PlayerHpBar->SetPos(ScreenW * 0.5f + 240.f, ScreenH - 440.f);
+	PlayerHpBar->SetUseColorKey(true);
+	PlayerHpBar->SetColorKey(FVector3D(124.f / 255.f, 50.f / 255.f, 24.f / 255.f));
+	PlayerHpBar->SetKeyThreshold(0.1f);
 
 	EnemyHpBar->SetTexture("EnemyHpBar", TEXT("Texture/Pokemon/BackGround/BattleMenu.png"));
-	EnemyHpBar->SetSize(960.f, 448.f);
+	EnemyHpBar->SetBrushAnimation(true);
+	EnemyHpBar->AddBrushFrame(3.f, 3.f, 100.f, 29.f);
+	EnemyHpBar->SetSize(400.f, 116.f);
 	EnemyHpBar->SetPivot(FVector2D(0.5f, 0.f));
+	EnemyHpBar->SetPos(ScreenW * 0.5f - 230.f, ScreenH - 180.f);
+	EnemyHpBar->SetUseColorKey(true);
+	EnemyHpBar->SetColorKey(FVector3D(124.f / 255.f, 50.f / 255.f, 24.f / 255.f));
+	EnemyHpBar->SetKeyThreshold(0.1f);
+	
 
 	HpGreen->SetTexture("HpGreen", TEXT("Texture/Pokemon/BackGround/BattleMenu.png"));
 	HpGreen->SetSize(960.f, 448.f);
@@ -180,9 +203,9 @@ bool CBattleWidget::Init()
 
 	MsgText->SetSize(520.f, 120.f);
 	MsgText->SetFont("Default");
-	MsgText->SetFontSize(32.f);
+	MsgText->SetFontSize(50.f);
 	MsgText->SetTextColor(255, 255, 255, 255);
-	MsgText->SetPos(120.f, ScreenH - 610.f);
+	MsgText->SetPos(220.f, ScreenH - 600.f);
 	
 
 	const auto& PosMap = CPokemonManager::GetInst()->GetPosMap();
@@ -252,6 +275,9 @@ bool CBattleWidget::Init()
 	Cursor->SetZOrder(5);
 	MsgText->SetZOrder(10);
 
+	PlayerHpBar->SetZOrder(10);
+	EnemyHpBar->SetZOrder(10);
+
 	AddWidget(BattleArena);
 	AddWidget(BattleUIBack);
 	AddWidget(BehaviorSelect);
@@ -259,6 +285,8 @@ bool CBattleWidget::Init()
 	AddWidget(Cursor);
 	AddWidget(MsgText);
 
+	AddWidget(PlayerHpBar);
+	AddWidget(EnemyHpBar);
 
 	// 멤버로 보관
 	mBattleUIBack = BattleUIBack;
@@ -266,9 +294,6 @@ bool CBattleWidget::Init()
 	mSkillSelect = SkillSelect;
 	mCursor = Cursor;
 	mMsgText = MsgText;
-
-
-
 
 	mRootText.clear();
 	mRootText.reserve(4);
@@ -290,14 +315,13 @@ bool CBattleWidget::Init()
 		int row = i / 2;
 		int col = i % 2;
 
-		std::string name = "RootMenuText_" + std::to_string(i);
+		string name = "RootMenuText_" + std::to_string(i);
 		CSharedPtr<CTextBlock> t = mScene->GetUIManager()->CreateWidget<CTextBlock>(name);
 
 		t->SetSize(200.f, 60.f);
 		t->SetFont("Default");
-		t->SetFontSize(36.f);
+		t->SetFontSize(50.f);
 		t->SetTextColor(0, 0, 0, 255);
-
 		t->SetText(mRootMenuNames[i].c_str());
 
 		float x = textBaseX + gapX * col;
@@ -311,9 +335,60 @@ bool CBattleWidget::Init()
 	}
 
 
+	mMoveText.clear();
+	mMoveText.reserve(4);
+
+	// SkillSelect 기준으로 위치 잡기
+	FVector2D sPos = mSkillSelect->GetPos();
+	FVector2D sSize = mSkillSelect->GetSize();
+	FVector2D sPivot = mSkillSelect->GetPivot();
+
+	float sLeft = sPos.x - sSize.x * sPivot.x;
+	float sBottom = sPos.y - sSize.y * sPivot.y;
+
+	float moveBaseX = sLeft + 70.f;
+	float moveBaseY = sBottom + 108.f;
+
+	float moveGapX = 320.f;
+	float moveGapY = 62.f;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		int row = i / 2;
+		int col = i % 2;
+
+		string name = "MoveText_" + std::to_string(i);
+		CSharedPtr<CTextBlock> t = mScene->GetUIManager()->CreateWidget<CTextBlock>(name);
+
+		t->SetSize(260.f, 60.f);
+		t->SetFont("Default");
+		t->SetFontSize(34.f);
+		t->SetTextColor(0, 0, 0, 255);
+
+		t->SetText(L"-"); // 기본값(비어있으면 -)
+		t->SetPos(moveBaseX + moveGapX * col, moveBaseY - moveGapY * row);
+
+		t->SetZOrder(2);
+		t->SetEnable(false);   // Root 상태에서는 꺼둠
+		AddWidget(t);
+
+		mMoveText.push_back(t);
+	}
+
+
+
+
+
+
+
+
+
+
 	OpenRoot();
 	UpdateCursorRoot();
-	
+	mInputBlockFrame = 2;
+	FlushBattleKeys();
+
 
 	return true;
 }
@@ -324,8 +399,14 @@ void CBattleWidget::Update(float DeltaTime)
 
 	if (!IsEnable())
 		return;
+	if (mInputBlockFrame > 0)
+	{
+		FlushBattleKeys();
+		--mInputBlockFrame;
+		return;
+	}
 
-	// 눌린 순간(토글)만 잡기: & 0x0001
+	
 	if (GetAsyncKeyState(VK_UP) & 0x0001)    MoveUp();
 	if (GetAsyncKeyState(VK_DOWN) & 0x0001)  MoveDown();
 	if (GetAsyncKeyState(VK_LEFT) & 0x0001)  MoveLeft();
@@ -334,6 +415,24 @@ void CBattleWidget::Update(float DeltaTime)
 	if (GetAsyncKeyState('D') & 0x0001) Accept();  // 확인
 	if (GetAsyncKeyState('S') & 0x0001) Cancel();  // 취소
 }
+
+void CBattleWidget::SetPlayerPokemon(const FPokemonInstance* p)
+{
+	mPlayerPokemon = p;
+
+	if (mMsgText && mState == EBattleUIState::Root)
+	{
+		wstring nameW = L"포켓몬";
+		if (mPlayerPokemon) nameW = Utf8ToWString(mPlayerPokemon->Info.Name);
+		SetMessage(nameW + L"은[는]\r\n무엇을 할까?");
+	}
+
+	if (mState == EBattleUIState::Fight)
+	{
+		RefreshMoveText();
+	}
+}
+
 
 
 void CBattleWidget::MoveUp()
@@ -457,7 +556,10 @@ void CBattleWidget::Cancel()
 	if (mState == EBattleUIState::Fight)
 	{
 		OpenRoot();
-		SetMessage(L"무엇을 할까?");
+		wstring nameW ;
+		if (mPlayerPokemon) nameW = Utf8ToWString(mPlayerPokemon->Info.Name);
+
+		SetMessage(nameW + L"은[는]\r\n무엇을 할까?");
 	}
 	else
 	{
@@ -489,7 +591,7 @@ void CBattleWidget::OpenRoot()
 	for (auto& t : mMoveText) if (t) t->SetEnable(false);
 	
 
-	wstring nameW = L"포켓몬";
+	wstring nameW ;
 	if (mPlayerPokemon) nameW = Utf8ToWString(mPlayerPokemon->Info.Name);
 
 	SetMessage(nameW + L"은[는]\r\n무엇을 할까?");
@@ -522,6 +624,9 @@ void CBattleWidget::OpenFight()
 
 	for (auto& t : mRootText)
 		if (t) t->SetEnable(false);
+
+
+	RefreshMoveText();
 
 	for (auto& t : mMoveText)
 		if (t) t->SetEnable(true);
@@ -594,8 +699,52 @@ void CBattleWidget::UpdateCursorFight()
 	mCursor->SetPos(x, y);
 }
 
+void CBattleWidget::RefreshMoveText()
+{
+	// 안전장치
+	if (!mPlayerPokemon)
+	{
+		for (auto& t : mMoveText)
+			if (t) t->SetText(L"-");
+		return;
+	}
+
+	const auto& moves = mPlayerPokemon->Moves;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		if (!mMoveText[i]) continue;
+
+		if (i < (int)moves.size())
+			mMoveText[i]->SetText(GetMoveName(moves[i]).c_str());
+		else
+			mMoveText[i]->SetText(L"-");
+	}
+}
+
+
 
 wstring CBattleWidget::GetMoveName(MoveID id)
 {
-	return L"Move " + to_wstring((int)id);
+	const auto& db = CPokemonManager::GetInst()->GetMoveDB();
+	auto it = db.find(id);
+
+	if (it == db.end())
+		return L"-";
+
+	return Utf8ToWString(it->second.Name);
 }
+
+void CBattleWidget::UpdateStatusUI()
+{
+}
+
+void CBattleWidget::UpdateMoveInfoUI()
+{
+}
+
+wstring CBattleWidget::GetTypeName(EPokemonType type)
+{
+	return wstring();
+}
+

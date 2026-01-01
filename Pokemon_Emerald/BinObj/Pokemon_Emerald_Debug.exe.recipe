@@ -2,24 +2,24 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\Bin\Pokemon_Emerald_Debug.exe</FullPath>
+      <FullPath>C:\Project\Pokemon_Emerald\Pokemon_Emerald\Bin\Pokemon_Emerald_Debug.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\Bin\ColorMesh.cso</FullPath>
+      <FullPath>C:\Project\Pokemon_Emerald\Pokemon_Emerald\Bin\ColorMesh.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\Bin\Mesh.cso</FullPath>
+      <FullPath>C:\Project\Pokemon_Emerald\Pokemon_Emerald\Bin\Mesh.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\Bin\Sprite.cso</FullPath>
+      <FullPath>C:\Project\Pokemon_Emerald\Pokemon_Emerald\Bin\Sprite.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\Bin\TileMap.cso</FullPath>
+      <FullPath>C:\Project\Pokemon_Emerald\Pokemon_Emerald\Bin\TileMap.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>E:\Pokemon\Pokemon_Emerald\Pokemon_Emerald\Bin\UI.cso</FullPath>
+      <FullPath>C:\Project\Pokemon_Emerald\Pokemon_Emerald\Bin\UI.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />

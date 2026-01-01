@@ -48,17 +48,30 @@ public:
 	CSharedPtr<class CImage> mSkillSelect;
 	CSharedPtr<class CImage> mCursor;
 	CSharedPtr<class CTextBlock> mMsgText;
-	
+
+	/*CSharedPtr<class CTextBlock> mEnemyNameText;
+	CSharedPtr<class CTextBlock> mEnemyLvText;
+	CSharedPtr<class CProgressBar> mEnemyHpGauge;
+
+	CSharedPtr<class CTextBlock> mPlayerNameText;
+	CSharedPtr<class CTextBlock> mPlayerLvText;
+	CSharedPtr<class CTextBlock> mPlayerHpText;
+	CSharedPtr<class CProgressBar> mPlayerHpGauge;
+	CSharedPtr<class CProgressBar> mPlayerExpGauge;
+
+
+	CSharedPtr<class CTextBlock> mMoveTypeText;
+	CSharedPtr<class CTextBlock> mMovePPText;*/
+
+
+	int mInputBlockFrame = 0;
 
 public:
 	virtual bool Init();
 	virtual void Update(float DeltaTime) override;
 
 
-	void SetPlayerPokemon(const FPokemonInstance* p)
-	{
-		mPlayerPokemon = p;
-	}
+	void SetPlayerPokemon(const FPokemonInstance* p);
 	void SetPartyUI(CPartyUI* ui)
 	{
 		mPartyUI = ui;
@@ -89,8 +102,13 @@ private:
 
 	void UpdateCursorRoot();
 	void UpdateCursorFight();
+	void RefreshMoveText();
 
 	wstring GetMoveName(MoveID id);
 
+	void UpdateStatusUI();
+	void UpdateMoveInfoUI();
+
+	wstring GetTypeName(EPokemonType type);
 };
 
