@@ -19,10 +19,14 @@ enum class EBattleIntroPhase
 {
 	None,
 	Flash,
-	BarsIn,
+	Grass,
+	Reveal,
 	EnemyEnter,
-	PlayerEnter,
+	EnemyCry,
 	MsgWild,
+	MsgGo,
+	PlayerEnter,
+	PlayerCry,
 	Done
 };
 
@@ -141,13 +145,28 @@ private:
 	float mScreenW = 0.f;
 	float mScreenH = 0.f;
 
+	bool mIntroStarted = false;
 
+	CSharedPtr<class CImage> mCurtainTop;
+	CSharedPtr<class CImage> mCurtainBottom;
+
+	vector<CSharedPtr<class CImage>> mGrassRows;
+	vector<float> mGrassDelay;
+	vector<float> mGrassBaseY;
+
+	CSharedPtr<class CImage> mMyPokemonSprite;
+	CSharedPtr<class CImage> mEnemyPokemonSprite;
+
+	FVector2D mMyStartPos, mMyTargetPos;
+	FVector2D mEnemyStartPos, mEnemyTargetPos;
 
 private:
 	void BeginIntro();
 	void UpdateIntro(float dt);
 	void EnterIntro(EBattleIntroPhase next);
 	void SetBattleUIEnable(bool enable);
-
+	void TryStartIntro();
+	void CreateIntroWidgets();
+	void EnsurePokemonSprites();
 };
 

@@ -540,13 +540,20 @@ bool CBattleWidget::Init()
 
 
 
-	OpenRoot();
-	UpdateCursorRoot();
+	mScreenW = ScreenW;
+	mScreenH = ScreenH;
+
+	CreateIntroWidgets();
+	SetBattleUIEnable(false);
+
+	mInroPlayer = true;
+	mIntroStarted = false;
+	mIntro = EBattleIntroPhase::None;
+
 	mInputBlockFrame = 2;
 	FlushBattleKeys();
-
-
 	return true;
+
 }
 
 void CBattleWidget::Update(float DeltaTime)
@@ -555,6 +562,14 @@ void CBattleWidget::Update(float DeltaTime)
 
 	if (!IsEnable())
 		return;
+
+	if (mInroPlayer && mIntroStarted)
+	{
+		UpdateIntro(DeltaTime);
+		return;
+	}
+
+
 	if (mInputBlockFrame > 0)
 	{
 		FlushBattleKeys();
@@ -578,6 +593,8 @@ void CBattleWidget::Update(float DeltaTime)
 void CBattleWidget::SetPlayerPokemon(const FPokemonInstance* p)
 {
 	mPlayerPokemon = p;
+	UpdateStatusUI();
+	TryStartIntro();
 
 	if (mMsgText && mState == EBattleUIState::Root)
 	{
@@ -598,6 +615,8 @@ void CBattleWidget::SetPlayerPokemon(const FPokemonInstance* p)
 void CBattleWidget::SetEnemyPokemon(const FPokemonInstance* p)
 {
 	mEnemyPokemon = p;
+	UpdateStatusUI();
+	TryStartIntro();
 
 	if (mMsgText && mState == EBattleUIState::Root)
 	{
@@ -1086,6 +1105,23 @@ void CBattleWidget::EnterIntro(EBattleIntroPhase next)
 }
 
 void CBattleWidget::SetBattleUIEnable(bool enable)
+{
+}
+
+void CBattleWidget::TryStartIntro()
+{
+	if (mIntroStarted) return;
+	if (!mPlayerPokemon || !mEnemyPokemon) return;
+
+	EnsurePokemonSprites();
+	BeginIntro();
+}
+
+void CBattleWidget::CreateIntroWidgets()
+{
+}
+
+void CBattleWidget::EnsurePokemonSprites()
 {
 }
 
