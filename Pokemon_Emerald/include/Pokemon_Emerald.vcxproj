@@ -210,6 +210,8 @@
     <ClCompile Include="Pokemon\UI\Inventory.cpp" />
     <ClCompile Include="Pokemon\UI\MenuUI.cpp" />
     <ClCompile Include="Pokemon\UI\PartyUI.cpp" />
+    <ClCompile Include="Pokemon\UI\PokemonBattleIntro.cpp" />
+    <ClCompile Include="Pokemon\UI\TrainerBattleIntro.cpp" />
     <ClCompile Include="ProfileManager.cpp" />
     <ClCompile Include="Render\BlendState.cpp" />
     <ClCompile Include="Render\DepthStencilState.cpp" />
@@ -343,6 +345,8 @@
     <ClInclude Include="Pokemon\UI\Inventory.h" />
     <ClInclude Include="Pokemon\UI\MenuUI.h" />
     <ClInclude Include="Pokemon\UI\PartyUI.h" />
+    <ClInclude Include="Pokemon\UI\PokemonBattleIntro.h" />
+    <ClInclude Include="Pokemon\UI\TrainerBattleIntro.h" />
     <ClInclude Include="ProfileManager.h" />
     <ClInclude Include="Render\BlendState.h" />
     <ClInclude Include="Render\DepthStencilState.h" />

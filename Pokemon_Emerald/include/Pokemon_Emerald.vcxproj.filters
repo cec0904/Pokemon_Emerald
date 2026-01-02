@@ -597,6 +597,12 @@
     <ClCompile Include="Pokemon\UI\BattleGaugeUI.cpp">
       <Filter>Pokemon\04.UI</Filter>
     </ClCompile>
+    <ClCompile Include="Pokemon\UI\PokemonBattleIntro.cpp">
+      <Filter>Pokemon\04.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Pokemon\UI\TrainerBattleIntro.cpp">
+      <Filter>Pokemon\04.UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameManager.h">
@@ -1008,6 +1014,12 @@
       <Filter>Pokemon\01.Pokemon</Filter>
     </ClInclude>
     <ClInclude Include="Pokemon\UI\BattleGaugeUI.h">
+      <Filter>Pokemon\04.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\UI\PokemonBattleIntro.h">
+      <Filter>Pokemon\04.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\UI\TrainerBattleIntro.h">
       <Filter>Pokemon\04.UI</Filter>
     </ClInclude>
   </ItemGroup>
