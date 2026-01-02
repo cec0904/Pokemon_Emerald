@@ -1,14 +1,29 @@
 #pragma once
 #include "../../UI/UserWidget/UserWidget.h"
 #include "../../PokemonData.h"
+#include "../../UI/Common/ProgressBar.h"
+#include "../../UI/Common/TextBlock.h"
+#include "BattleGaugeUI.h"
 #include <vector>
 
 class CPartyUI;
+class CBattleGaugeUI;
 
 enum class EBattleUIState
 {
 	Root,	// fight/bag/pokemon/run
 	Fight	// 기술 4개 선택
+};
+
+enum class EBattleIntroPhase
+{
+	None,
+	Flash,
+	BarsIn,
+	EnemyEnter,
+	PlayerEnter,
+	MsgWild,
+	Done
 };
 
 class CBattleWidget :
@@ -34,6 +49,7 @@ public:
 	int mSkillIndex = 0;
 
 	const FPokemonInstance* mPlayerPokemon = nullptr;
+	const FPokemonInstance* mEnemyPokemon = nullptr;
 	CPartyUI* mPartyUI = nullptr;
 
 	bool mRequestExitBattle = false;
@@ -49,7 +65,7 @@ public:
 	CSharedPtr<class CImage> mCursor;
 	CSharedPtr<class CTextBlock> mMsgText;
 
-	/*CSharedPtr<class CTextBlock> mEnemyNameText;
+	CSharedPtr<class CTextBlock> mEnemyNameText;
 	CSharedPtr<class CTextBlock> mEnemyLvText;
 	CSharedPtr<class CProgressBar> mEnemyHpGauge;
 
@@ -59,9 +75,11 @@ public:
 	CSharedPtr<class CProgressBar> mPlayerHpGauge;
 	CSharedPtr<class CProgressBar> mPlayerExpGauge;
 
+	CBattleGaugeUI mGaugeUI;
+
 
 	CSharedPtr<class CTextBlock> mMoveTypeText;
-	CSharedPtr<class CTextBlock> mMovePPText;*/
+	CSharedPtr<class CTextBlock> mMovePPText;
 
 
 	int mInputBlockFrame = 0;
@@ -72,6 +90,9 @@ public:
 
 
 	void SetPlayerPokemon(const FPokemonInstance* p);
+	void SetEnemyPokemon(const FPokemonInstance* p);
+
+
 	void SetPartyUI(CPartyUI* ui)
 	{
 		mPartyUI = ui;
@@ -110,5 +131,23 @@ private:
 	void UpdateMoveInfoUI();
 
 	wstring GetTypeName(EPokemonType type);
+
+	/////////////////////////////// 배틀 인트로
+private:
+	EBattleIntroPhase mIntro= EBattleIntroPhase::None;
+	bool mInroPlayer = true;
+	float mIntroTime = 0.f;
+
+	float mScreenW = 0.f;
+	float mScreenH = 0.f;
+
+
+
+private:
+	void BeginIntro();
+	void UpdateIntro(float dt);
+	void EnterIntro(EBattleIntroPhase next);
+	void SetBattleUIEnable(bool enable);
+
 };
 

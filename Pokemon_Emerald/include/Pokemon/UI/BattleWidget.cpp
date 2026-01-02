@@ -7,6 +7,8 @@
 #include "../../Scene/SceneUIManager.h"
 #include "../../UI/Common/Button.h"
 #include "../../UI/Common/Image.h"
+#include "../../UI/Common/TextBlock.h"
+#include "../../UI/Common/ProgressBar.h"
 #include "../../Share/Log.h"
 #include "../../PokemonData.h"
 #include "../../Pokemon/Pokemon/Pokemon.h"
@@ -16,9 +18,9 @@
 #include "../../Asset/AssetManager.h"
 #include "../../Asset/Font/Font.h"
 #include "../../Asset/Font/FontManager.h"
-#include "../../UI/Common/TextBlock.h"
 #include "Inventory.h"
 #include "PartyUI.h"
+#include "BattleGaugeUI.h"
 #include <Windows.h>
 #include <string>
 
@@ -56,6 +58,20 @@ static inline void FlushBattleKeys()
 	GetAsyncKeyState('D');
 	GetAsyncKeyState('S');
 }
+
+static inline int GetCurHP(const FPokemonInstance* p)
+{
+	if (!p) return 0;
+	return p->CurrentHP;
+}
+
+static inline int GetMaxHP(const FPokemonInstance* p)
+{
+	if (!p) return 0;
+	return p->CurrentState.HP;
+}
+
+
 
 CBattleWidget::CBattleWidget()
 {
@@ -362,23 +378,163 @@ bool CBattleWidget::Init()
 
 		t->SetSize(260.f, 60.f);
 		t->SetFont("Default");
-		t->SetFontSize(34.f);
+		t->SetFontSize(50.f);
 		t->SetTextColor(0, 0, 0, 255);
 
-		t->SetText(L"-"); // 기본값(비어있으면 -)
+		t->SetText(L"-");
 		t->SetPos(moveBaseX + moveGapX * col, moveBaseY - moveGapY * row);
 
 		t->SetZOrder(2);
-		t->SetEnable(false);   // Root 상태에서는 꺼둠
+		t->SetEnable(false);
 		AddWidget(t);
 
 		mMoveText.push_back(t);
 	}
 
 
+	// ---- 기술 정보(타입/PP) 텍스트 ----
+	mMoveTypeText = mScene->GetUIManager()->CreateWidget<CTextBlock>("MoveTypeText");
+	mMovePPText = mScene->GetUIManager()->CreateWidget<CTextBlock>("MovePPText");
+
+	mMoveTypeText->SetFont("Default");
+	mMoveTypeText->SetFontSize(50.f);
+	mMoveTypeText->SetTextColor(0, 0, 0, 255);
+	mMoveTypeText->SetSize(200.f, 40.f);
+	mMoveTypeText->SetText(L"타입 -");
+
+	mMovePPText->SetFont("Default");
+	mMovePPText->SetFontSize(50.f);
+	mMovePPText->SetTextColor(0, 0, 0, 255);
+	mMovePPText->SetSize(220.f, 40.f);
+	mMovePPText->SetText(L"PP -/-");
+
+	// SkillSelect 기준 위치(좌상단 기반)
+	{
+		FVector2D pos = mSkillSelect->GetPos();
+		FVector2D size = mSkillSelect->GetSize();
+		FVector2D pivot = mSkillSelect->GetPivot();
+
+		float left = pos.x - size.x * pivot.x;
+		float top = pos.y - size.y * pivot.y;
+
+		// 오른쪽 아래 영역
+		mMovePPText->SetPos(left + 680.f, top + 110.f);
+		mMoveTypeText->SetPos(left + 680.f, top + 40.f);
+	}
+
+	mMovePPText->SetZOrder(11);
+	mMoveTypeText->SetZOrder(11);
+
+	// Root 상태에서는 안보이게
+	mMovePPText->SetEnable(false);
+	mMoveTypeText->SetEnable(false);
+
+	AddWidget(mMovePPText);
+	AddWidget(mMoveTypeText);
 
 
 
+
+
+
+
+// 플레이어 상태창 텍스트 
+	mPlayerNameText = mScene->GetUIManager()->CreateWidget<CTextBlock>("PlayerNameText");
+	mPlayerLvText = mScene->GetUIManager()->CreateWidget<CTextBlock>("PlayerLvText");
+	mPlayerHpText = mScene->GetUIManager()->CreateWidget<CTextBlock>("PlayerHpText");
+	mPlayerHpGauge = mScene->GetUIManager()->CreateWidget<CProgressBar>("PlayerHpGauge");
+	mPlayerExpGauge = mScene->GetUIManager()->CreateWidget<CProgressBar>("PlayerExpGauge");
+
+	wstring nameW = L"포켓몬";
+	if (mPlayerPokemon) nameW = Utf8ToWString(mPlayerPokemon->Info.Name);
+
+	mPlayerNameText->SetFont("Default");
+	mPlayerNameText->SetFontSize(50.f);
+	mPlayerNameText->SetTextColor(0, 0, 0, 255);
+	mPlayerNameText->SetSize(260.f, 40.f);
+	mPlayerNameText->SetText(L"-");
+
+	mPlayerLvText->SetFont("Default");
+	mPlayerLvText->SetFontSize(50.f);
+	mPlayerLvText->SetTextColor(0, 0, 0, 255);
+	mPlayerLvText->SetSize(80.f, 40.f);
+	mPlayerLvText->SetText(L"0");
+
+	mPlayerHpText->SetFont("Default");
+	mPlayerHpText->SetFontSize(50.f);
+	mPlayerHpText->SetTextColor(0, 0, 0, 255);
+	mPlayerHpText->SetSize(100.f, 100.f);
+	mPlayerHpText->SetText(L"0");
+
+
+	// PlayerHpBar 기준 좌표 계산 (HpBar의 "좌상단" 기준으로 오프셋)
+	{
+		FVector2D pos = PlayerHpBar->GetPos();
+		FVector2D size = PlayerHpBar->GetSize();
+		FVector2D pivot = PlayerHpBar->GetPivot();
+
+		float left = pos.x - size.x * pivot.x;
+		float top = pos.y - size.y * pivot.y;
+
+		// 이름(좌측)
+		mPlayerNameText->SetPos(left + 100.f, top + 95.f);
+
+		// 레벨 숫자
+		mPlayerLvText->SetPos(left + 370.f, top + 95.f);
+
+		// Hp 숫자
+		mPlayerHpText->SetPos(left + 250.f, top - 3.f);
+	}
+
+
+	// 적 상태창 텍스트
+	mEnemyNameText = mScene->GetUIManager()->CreateWidget<CTextBlock>("EnemyNameText");
+	mEnemyLvText = mScene->GetUIManager()->CreateWidget<CTextBlock>("EnemyLvText");
+	mEnemyHpGauge = mScene->GetUIManager()->CreateWidget<CProgressBar>("EnemyHpGauge");
+
+	mEnemyNameText->SetFont("Default");
+	mEnemyNameText->SetFontSize(50.f);
+	mEnemyNameText->SetTextColor(0, 0, 0, 255);
+	mEnemyNameText->SetSize(260.f, 40.f);
+	mEnemyNameText->SetText(L"-");
+
+	mEnemyLvText->SetFont("Default");
+	mEnemyLvText->SetFontSize(50.f);
+	mEnemyLvText->SetTextColor(0, 0, 0, 255);
+	mEnemyLvText->SetSize(80.f, 40.f);
+	mEnemyLvText->SetText(L"0");
+
+
+	{
+		FVector2D pos = EnemyHpBar->GetPos();
+		FVector2D size = EnemyHpBar->GetSize();
+		FVector2D pivot = EnemyHpBar->GetPivot();
+
+		float left = pos.x - size.x * pivot.x;
+		float top = pos.y - size.y * pivot.y;
+
+		mEnemyNameText->SetPos(left + 45.f, top + 63.f);
+		mEnemyLvText->SetPos(left + 330.f, top + 63.f);
+	}
+
+
+	mPlayerNameText->SetZOrder(11);
+	mPlayerLvText->SetZOrder(11);
+	mPlayerHpText->SetZOrder(11);
+
+	mEnemyNameText->SetZOrder(11);
+	mEnemyLvText->SetZOrder(11);
+
+	AddWidget(mPlayerNameText);
+	AddWidget(mPlayerLvText);
+	AddWidget(mPlayerHpText);
+
+	AddWidget(mEnemyNameText);
+	AddWidget(mEnemyLvText);
+
+	
+	mGaugeUI.Init(mScene, this, PlayerHpBar.Get(), EnemyHpBar.Get());
+	mGaugeUI.Update(mPlayerPokemon, mEnemyPokemon, 0.f);
 
 
 
@@ -414,6 +570,9 @@ void CBattleWidget::Update(float DeltaTime)
 
 	if (GetAsyncKeyState('D') & 0x0001) Accept();  // 확인
 	if (GetAsyncKeyState('S') & 0x0001) Cancel();  // 취소
+
+
+
 }
 
 void CBattleWidget::SetPlayerPokemon(const FPokemonInstance* p)
@@ -431,6 +590,27 @@ void CBattleWidget::SetPlayerPokemon(const FPokemonInstance* p)
 	{
 		RefreshMoveText();
 	}
+
+	UpdateStatusUI();
+
+}
+
+void CBattleWidget::SetEnemyPokemon(const FPokemonInstance* p)
+{
+	mEnemyPokemon = p;
+
+	if (mMsgText && mState == EBattleUIState::Root)
+	{
+		wstring nameW = L"포켓몬";
+		if (mEnemyPokemon) nameW = Utf8ToWString(mEnemyPokemon->Info.Name);
+	}
+
+	if (mState == EBattleUIState::Fight)
+	{
+		RefreshMoveText();
+	}
+
+	UpdateStatusUI();
 }
 
 
@@ -451,6 +631,7 @@ void CBattleWidget::MoveUp()
 		{
 			mSkillIndex -= 2;
 			UpdateCursorFight();
+			UpdateMoveInfoUI();
 		}
 	}
 }
@@ -471,6 +652,7 @@ void CBattleWidget::MoveDown()
 		{
 			mSkillIndex += 2;
 			UpdateCursorFight();
+			UpdateMoveInfoUI();
 		}
 	}
 }
@@ -491,6 +673,7 @@ void CBattleWidget::MoveLeft()
 		{
 			mSkillIndex -= 1;
 			UpdateCursorFight();
+			UpdateMoveInfoUI();
 		}
 	}
 }
@@ -511,6 +694,7 @@ void CBattleWidget::MoveRight()
 		{
 			mSkillIndex += 1;
 			UpdateCursorFight();
+			UpdateMoveInfoUI();
 		}
 	}
 }
@@ -534,7 +718,11 @@ void CBattleWidget::Accept()
 		case 2:
 			CLog::PrintLog("포켓몬 선택\n");
 
-			if (mPartyUI) { mPartyUI->SetEnable(true); SetEnable(false); }
+			if (mPartyUI) 
+			{
+				mPartyUI->SetEnable(true);
+				SetEnable(false); 
+			}
 			return;
 
 		case 3:
@@ -556,6 +744,7 @@ void CBattleWidget::Cancel()
 	if (mState == EBattleUIState::Fight)
 	{
 		OpenRoot();
+		UpdateMoveInfoUI();
 		wstring nameW ;
 		if (mPlayerPokemon) nameW = Utf8ToWString(mPlayerPokemon->Info.Name);
 
@@ -633,6 +822,8 @@ void CBattleWidget::OpenFight()
 
 
 	UpdateCursorFight();
+	UpdateMoveInfoUI();
+
 }
 
 
@@ -681,9 +872,9 @@ void CBattleWidget::UpdateCursorFight()
 	float panelLeft = panelCenterX - panelW * 0.5f;
 	float panelBottom = ScreenH - 640.f;
 
-	// BattleMenu.png (297,4,240,48) 슬라이스를 분석하면
-	// 큰 기술 박스가 대략 "왼쪽 160px(원본)" = 640px(4배) 영역임.
-	// => 2열이면 col 간격은 320px이 맞음.
+	// BattleMenu.png (297,4,240,48) 
+	// 큰 기술 박스가 대략 "왼쪽 160px(원본)" = 640px(4배) 영역
+	// => 2열이면 col 간격은 320px
 	int row = mSkillIndex / 2;
 	int col = mSkillIndex % 2;
 
@@ -719,6 +910,7 @@ void CBattleWidget::RefreshMoveText()
 			mMoveText[i]->SetText(GetMoveName(moves[i]).c_str());
 		else
 			mMoveText[i]->SetText(L"-");
+		UpdateMoveInfoUI();
 	}
 }
 
@@ -737,14 +929,163 @@ wstring CBattleWidget::GetMoveName(MoveID id)
 
 void CBattleWidget::UpdateStatusUI()
 {
+	if (mPlayerNameText)
+	{
+		if (mPlayerPokemon)
+		{
+			mPlayerNameText->SetText(Utf8ToWString(mPlayerPokemon->Info.Name).c_str());
+		}
+		else
+		{
+			mPlayerNameText->SetText(L"-");
+		}
+	}
+
+	if (mPlayerLvText)
+	{
+		int lv = 0;
+		if (mPlayerPokemon)
+		{
+			lv = mPlayerPokemon->Level;
+		}
+
+		mPlayerLvText->SetText(to_wstring(lv).c_str());
+	}
+
+	if (mPlayerHpText)
+	{
+		int cur = GetCurHP(mPlayerPokemon);
+		int mx = GetMaxHP(mPlayerPokemon);
+
+		wstring hp = to_wstring(cur) + L"/" + to_wstring(mx);
+		mPlayerHpText->SetText(hp.c_str());
+	}
+
+	if (mPlayerPokemon || mEnemyPokemon)
+	{
+		mGaugeUI.Update(mPlayerPokemon, mEnemyPokemon, 0.f);
+	}
+
+
+
+	if (mEnemyNameText)
+	{
+		if (mEnemyPokemon)
+		{
+			mEnemyNameText->SetText(Utf8ToWString(mEnemyPokemon->Info.Name).c_str());
+		}
+		else
+		{
+			mEnemyNameText->SetText(L"-");
+		}
+	}
+
+	if (mEnemyLvText)
+	{
+		int lv = 0;
+		if (mEnemyPokemon)
+		{
+			lv = mEnemyPokemon->Level;
+		}
+
+		mEnemyLvText->SetText(to_wstring(lv).c_str());
+	}
+
 }
 
 void CBattleWidget::UpdateMoveInfoUI()
 {
+	if (!mMoveTypeText || !mMovePPText)
+		return;
+
+	// Fight 상태가 아니면 숨김
+	if (mState != EBattleUIState::Fight)
+	{
+		mMovePPText->SetEnable(false);
+		mMoveTypeText->SetEnable(false);
+		return;
+	}
+
+	mMovePPText->SetEnable(true);
+	mMoveTypeText->SetEnable(true);
+
+	if (!mPlayerPokemon)
+	{
+		mMovePPText->SetText(L"PP -/-");
+		mMoveTypeText->SetText(L"타입 -/");
+		return;
+	}
+
+	const auto& moves = mPlayerPokemon->Moves;
+	if (mSkillIndex < 0 || mSkillIndex >= (int)moves.size())
+	{
+		mMovePPText->SetText(L"PP -/-");
+		mMoveTypeText->SetText(L"타입 -");
+		return;
+	}
+
+	MoveID id = moves[mSkillIndex];
+
+	const auto& db = CPokemonManager::GetInst()->GetMoveDB();
+	auto it = db.find(id);
+	if (it == db.end())
+	{
+		mMovePPText->SetText(L"PP -/-");
+		mMoveTypeText->SetText(L"타입 -");
+		return;
+	}
+
+
+	wstring typeW = GetTypeName(it->second.Type);
+	mMoveTypeText->SetText((L"타입   " + typeW).c_str());
+
+	int maxPP = it->second.PP; 
+	int curPP = maxPP;
+	if (mSkillIndex >= 0 && mSkillIndex < (int)mPlayerPokemon->CurrentPP.size())
+		curPP = mPlayerPokemon->CurrentPP[mSkillIndex];
+	wstring ppW = L"PP      " + to_wstring(curPP) + L"/" + to_wstring(maxPP);
+	mMovePPText->SetText(ppW.c_str());
 }
+
 
 wstring CBattleWidget::GetTypeName(EPokemonType type)
 {
-	return wstring();
+	switch (type)
+	{
+	case EPokemonType::Normal: return L"노말";
+	case EPokemonType::Fire:   return L"불꽃";
+	case EPokemonType::Water:  return L"물";
+	case EPokemonType::Grass:  return L"풀";
+	case EPokemonType::Electr:return L"전기";
+	case EPokemonType::Ice:    return L"얼음";
+	case EPokemonType::Fight:return L"격투";
+	case EPokemonType::Poison: return L"독";
+	case EPokemonType::Ground: return L"땅";
+	case EPokemonType::Flying: return L"비행";
+	case EPokemonType::Psychc:return L"에스퍼";
+	case EPokemonType::Bug:    return L"벌레";
+	case EPokemonType::Rock:   return L"바위";
+	case EPokemonType::Ghost:  return L"고스트";
+	case EPokemonType::Dragon: return L"드래곤";
+	case EPokemonType::Dark:   return L"악";
+	case EPokemonType::Steel:  return L"강철";
+	default: return L"-";
+	}
+}
+
+void CBattleWidget::BeginIntro()
+{
+}
+
+void CBattleWidget::UpdateIntro(float dt)
+{
+}
+
+void CBattleWidget::EnterIntro(EBattleIntroPhase next)
+{
+}
+
+void CBattleWidget::SetBattleUIEnable(bool enable)
+{
 }
 

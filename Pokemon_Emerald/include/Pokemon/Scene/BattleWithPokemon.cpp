@@ -22,8 +22,10 @@ bool CBattleWithPokemon::Init()
     CBattleWidget* Widget = mUIManager->CreateWidget<CBattleWidget>("BattleWithPokemon");
     mUIManager->AddToViewport(Widget);
 
-    static FPokemonInstance sTestPlayer;
 
+
+    static FPokemonInstance sTestPlayer;
+    static FPokemonInstance sTestEnemy;
 
     if (sTestPlayer.SpeciesID == 0)
     {
@@ -51,7 +53,36 @@ bool CBattleWithPokemon::Init()
     }
     CLog::PrintLog(std::string("Info.Name=") + sTestPlayer.Info.Name + "\n");
 
+
+
+    if (sTestEnemy.SpeciesID == 0)
+    {
+        sTestEnemy.SpeciesID = 4;
+        sTestEnemy.Level = 5;
+
+        const auto& idMap = CPokemonManager::GetInst()->GetIDMap();
+        const auto& statMap = CPokemonManager::GetInst()->GetDefaultStatMap();
+        const auto& posMap = CPokemonManager::GetInst()->GetPosMap();
+
+        sTestEnemy.Info = idMap.at(4);
+        sTestEnemy.ImageInfo = posMap.at(4);
+
+        FBaseStats base = statMap.at(4);
+        int lv = sTestEnemy.Level;
+        sTestEnemy.CurrentState.HP = ((base.HP * 2) * lv / 100) + 10 + lv;
+        sTestEnemy.CurrentHP = sTestEnemy.CurrentState.HP;
+        sTestEnemy.CurrentState.Atk = ((base.Atk * 2) * lv / 100) + 5;
+        sTestEnemy.CurrentState.Def = ((base.Def * 2) * lv / 100) + 5;
+        sTestEnemy.CurrentState.SpAtk = ((base.SpAtk * 2) * lv / 100) + 5;
+        sTestEnemy.CurrentState.SpDef = ((base.SpDef * 2) * lv / 100) + 5;
+        sTestEnemy.CurrentState.Spd = ((base.Spd * 2) * lv / 100) + 5;
+
+        CPokemonManager::GetInst()->BuildPokemonMoves(sTestEnemy);
+    }
+    CLog::PrintLog(std::string("Info.Name=") + sTestEnemy.Info.Name + "\n");
+
     Widget->SetPlayerPokemon(&sTestPlayer); 
+    Widget->SetEnemyPokemon(&sTestEnemy);
 
     return true;
 }

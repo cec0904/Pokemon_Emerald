@@ -199,10 +199,12 @@
     <ClCompile Include="Object\TornadoBullet.cpp" />
     <ClCompile Include="Pokemon\Npc\NpcBase.cpp" />
     <ClCompile Include="Pokemon\Npc\NpcProfessor.cpp" />
+    <ClCompile Include="Pokemon\Pokemon\EnemyBattleAI.cpp" />
     <ClCompile Include="Pokemon\Pokemon\PartyData.cpp" />
     <ClCompile Include="Pokemon\Pokemon\Pokemon.cpp" />
     <ClCompile Include="Pokemon\Pokemon\PokemonManager.cpp" />
     <ClCompile Include="Pokemon\Scene\BattleWithPokemon.cpp" />
+    <ClCompile Include="Pokemon\UI\BattleGaugeUI.cpp" />
     <ClCompile Include="Pokemon\UI\BattleWidget.cpp" />
     <ClCompile Include="Pokemon\UI\FadeWidget.cpp" />
     <ClCompile Include="Pokemon\UI\Inventory.cpp" />
@@ -330,10 +332,12 @@
     <ClInclude Include="Object\TornadoBullet.h" />
     <ClInclude Include="Pokemon\Npc\NpcBase.h" />
     <ClInclude Include="Pokemon\Npc\NpcProfessor.h" />
+    <ClInclude Include="Pokemon\Pokemon\EnemyBattleAI.h" />
     <ClInclude Include="Pokemon\Pokemon\PartyData.h" />
     <ClInclude Include="Pokemon\Pokemon\Pokemon.h" />
     <ClInclude Include="Pokemon\Pokemon\PokemonManager.h" />
     <ClInclude Include="Pokemon\Scene\BattleWithPokemon.h" />
+    <ClInclude Include="Pokemon\UI\BattleGaugeUI.h" />
     <ClInclude Include="Pokemon\UI\BattleWidget.h" />
     <ClInclude Include="Pokemon\UI\FadeWidget.h" />
     <ClInclude Include="Pokemon\UI\Inventory.h" />

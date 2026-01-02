@@ -591,6 +591,12 @@
     <ClCompile Include="Pokemon\Pokemon\PartyData.cpp">
       <Filter>Pokemon\01.Pokemon</Filter>
     </ClCompile>
+    <ClCompile Include="Pokemon\Pokemon\EnemyBattleAI.cpp">
+      <Filter>Pokemon\01.Pokemon</Filter>
+    </ClCompile>
+    <ClCompile Include="Pokemon\UI\BattleGaugeUI.cpp">
+      <Filter>Pokemon\04.UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameManager.h">
@@ -997,6 +1003,12 @@
     </ClInclude>
     <ClInclude Include="Pokemon\Pokemon\PartyData.h">
       <Filter>Pokemon\01.Pokemon</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\Pokemon\EnemyBattleAI.h">
+      <Filter>Pokemon\01.Pokemon</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\UI\BattleGaugeUI.h">
+      <Filter>Pokemon\04.UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
