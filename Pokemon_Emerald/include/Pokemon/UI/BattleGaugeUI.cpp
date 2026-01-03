@@ -216,5 +216,90 @@ void CBattleGaugeUI::Update(const FPokemonInstance* player, const FPokemonInstan
     {
         mPlayerExpGauge->SetPercent(exp);
     }
+    mShownInit = true;
+    mShownPlayerHp = pRatio;
+    mShownEnemyHp = eRatio;
+    mShownExp = exp;
 
 }
+void CBattleGaugeUI::UpdateSmooth(const FPokemonInstance* player, const FPokemonInstance* enemy, float dt, float playerExpRatio)
+{
+    // 목표 ratio 계산(기존 Update와 동일)
+    float pTarget = 0.f;
+    {
+        int cur = GetCurHP(player);
+        int mx = GetMaxHP(player);
+        if (mx > 0) pTarget = (float)cur / (float)mx;
+        pTarget = Clamp01(pTarget);
+    }
+
+    float eTarget = 0.f;
+    {
+        int cur = GetCurHP(enemy);
+        int mx = GetMaxHP(enemy);
+        if (mx > 0) eTarget = (float)cur / (float)mx;
+        eTarget = Clamp01(eTarget);
+    }
+
+    float expTarget = Clamp01(playerExpRatio);
+
+    // 최초 1회는 튀지 않게 동기화
+    if (!mShownInit || dt <= 0.f)
+    {
+        mShownInit = true;
+        mShownPlayerHp = pTarget;
+        mShownEnemyHp = eTarget;
+        mShownExp = expTarget;
+    }
+    else
+    {
+        // ✅ 속도(원하면 조절)
+        const float HP_SPEED = 2.5f; // ratio/sec (1.0을 0.4초에 줄이는 느낌)
+        const float EXP_SPEED = 3.5f;
+
+        mShownPlayerHp = MoveTowards(mShownPlayerHp, pTarget, HP_SPEED * dt);
+        mShownEnemyHp = MoveTowards(mShownEnemyHp, eTarget, HP_SPEED * dt);
+        mShownExp = MoveTowards(mShownExp, expTarget, EXP_SPEED * dt);
+    }
+
+    if (mPlayerHpGauge)
+    {
+        mPlayerHpGauge->SetPercent(mShownPlayerHp);
+        mPlayerHpGauge->SetCurrentFrame(EProgressBarImageType::Fill, GetHpFrameIndex(mShownPlayerHp));
+    }
+
+    if (mEnemyHpGauge)
+    {
+        mEnemyHpGauge->SetPercent(mShownEnemyHp);
+        mEnemyHpGauge->SetCurrentFrame(EProgressBarImageType::Fill, GetHpFrameIndex(mShownEnemyHp));
+    }
+
+    if (mPlayerExpGauge)
+    {
+        mPlayerExpGauge->SetPercent(mShownExp);
+    }
+}
+
+
+bool CBattleGaugeUI::IsPlayerHpSettled(const FPokemonInstance* player, float eps) const
+{
+    float target = 0.f;
+    int cur = GetCurHP(player);
+    int mx = GetMaxHP(player);
+    if (mx > 0) target = (float)cur / (float)mx;
+    target = Clamp01(target);
+
+    return (std::fabs(mShownPlayerHp - target) <= eps);
+}
+
+bool CBattleGaugeUI::IsEnemyHpSettled(const FPokemonInstance* enemy, float eps) const
+{
+    float target = 0.f;
+    int cur = GetCurHP(enemy);
+    int mx = GetMaxHP(enemy);
+    if (mx > 0) target = (float)cur / (float)mx;
+    target = Clamp01(target);
+
+    return (std::fabs(mShownEnemyHp - target) <= eps);
+}
+

@@ -4,6 +4,7 @@
 #include "../../UI/Common/ProgressBar.h"
 #include "../../UI/Common/TextBlock.h"
 #include "BattleGaugeUI.h"
+#include "../Pokemon/Battle.h"
 #include <vector>
 
 class CPartyUI;
@@ -30,6 +31,38 @@ enum class EBattleIntroPhase
 	Done
 };
 
+enum class ETurnPhase
+{
+	None,
+	ShowText,
+	HpAnim,
+	FaintAnim,
+	NextStep,
+	Done
+};
+
+struct FTurnStep
+{
+	enum class EType
+	{
+		Text,
+		Hp,
+		Exp,
+		Faint
+	}Type;
+
+	wstring Text;
+	bool bTargetEnemy = true;
+	int TargetHP = 0;
+
+	int TargetExp = 0;
+
+	bool bFaintEnemy = true;
+
+};
+
+
+
 class CBattleWidget :
 	public CUserWidget
 {
@@ -52,8 +85,8 @@ public:
 	int mRootIndex = 0;
 	int mSkillIndex = 0;
 
-	const FPokemonInstance* mPlayerPokemon = nullptr;
-	const FPokemonInstance* mEnemyPokemon = nullptr;
+	FPokemonInstance* mPlayerPokemon = nullptr;
+	FPokemonInstance* mEnemyPokemon = nullptr;
 	CPartyUI* mPartyUI = nullptr;
 
 	bool mRequestExitBattle = false;
@@ -88,13 +121,41 @@ public:
 
 	int mInputBlockFrame = 0;
 
+
+	vector<FTurnStep> mTurnSteps;
+	int mTurnStepIndex = 0;
+
+	ETurnPhase mTurnPhase = ETurnPhase::None;
+
+	bool mTyping = false;
+	wstring mTypingFull;
+	int mTypingIndex = 0;
+	float mTypingAcc = 0.f;
+	float mTypingInterval = 0.03f;
+
+	bool mHpAnimating = false;
+	bool mHpAnimTargetEnemy = true;
+	int mHpAnimTargetHP = 0;
+
+	bool mFaintAnimating = false;
+	bool mFaintTargetEnemy = true;
+	float mFaintElapsed = 0.f;
+	float mFaintDuration = 0.45f;
+	float mFaintSinkPx = 90.f;
+	FVector2D mFaintStartPos{};
+	FVector2D mFaintStartSize{};
+
+	
+	CSharedPtr<class CImage> mPlayerSprite;
+	CSharedPtr<class CImage> mEnemySprite;
+
 public:
 	virtual bool Init();
 	virtual void Update(float DeltaTime) override;
 
 
-	void SetPlayerPokemon(const FPokemonInstance* p);
-	void SetEnemyPokemon(const FPokemonInstance* p);
+	void SetPlayerPokemon(FPokemonInstance* p);
+	void SetEnemyPokemon(FPokemonInstance* p);
 
 
 	void SetPartyUI(CPartyUI* ui)
@@ -136,37 +197,36 @@ private:
 
 	wstring GetTypeName(EPokemonType type);
 
-	/////////////////////////////// 배틀 인트로
 private:
-	EBattleIntroPhase mIntro= EBattleIntroPhase::None;
-	bool mInroPlayer = true;
-	float mIntroTime = 0.f;
+	vector<wstring> mTurnMsgs;
+	int mTurnMsgIndex = 0;
+	bool mTurnBusy = false;
+	CBattle mBattle;
 
-	float mScreenW = 0.f;
-	float mScreenH = 0.f;
+	void AdvanceTurnMessage();
+	void StartNextTurnStep();
+	void BeginTyping(const wstring& msg);
+	bool UpdateTyping(float dt);
 
-	bool mIntroStarted = false;
+public:
+	bool IsHpAnimFinished() const;
+	void BeginHpAnim(bool targetEnemy, int targetHP);
+	bool UpdateHpAnim(float dt);
+	void BeginFaintAnim(bool enemy);
+	bool UpdateFaintAnim(float dt);
+	float mHpAnimElapsed = 0.f;
+	float mHpAnimMinTime = 0.35f;
 
-	CSharedPtr<class CImage> mCurtainTop;
-	CSharedPtr<class CImage> mCurtainBottom;
+	// 경험치
+	bool mExpAnimating = false;
+	int mExpAnimTargetExp = 0;
+	int mExpAnimStartExp = 0;
+	float mExpAnimElapsed = 0.f;
+	float mExpAnimMinTime = 0.35f;
 
-	vector<CSharedPtr<class CImage>> mGrassRows;
-	vector<float> mGrassDelay;
-	vector<float> mGrassBaseY;
+	bool  mExitAfterTurn = false;
 
-	CSharedPtr<class CImage> mMyPokemonSprite;
-	CSharedPtr<class CImage> mEnemyPokemonSprite;
-
-	FVector2D mMyStartPos, mMyTargetPos;
-	FVector2D mEnemyStartPos, mEnemyTargetPos;
-
-private:
-	void BeginIntro();
-	void UpdateIntro(float dt);
-	void EnterIntro(EBattleIntroPhase next);
-	void SetBattleUIEnable(bool enable);
-	void TryStartIntro();
-	void CreateIntroWidgets();
-	void EnsurePokemonSprites();
+	void BeginExpAnim(int targetExp);
+	bool UpdateExpAnim(float dt);
 };
 

@@ -23,7 +23,7 @@ public:
 
 	void ChangePokemon(int index);
 	const FPokemonInstance& GetActivePokemon() const;
-	const std::vector<FPokemonInstance>& GetPartyList() const;
+	const vector<FPokemonInstance>& GetPartyList() const;
 
 public:
 	virtual bool Init();

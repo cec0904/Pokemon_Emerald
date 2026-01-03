@@ -368,6 +368,43 @@ EPokemonType CPokemonManager::GetTypeFromString(const string& _typeStr)
 }
 
 
+bool CPokemonManager::BuildPokemonInstance(FPokemonInstance& out, int id, int level)
+{
+	PokemonID pid = (PokemonID)id;
+
+	auto itInfo = PokemonIDMap.find(pid);
+	auto itStat = PokemonDefaultStateMap.find(pid);
+	auto itPos = PokemonSpritePosInfoMap.find(pid);
+
+	if (itInfo == PokemonIDMap.end()) return false;
+	if (itStat == PokemonDefaultStateMap.end()) return false;
+	if (itPos == PokemonSpritePosInfoMap.end()) return false;
+
+	out = FPokemonInstance{};
+	out.SpeciesID = pid;
+	out.Info = itInfo->second;
+	out.Level = level;
+	out.ImageInfo = itPos->second;
+
+	const FBaseStats& base = itStat->second;
+
+	out.CurrentState.HP = ((base.HP * 2) * level / 100) + 10 + level;
+	out.CurrentHP = out.CurrentState.HP;
+
+	out.CurrentState.Atk = ((base.Atk * 2) * level / 100) + 5;
+	out.CurrentState.Def = ((base.Def * 2) * level / 100) + 5;
+	out.CurrentState.SpAtk = ((base.SpAtk * 2) * level / 100) + 5;
+	out.CurrentState.SpDef = ((base.SpDef * 2) * level / 100) + 5;
+	out.CurrentState.Spd = ((base.Spd * 2) * level / 100) + 5;
+
+	out.CurrentExp = 0;
+	out.Exp = out.Level;
+
+	BuildPokemonMoves(out);
+	return true;
+}
+
+
 void CPokemonManager::BuildPokemonMoves(FPokemonInstance& inst) const
 {
 	inst.Moves.clear();
@@ -384,7 +421,7 @@ void CPokemonManager::BuildPokemonMoves(FPokemonInstance& inst) const
 			continue;
 
 		// 중복 방지
-		if (std::find(inst.Moves.begin(), inst.Moves.end(), moveID) != inst.Moves.end())
+		if (find(inst.Moves.begin(), inst.Moves.end(), moveID) != inst.Moves.end())
 			continue;
 
 		inst.Moves.push_back(moveID);
@@ -399,3 +436,17 @@ void CPokemonManager::BuildPokemonMoves(FPokemonInstance& inst) const
 }
 
 
+void CPokemonManager::AddExpAndLevelUp(FPokemonInstance& inst, int gain)
+{
+	inst.CurrentExp += gain;
+
+	while (inst.CurrentExp >= inst.Exp)
+	{
+		inst.CurrentExp -= inst.Exp;
+		inst.Level++;
+
+		inst.Exp = inst.Level;
+
+		LevelChange(inst);
+	}
+}

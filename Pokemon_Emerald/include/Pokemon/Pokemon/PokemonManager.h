@@ -58,8 +58,12 @@ public:
 	}
 
 
+public:
+	bool BuildPokemonInstance(FPokemonInstance& out, int id, int level);
 
 	void BuildPokemonMoves(FPokemonInstance& inst) const;
+
+	void AddExpAndLevelUp(FPokemonInstance& inst, int gain);
 
 
 public:

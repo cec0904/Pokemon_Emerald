@@ -199,6 +199,7 @@
     <ClCompile Include="Object\TornadoBullet.cpp" />
     <ClCompile Include="Pokemon\Npc\NpcBase.cpp" />
     <ClCompile Include="Pokemon\Npc\NpcProfessor.cpp" />
+    <ClCompile Include="Pokemon\Pokemon\Battle.cpp" />
     <ClCompile Include="Pokemon\Pokemon\EnemyBattleAI.cpp" />
     <ClCompile Include="Pokemon\Pokemon\PartyData.cpp" />
     <ClCompile Include="Pokemon\Pokemon\Pokemon.cpp" />
@@ -334,6 +335,7 @@
     <ClInclude Include="Object\TornadoBullet.h" />
     <ClInclude Include="Pokemon\Npc\NpcBase.h" />
     <ClInclude Include="Pokemon\Npc\NpcProfessor.h" />
+    <ClInclude Include="Pokemon\Pokemon\Battle.h" />
     <ClInclude Include="Pokemon\Pokemon\EnemyBattleAI.h" />
     <ClInclude Include="Pokemon\Pokemon\PartyData.h" />
     <ClInclude Include="Pokemon\Pokemon\Pokemon.h" />

@@ -10,6 +10,8 @@ private:
 
 public:
 	bool AddPokemon(int id, int level);
+	bool AddPokemonInstance(const FPokemonInstance& inst);
+
 
 	void ChangePokemon(int index)
 	{
@@ -32,6 +34,12 @@ public:
 	int GetCurrentIndex() const
 	{
 		return CurrentIndex;
+	}
+
+	FPokemonInstance* GetActivePokemonPtr()
+	{
+		if (mPokemonParty.empty()) return nullptr;
+		return &mPokemonParty[CurrentIndex];
 	}
 
 };

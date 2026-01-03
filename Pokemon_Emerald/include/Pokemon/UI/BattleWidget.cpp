@@ -14,6 +14,9 @@
 #include "../../Pokemon/Pokemon/Pokemon.h"
 #include "../../Pokemon/Pokemon/PokemonManager.h"
 #include "../../Pokemon/Scene/BattleWithPokemon.h"
+
+#include "../Pokemon/Battle.h"
+
 #include "../../Asset/Asset.h"
 #include "../../Asset/AssetManager.h"
 #include "../../Asset/Font/Font.h"
@@ -71,6 +74,21 @@ static inline int GetMaxHP(const FPokemonInstance* p)
 	return p->CurrentState.HP;
 }
 
+static bool ExtractActionMsg(const vector<wstring>& msgs, const wstring& actorName, wstring& out)
+{
+	for (const auto& m : msgs)
+	{
+		if (m.rfind(actorName, 0) == 0) 
+		{
+			if (m.find(L"의\r\n") != wstring::npos && m.find(L"!") != wstring::npos)
+			{
+				out = m;
+				return true;
+			}
+		}
+	}
+	return false;
+}
 
 
 CBattleWidget::CBattleWidget()
@@ -235,48 +253,46 @@ bool CBattleWidget::Init()
 	if (itMy != PosMap.end() && itEnemy != PosMap.end())
 	{
 		// 내 포켓몬 (Back)
-		CSharedPtr<CImage> MyPokemon =
-			mScene->GetUIManager()->CreateWidget<CImage>("MyPokemon");
+		mPlayerSprite = mScene->GetUIManager()->CreateWidget<CImage>("MyPokemon");
+		
 
-		MyPokemon->SetTexture("MyPokemonTex",
+		mPlayerSprite->SetTexture("MyPokemonTex",
 			TEXT("Texture/Pokemon/Pokemon/BackSprite.png"));
-		MyPokemon->SetBrushAnimation(true);
-		MyPokemon->AddBrushFrame(
+		mPlayerSprite->SetBrushAnimation(true);
+		mPlayerSprite->AddBrushFrame(
 			itMy->second.Back1.x,
 			itMy->second.Back1.y,
 			64.f, 64.f
 		);
-		MyPokemon->SetSize(256.f, 256.f);
-		MyPokemon->SetPivot(FVector2D(0.5f, 0.5f));
-		MyPokemon->SetPos(410.f, 400.f);
-		MyPokemon->SetZOrder(10);
-		AddWidget(MyPokemon);
+		mPlayerSprite->SetSize(256.f, 256.f);
+		mPlayerSprite->SetPivot(FVector2D(0.5f, 0.5f));
+		mPlayerSprite->SetPos(410.f, 400.f);
+		mPlayerSprite->SetZOrder(10);
+		AddWidget(mPlayerSprite);
 
-		MyPokemon->SetUseColorKey(true);
-		MyPokemon->SetColorKey(FVector3D(255.f / 255.f, 147.f / 255.f, 37.f / 255.f));
-		MyPokemon->SetKeyThreshold(0.1f);
+		mPlayerSprite->SetUseColorKey(true);
+		mPlayerSprite->SetColorKey(FVector3D(255.f / 255.f, 147.f / 255.f, 37.f / 255.f));
+		mPlayerSprite->SetKeyThreshold(0.1f);
 
 		// 적 포켓몬 (Front)
-		CSharedPtr<CImage> EnemyPokemon =
-			mScene->GetUIManager()->CreateWidget<CImage>("EnemyPokemon");
-
-		EnemyPokemon->SetTexture("EnemyPokemonTex",
+		mEnemySprite = mScene->GetUIManager()->CreateWidget<CImage>("EnemyPokemon");
+		mEnemySprite->SetTexture("EnemyPokemonTex",
 			TEXT("Texture/Pokemon/Pokemon/FrontSprite.png"));
-		EnemyPokemon->SetBrushAnimation(true);
-		EnemyPokemon->AddBrushFrame(
+		mEnemySprite->SetBrushAnimation(true);
+		mEnemySprite->AddBrushFrame(
 			itEnemy->second.Front1.x,
 			itEnemy->second.Front1.y,
 			64.f, 64.f
 		);
-		EnemyPokemon->SetSize(256.f, 256.f);
-		EnemyPokemon->SetPivot(FVector2D(0.5f, 1.f));
-		EnemyPokemon->SetPos(860.f, 675.f);
-		EnemyPokemon->SetZOrder(10);
-		AddWidget(EnemyPokemon);
+		mEnemySprite->SetSize(256.f, 256.f);
+		mEnemySprite->SetPivot(FVector2D(0.5f, 1.f));
+		mEnemySprite->SetPos(860.f, 675.f);
+		mEnemySprite->SetZOrder(10);
+		AddWidget(mEnemySprite);
 
-		EnemyPokemon->SetUseColorKey(true);
-		EnemyPokemon->SetColorKey(FVector3D(96.f / 255.f, 212.f / 255.f, 255.f / 255.f));
-		EnemyPokemon->SetKeyThreshold(0.1f);
+		mEnemySprite->SetUseColorKey(true);
+		mEnemySprite->SetColorKey(FVector3D(96.f / 255.f, 212.f / 255.f, 255.f / 255.f));
+		mEnemySprite->SetKeyThreshold(0.1f);
 
 	}
 
@@ -331,7 +347,7 @@ bool CBattleWidget::Init()
 		int row = i / 2;
 		int col = i % 2;
 
-		string name = "RootMenuText_" + std::to_string(i);
+		string name = "RootMenuText_" + to_string(i);
 		CSharedPtr<CTextBlock> t = mScene->GetUIManager()->CreateWidget<CTextBlock>(name);
 
 		t->SetSize(200.f, 60.f);
@@ -373,7 +389,7 @@ bool CBattleWidget::Init()
 		int row = i / 2;
 		int col = i % 2;
 
-		string name = "MoveText_" + std::to_string(i);
+		string name = "MoveText_" + to_string(i);
 		CSharedPtr<CTextBlock> t = mScene->GetUIManager()->CreateWidget<CTextBlock>(name);
 
 		t->SetSize(260.f, 60.f);
@@ -442,8 +458,7 @@ bool CBattleWidget::Init()
 	mPlayerNameText = mScene->GetUIManager()->CreateWidget<CTextBlock>("PlayerNameText");
 	mPlayerLvText = mScene->GetUIManager()->CreateWidget<CTextBlock>("PlayerLvText");
 	mPlayerHpText = mScene->GetUIManager()->CreateWidget<CTextBlock>("PlayerHpText");
-	mPlayerHpGauge = mScene->GetUIManager()->CreateWidget<CProgressBar>("PlayerHpGauge");
-	mPlayerExpGauge = mScene->GetUIManager()->CreateWidget<CProgressBar>("PlayerExpGauge");
+
 
 	wstring nameW = L"포켓몬";
 	if (mPlayerPokemon) nameW = Utf8ToWString(mPlayerPokemon->Info.Name);
@@ -490,7 +505,7 @@ bool CBattleWidget::Init()
 	// 적 상태창 텍스트
 	mEnemyNameText = mScene->GetUIManager()->CreateWidget<CTextBlock>("EnemyNameText");
 	mEnemyLvText = mScene->GetUIManager()->CreateWidget<CTextBlock>("EnemyLvText");
-	mEnemyHpGauge = mScene->GetUIManager()->CreateWidget<CProgressBar>("EnemyHpGauge");
+
 
 	mEnemyNameText->SetFont("Default");
 	mEnemyNameText->SetFontSize(50.f);
@@ -540,15 +555,7 @@ bool CBattleWidget::Init()
 
 
 
-	mScreenW = ScreenW;
-	mScreenH = ScreenH;
-
-	CreateIntroWidgets();
-	SetBattleUIEnable(false);
-
-	mInroPlayer = true;
-	mIntroStarted = false;
-	mIntro = EBattleIntroPhase::None;
+	
 
 	mInputBlockFrame = 2;
 	FlushBattleKeys();
@@ -563,12 +570,13 @@ void CBattleWidget::Update(float DeltaTime)
 	if (!IsEnable())
 		return;
 
-	if (mInroPlayer && mIntroStarted)
+	float expRatio = 0.f;
+	if (mPlayerPokemon && mPlayerPokemon->Exp > 0)
 	{
-		UpdateIntro(DeltaTime);
-		return;
+		expRatio = (float)mPlayerPokemon->CurrentExp / (float)mPlayerPokemon->Exp;
 	}
 
+	mGaugeUI.UpdateSmooth(mPlayerPokemon, mEnemyPokemon, DeltaTime, expRatio);
 
 	if (mInputBlockFrame > 0)
 	{
@@ -577,59 +585,100 @@ void CBattleWidget::Update(float DeltaTime)
 		return;
 	}
 
-	
+	if (!mTurnSteps.empty() && mTurnStepIndex < (int)mTurnSteps.size())
+	{
+		if (mTyping)
+		{
+			bool done = UpdateTyping(DeltaTime);
+
+			if (done)
+			{
+				++mTurnStepIndex;
+				StartNextTurnStep();
+			}
+			return;
+		}
+
+		if (mHpAnimating)
+		{
+			bool done = UpdateHpAnim(DeltaTime);
+			if (done)
+			{
+				++mTurnStepIndex;
+				StartNextTurnStep();
+			}
+			return;
+		}
+
+		if (mFaintAnimating)
+		{
+			bool done = UpdateFaintAnim(DeltaTime);
+			if (done)
+			{
+				++mTurnStepIndex;
+				StartNextTurnStep();
+			}
+			return;
+		}
+
+		if (mExpAnimating)
+		{
+			bool done = UpdateExpAnim(DeltaTime);
+			if (done)
+			{
+				++mTurnStepIndex;
+				StartNextTurnStep();
+			}
+			return;
+		}
+
+		return; 
+	}
+
+
+
 	if (GetAsyncKeyState(VK_UP) & 0x0001)    MoveUp();
 	if (GetAsyncKeyState(VK_DOWN) & 0x0001)  MoveDown();
 	if (GetAsyncKeyState(VK_LEFT) & 0x0001)  MoveLeft();
 	if (GetAsyncKeyState(VK_RIGHT) & 0x0001) MoveRight();
 
-	if (GetAsyncKeyState('D') & 0x0001) Accept();  // 확인
-	if (GetAsyncKeyState('S') & 0x0001) Cancel();  // 취소
-
-
-
+	if (GetAsyncKeyState('D') & 0x0001) Accept();
+	if (GetAsyncKeyState('S') & 0x0001) Cancel();
 }
 
-void CBattleWidget::SetPlayerPokemon(const FPokemonInstance* p)
+
+void CBattleWidget::SetPlayerPokemon(FPokemonInstance* p)
 {
 	mPlayerPokemon = p;
+
+	// 둘 다 셋팅되면 배틀에 넘김
+	if (mPlayerPokemon && mEnemyPokemon)
+		mBattle.SetCombatants(mPlayerPokemon, mEnemyPokemon);
+
 	UpdateStatusUI();
-	TryStartIntro();
 
 	if (mMsgText && mState == EBattleUIState::Root)
 	{
-		wstring nameW = L"포켓몬";
-		if (mPlayerPokemon) nameW = Utf8ToWString(mPlayerPokemon->Info.Name);
+		wstring nameW = Utf8ToWString(mPlayerPokemon->Info.Name);
 		SetMessage(nameW + L"은[는]\r\n무엇을 할까?");
 	}
 
 	if (mState == EBattleUIState::Fight)
-	{
 		RefreshMoveText();
-	}
-
-	UpdateStatusUI();
 
 }
 
-void CBattleWidget::SetEnemyPokemon(const FPokemonInstance* p)
+void CBattleWidget::SetEnemyPokemon(FPokemonInstance* p)
 {
 	mEnemyPokemon = p;
-	UpdateStatusUI();
-	TryStartIntro();
 
-	if (mMsgText && mState == EBattleUIState::Root)
-	{
-		wstring nameW = L"포켓몬";
-		if (mEnemyPokemon) nameW = Utf8ToWString(mEnemyPokemon->Info.Name);
-	}
+	if (mPlayerPokemon && mEnemyPokemon)
+		mBattle.SetCombatants(mPlayerPokemon, mEnemyPokemon);
+
+	UpdateStatusUI();
 
 	if (mState == EBattleUIState::Fight)
-	{
 		RefreshMoveText();
-	}
-
-	UpdateStatusUI();
 }
 
 
@@ -750,10 +799,121 @@ void CBattleWidget::Accept()
 			return;
 		}
 	}
-	else if (mState == EBattleUIState::Fight)
+	if (mState == EBattleUIState::Fight)
 	{
+		if (!mPlayerPokemon || !mEnemyPokemon) return;
 
-		CLog::PrintLog("기술 선택 idx=%d\n");
+		if (mSkillSelect) mSkillSelect->SetEnable(false);
+		for (auto& t : mMoveText) if (t) t->SetEnable(false);
+		if (mMovePPText) mMovePPText->SetEnable(false);
+		if (mMoveTypeText) mMoveTypeText->SetEnable(false);
+
+		if (mBattleUIBack) mBattleUIBack->SetEnable(true);
+		if (mMsgText) mMsgText->SetEnable(true);
+		if (mCursor) mCursor->SetEnable(false);
+
+		int oldEnemyHP = mEnemyPokemon->CurrentHP;
+		int oldPlayerHP = mPlayerPokemon->CurrentHP;
+
+		bool ok = mBattle.RunTurn(mSkillIndex);
+		if (!ok)
+		{
+			OpenRoot();
+			return;
+		}
+
+		int newEnemyHP = mEnemyPokemon->CurrentHP;
+		int newPlayerHP = mPlayerPokemon->CurrentHP;
+
+		mEnemyPokemon->CurrentHP = oldEnemyHP;
+		mPlayerPokemon->CurrentHP = oldPlayerHP;
+		UpdateStatusUI();
+
+		mTurnSteps.clear();
+		mTurnStepIndex = 0;
+
+		wstring myName = Utf8ToWString(mPlayerPokemon->Info.Name);
+		wstring enemyName = Utf8ToWString(mEnemyPokemon->Info.Name);
+
+		const auto& msgs = mBattle.GetMessages();
+
+		{
+			wstring action;
+			if (!ExtractActionMsg(msgs, myName, action))
+			{
+				wstring moveName = GetMoveName(mPlayerPokemon->Moves[mSkillIndex]);
+				action = myName + L"의\r\n" + moveName + L"!";
+			}
+			mTurnSteps.push_back({ FTurnStep::EType::Text, action });
+		}
+
+		{
+			FTurnStep s{};
+			s.Type = FTurnStep::EType::Hp;
+			s.bTargetEnemy = true;
+			s.TargetHP = newEnemyHP;
+			mTurnSteps.push_back(s);
+		}
+
+		bool enemyDidAct = false;
+		wstring enemyAction;
+		if (newEnemyHP > 0)
+		{
+			enemyDidAct = ExtractActionMsg(msgs, enemyName, enemyAction);
+			if (enemyDidAct)
+			{
+				if (enemyAction.rfind(L"야생 ", 0) != 0)
+					enemyAction = L"야생 " + enemyAction;
+
+				mTurnSteps.push_back({ FTurnStep::EType::Text, enemyAction });
+
+				FTurnStep s{};
+				s.Type = FTurnStep::EType::Hp;
+				s.bTargetEnemy = false;
+				s.TargetHP = newPlayerHP;
+				mTurnSteps.push_back(s);
+			}
+		}
+
+		if (newEnemyHP <= 0)
+		{
+			FTurnStep s{};
+			s.Type = FTurnStep::EType::Faint;
+			s.bFaintEnemy = true;
+			mTurnSteps.push_back(s);
+			mExitAfterTurn = true;
+
+			int gain = (mEnemyPokemon ? mEnemyPokemon->Level * 10 : 0);
+			int oldExp = mPlayerPokemon ? mPlayerPokemon->CurrentExp : 0;
+			int newExp = oldExp + gain;
+
+			mTurnSteps.push_back({ FTurnStep::EType::Text, L"경험치를 " + to_wstring(gain) + L" 얻었다!" });
+
+			FTurnStep exp{};
+			exp.Type = FTurnStep::EType::Exp;
+			exp.TargetExp = newExp;
+			mTurnSteps.push_back(exp);
+
+			mExitAfterTurn = true;
+		}
+		if (newPlayerHP <= 0)
+		{
+			FTurnStep s{};
+			s.Type = FTurnStep::EType::Faint;
+			s.bFaintEnemy = false;
+			mTurnSteps.push_back(s);
+		}
+
+		if (newEnemyHP > 0 && newPlayerHP > 0)
+		{
+			FTurnStep s{};
+			s.Type = FTurnStep::EType::Text;
+			s.Text = myName + L"은[는]\r\n무엇을 할까?";
+			mTurnSteps.push_back(s);
+		}
+
+		StartNextTurnStep();
+		return;
 	}
 }
 
@@ -982,7 +1142,12 @@ void CBattleWidget::UpdateStatusUI()
 
 	if (mPlayerPokemon || mEnemyPokemon)
 	{
-		mGaugeUI.Update(mPlayerPokemon, mEnemyPokemon, 0.f);
+		float expRatio = 0.f;
+		if (mPlayerPokemon && mPlayerPokemon->Exp > 0)
+		{
+			expRatio = (float)mPlayerPokemon->CurrentExp / (float)mPlayerPokemon->Exp;
+		}
+		mGaugeUI.Update(mPlayerPokemon, mEnemyPokemon, expRatio);
 	}
 
 
@@ -1092,36 +1257,254 @@ wstring CBattleWidget::GetTypeName(EPokemonType type)
 	}
 }
 
-void CBattleWidget::BeginIntro()
+void CBattleWidget::AdvanceTurnMessage()
 {
+	if (!mTurnBusy) return;
+
+	++mTurnMsgIndex;
+
+	if (mTurnMsgIndex < (int)mTurnMsgs.size())
+	{
+		if (mMsgText)
+			mMsgText->SetText(mTurnMsgs[mTurnMsgIndex].c_str());
+		return;
+	}
+
+	// 메시지 끝
+	mTurnBusy = false;
+	mTurnMsgs.clear();
+	mTurnMsgIndex = 0;
+
+	// 누가 쓰러졌는지 체크(배틀 엔진 기준)
+	if (mBattle.IsPlayerFainted() || mBattle.IsEnemyFainted())
+	{
+		mRequestExitBattle = true; // 너 전투 종료 루트로
+		return;
+	}
+
+	// 다음 입력을 위해 Root로
+	OpenRoot();
 }
 
-void CBattleWidget::UpdateIntro(float dt)
+void CBattleWidget::StartNextTurnStep()
 {
+	if (mTurnStepIndex >= (int)mTurnSteps.size())
+	{
+		mTurnSteps.clear();
+		mTurnStepIndex = 0;
+		mTyping = false;
+		mHpAnimating = false;
+		mFaintAnimating = false;
+
+		if (mExitAfterTurn)
+		{
+			mExitAfterTurn = false;
+			mRequestExitBattle = true;
+			return;
+		}
+
+		if (mCursor) mCursor->SetEnable(true);
+		return;
+	}
+
+	const FTurnStep& step = mTurnSteps[mTurnStepIndex];
+
+	if (step.Type == FTurnStep::EType::Text)
+	{
+		if (step.Text.find(L"무엇을 할까") != wstring::npos)
+		{
+			OpenRoot();
+			if (mCursor) mCursor->SetEnable(true);
+		}
+
+		BeginTyping(step.Text);
+	}
+	else if (step.Type == FTurnStep::EType::Hp)
+	{
+		BeginHpAnim(step.bTargetEnemy, step.TargetHP);
+	}
+	else if (step.Type == FTurnStep::EType::Faint)
+	{
+		BeginFaintAnim(step.bFaintEnemy);
+	}
+
+	else if (step.Type == FTurnStep::EType::Exp)
+	{
+		BeginExpAnim(step.TargetExp);
+	}
 }
 
-void CBattleWidget::EnterIntro(EBattleIntroPhase next)
+void CBattleWidget::BeginTyping(const std::wstring& msg)
 {
+	mTyping = true;
+	mTypingFull = msg;
+	mTypingIndex = 0;
+	mTypingAcc = 0.f;
+
+	if (mMsgText) mMsgText->SetText(L"");
 }
 
-void CBattleWidget::SetBattleUIEnable(bool enable)
+bool CBattleWidget::UpdateTyping(float dt)
 {
+	if (!mTyping) return true;
+
+	mTypingAcc += dt;
+
+	while (mTypingAcc >= mTypingInterval)
+	{
+		mTypingAcc -= mTypingInterval;
+
+		if (mTypingIndex < (int)mTypingFull.size())
+		{
+			std::wstring cur = mTypingFull.substr(0, mTypingIndex + 1);
+			if (mMsgText) mMsgText->SetText(cur.c_str());
+			++mTypingIndex;
+		}
+		else
+		{
+			mTyping = false;
+			return true; // 완료
+		}
+	}
+	return false; // 진행 중
 }
 
-void CBattleWidget::TryStartIntro()
+bool CBattleWidget::IsHpAnimFinished() const
 {
-	if (mIntroStarted) return;
-	if (!mPlayerPokemon || !mEnemyPokemon) return;
-
-	EnsurePokemonSprites();
-	BeginIntro();
+	if (!mHpAnimating)
+	{
+		return true;
+	}
+	if (mHpAnimTargetEnemy)
+	{
+		return mGaugeUI.IsEnemyHpSettled(mEnemyPokemon);
+	}
+	else
+	{
+		return mGaugeUI.IsPlayerHpSettled(mPlayerPokemon);
+	}
+	
 }
 
-void CBattleWidget::CreateIntroWidgets()
+void CBattleWidget::BeginHpAnim(bool targetEnemy, int targetHP)
 {
+	mHpAnimating = true;
+	mHpAnimTargetEnemy = targetEnemy;
+	mHpAnimTargetHP = targetHP;
+	mHpAnimElapsed = 0.f; 
+
+	if (targetEnemy)
+	{
+		if (mEnemyPokemon)
+			const_cast<FPokemonInstance*>(mEnemyPokemon)->CurrentHP = targetHP;
+	}
+	else
+	{
+		if (mPlayerPokemon)
+			const_cast<FPokemonInstance*>(mPlayerPokemon)->CurrentHP = targetHP;
+	}
+
+	UpdateStatusUI();
 }
 
-void CBattleWidget::EnsurePokemonSprites()
+bool CBattleWidget::UpdateHpAnim(float dt)
 {
+	if (!mHpAnimating) return true;
+
+	mHpAnimElapsed += dt;
+
+	if (mHpAnimElapsed < mHpAnimMinTime)
+		return false;
+
+	if (IsHpAnimFinished())
+	{
+		mHpAnimating = false;
+		return true;
+	}
+
+	return false;
 }
+
+
+void CBattleWidget::BeginFaintAnim(bool enemy)
+{
+	mFaintAnimating = true;
+	mFaintTargetEnemy = enemy;
+	mFaintElapsed = 0.f;
+
+	CSharedPtr<CImage> spr = enemy ? mEnemySprite : mPlayerSprite;
+	if (!spr) { mFaintAnimating = false; return; }
+
+	mFaintStartPos = spr->GetPos();
+	mFaintStartSize = spr->GetSize();
+
+	// 울음소리 여기서
+}
+
+bool CBattleWidget::UpdateFaintAnim(float dt)
+{
+	if (!mFaintAnimating) return true;
+
+	CSharedPtr<CImage> spr = mFaintTargetEnemy ? mEnemySprite : mPlayerSprite;
+	if (!spr) { mFaintAnimating = false; return true; }
+
+	mFaintElapsed += dt;
+	float t = mFaintElapsed / mFaintDuration;
+	if (t > 1.f) t = 1.f;
+
+	
+	FVector2D pos = mFaintStartPos;
+	pos.y -= mFaintSinkPx * t;
+	spr->SetPos(pos.x, pos.y);
+
+	
+	FVector2D size = mFaintStartSize;
+	spr->SetSize(size.x, size.y);
+
+	if (t >= 1.f)
+	{
+		spr->SetEnable(false);
+		mFaintAnimating = false;
+		return true;
+	}
+	return false;
+}
+
+void CBattleWidget::BeginExpAnim(int targetExp)
+{
+	mExpAnimating = true;
+	mExpAnimElapsed = 0.f;
+
+	mExpAnimStartExp = (mPlayerPokemon ? mPlayerPokemon->CurrentExp : 0);
+	mExpAnimTargetExp = targetExp;
+}
+
+bool CBattleWidget::UpdateExpAnim(float dt)
+{
+	if (!mExpAnimating) return true;
+
+	mExpAnimElapsed += dt;
+	float t = mExpAnimElapsed / mExpAnimMinTime;
+	if (t > 1.f) t = 1.f;
+
+	if (mPlayerPokemon)
+	{
+		int cur = (int)(mExpAnimStartExp + (mExpAnimTargetExp - mExpAnimStartExp) * t);
+		mPlayerPokemon->CurrentExp = cur;
+	}
+
+	UpdateStatusUI(); // 게이지/UI 갱신
+
+	if (t >= 1.f)
+	{
+		mExpAnimating = false;
+		return true;
+	}
+	return false;
+}
+
+
+
+
+
 

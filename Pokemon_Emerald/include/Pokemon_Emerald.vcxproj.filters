@@ -603,6 +603,9 @@
     <ClCompile Include="Pokemon\UI\TrainerBattleIntro.cpp">
       <Filter>Pokemon\04.UI</Filter>
     </ClCompile>
+    <ClCompile Include="Pokemon\Pokemon\Battle.cpp">
+      <Filter>Pokemon\01.Pokemon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameManager.h">
@@ -1021,6 +1024,9 @@
     </ClInclude>
     <ClInclude Include="Pokemon\UI\TrainerBattleIntro.h">
       <Filter>Pokemon\04.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Pokemon\Pokemon\Battle.h">
+      <Filter>Pokemon\01.Pokemon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
