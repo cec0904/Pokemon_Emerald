@@ -21,11 +21,47 @@
 #include "../../Asset/AssetManager.h"
 #include "../../Asset/Font/Font.h"
 #include "../../Asset/Font/FontManager.h"
+#include "../../Asset/Sound/Sound.h"
+#include "../../Asset/Sound/SoundManager.h"
+
 #include "Inventory.h"
 #include "PartyUI.h"
 #include "BattleGaugeUI.h"
 #include <Windows.h>
 #include <string>
+#include <random>
+
+
+
+enum class EIntroCryStage
+{
+	None,
+	EnemyCryShake,
+	PlayerCryShake,
+	Done
+};
+
+EIntroCryStage mIntroCryStage = EIntroCryStage::None;
+
+float mIntroElapsed = 0.f;
+float mShakeAcc = 0.f;
+float mShakeInterval = 0.03f;
+float mShakeAmp = 16.f;
+int   mShakeSign = 1;
+
+float mCryDurationEnemy = 0.60f;
+float mCryDurationPlayer = 0.60f;
+
+bool mIntroSoundPlayed = false;
+
+FVector2D mEnemyBasePos;
+FVector2D mPlayerBasePos;
+
+
+static inline int CalcNeedExp_Minimal(int level)
+{
+	return level ;
+}
 
 static inline wstring Utf8ToWString(const string& s)
 {
@@ -90,6 +126,40 @@ static bool ExtractActionMsg(const vector<wstring>& msgs, const wstring& actorNa
 	return false;
 }
 
+static bool ExtractEnemyActionMsg(const vector<wstring>& msgs,
+	const wstring& enemyName,
+	const wstring& myMoveName,
+	wstring& out)
+{
+	const wstring wild = L"야생 " + enemyName;
+
+	for (const auto& m : msgs)
+	{
+		if (m.rfind(wild, 0) == 0 &&
+			m.find(L"의\r\n") != wstring::npos &&
+			m.find(L"!") != wstring::npos)
+		{
+			out = m;
+			return true;
+		}
+	}
+
+	for (const auto& m : msgs)
+	{
+		if (m.rfind(enemyName, 0) == 0 &&
+			m.find(L"의\r\n") != wstring::npos &&
+			m.find(L"!") != wstring::npos)
+		{
+			if (!myMoveName.empty() && m.find(myMoveName) != wstring::npos)
+				continue;
+
+			out = m;
+			return true;
+		}
+	}
+	return false;
+}
+
 
 CBattleWidget::CBattleWidget()
 {
@@ -104,6 +174,9 @@ bool CBattleWidget::Init()
 	CUserWidget::Init();
 
 	FResolution RS = CDevice::GetInst()->GetResolution();
+
+	CAssetManager::GetInst()->GetSoundManager()->Stop("LittletownRoot");
+
 
 	float ScreenW = RS.Width;	// 1280
 	float ScreenH = RS.Height;	// 720
@@ -130,7 +203,6 @@ bool CBattleWidget::Init()
 	CSharedPtr<CImage> Cursor = mScene->GetUIManager()->CreateWidget<CImage>("Cursor");
 
 	CSharedPtr<CTextBlock> MsgText = mScene->GetUIManager()->CreateWidget<CTextBlock>("MsgText");
-
 
 
 	BattleArena->SetTexture("BattleBack", TEXT("Texture/Pokemon/BackGround/BattleArenas.png"));
@@ -181,7 +253,7 @@ bool CBattleWidget::Init()
 	PlayerHpBar->SetPos(ScreenW * 0.5f + 240.f, ScreenH - 440.f);
 	PlayerHpBar->SetUseColorKey(true);
 	PlayerHpBar->SetColorKey(FVector3D(124.f / 255.f, 50.f / 255.f, 24.f / 255.f));
-	PlayerHpBar->SetKeyThreshold(0.1f);
+	PlayerHpBar->SetKeyThreshold(0.01f);
 
 	EnemyHpBar->SetTexture("EnemyHpBar", TEXT("Texture/Pokemon/BackGround/BattleMenu.png"));
 	EnemyHpBar->SetBrushAnimation(true);
@@ -191,8 +263,9 @@ bool CBattleWidget::Init()
 	EnemyHpBar->SetPos(ScreenW * 0.5f - 230.f, ScreenH - 180.f);
 	EnemyHpBar->SetUseColorKey(true);
 	EnemyHpBar->SetColorKey(FVector3D(124.f / 255.f, 50.f / 255.f, 24.f / 255.f));
-	EnemyHpBar->SetKeyThreshold(0.1f);
+	EnemyHpBar->SetKeyThreshold(0.01f);
 	
+
 
 	HpGreen->SetTexture("HpGreen", TEXT("Texture/Pokemon/BackGround/BattleMenu.png"));
 	HpGreen->SetSize(960.f, 448.f);
@@ -244,8 +317,17 @@ bool CBattleWidget::Init()
 
 	const auto& PosMap = CPokemonManager::GetInst()->GetPosMap();
 
+	
+	
+	srand((unsigned int)time(0));
 	PokemonID MyID = (PokemonID)1;	// 나무지기
-	PokemonID EnemyID = (PokemonID)4;	// 아차모
+	PokemonID EnemyID = (PokemonID)(rand() % 28 + 1);
+
+
+
+	CLog::PrintLog("BattleWidget Init called");
+	CLog::PrintLog(to_string(EnemyID));
+	CLog::PrintLog(to_string((unsigned)time(0)));
 
 	auto itMy = PosMap.find(MyID);
 	auto itEnemy = PosMap.find(EnemyID);
@@ -272,18 +354,20 @@ bool CBattleWidget::Init()
 
 		mPlayerSprite->SetUseColorKey(true);
 		mPlayerSprite->SetColorKey(FVector3D(255.f / 255.f, 147.f / 255.f, 37.f / 255.f));
-		mPlayerSprite->SetKeyThreshold(0.1f);
+		mPlayerSprite->SetKeyThreshold(0.01f);
 
 		// 적 포켓몬 (Front)
 		mEnemySprite = mScene->GetUIManager()->CreateWidget<CImage>("EnemyPokemon");
 		mEnemySprite->SetTexture("EnemyPokemonTex",
 			TEXT("Texture/Pokemon/Pokemon/FrontSprite.png"));
 		mEnemySprite->SetBrushAnimation(true);
+		mEnemySprite->ClearBrushFrames();
 		mEnemySprite->AddBrushFrame(
 			itEnemy->second.Front1.x,
 			itEnemy->second.Front1.y,
 			64.f, 64.f
 		);
+		mEnemySprite->SetCurrentFrame(0);
 		mEnemySprite->SetSize(256.f, 256.f);
 		mEnemySprite->SetPivot(FVector2D(0.5f, 1.f));
 		mEnemySprite->SetPos(860.f, 675.f);
@@ -292,7 +376,7 @@ bool CBattleWidget::Init()
 
 		mEnemySprite->SetUseColorKey(true);
 		mEnemySprite->SetColorKey(FVector3D(96.f / 255.f, 212.f / 255.f, 255.f / 255.f));
-		mEnemySprite->SetKeyThreshold(0.1f);
+		mEnemySprite->SetKeyThreshold(0.01f);
 
 	}
 
@@ -302,7 +386,7 @@ bool CBattleWidget::Init()
 
 	BattleArena->SetZOrder(0);
 	BattleUIBack->SetZOrder(0);
-	BehaviorSelect->SetZOrder(1);
+	BehaviorSelect->SetZOrder(2);
 	SkillSelect->SetZOrder(2);
 	Cursor->SetZOrder(5);
 	MsgText->SetZOrder(10);
@@ -555,7 +639,7 @@ bool CBattleWidget::Init()
 
 
 
-	
+	mGaugeUI.SetHpSmoothSpeed(0.3f);
 
 	mInputBlockFrame = 2;
 	FlushBattleKeys();
@@ -569,6 +653,56 @@ void CBattleWidget::Update(float DeltaTime)
 
 	if (!IsEnable())
 		return;
+
+	if (mIntroCryPending)
+	{
+		mIntroCryWait -= DeltaTime;
+		if (mIntroCryWait <= 0.f)
+		{
+			mIntroCryPending = false;
+
+			if (mPlayerPokemon)
+			{
+				CAssetManager::GetInst()->GetSoundManager()->Play(to_string(mPlayerPokemon->SpeciesID));
+
+
+			}
+		}
+	}
+
+	if (mCryAnim && mCrySprite)
+	{
+		mCryAnimTime -= DeltaTime;
+		mCryAnimAcc += DeltaTime;
+
+		while (mCryAnimAcc >= mCryAnimInterval)
+		{
+			mCryAnimAcc -= mCryAnimInterval;
+			mCryAnimFrame ^= 1;
+			mCrySprite->SetCurrentFrame(mCryAnimFrame);
+		}
+
+		if (mCryAnimTime <= 0.f)
+		{
+			mCryAnim = false;
+			mCrySprite->SetCurrentFrame(0);
+		}
+	}
+
+	
+	if (mWaitExitConfirm)
+	{
+		if (GetAsyncKeyState('D') & 0x0001)
+		{
+			mWaitExitConfirm = false;
+			SwitchToWorldBGM();
+			mRequestExitBattle = true;
+			
+		}
+
+
+		return;
+	}
 
 	float expRatio = 0.f;
 	if (mPlayerPokemon && mPlayerPokemon->Exp > 0)
@@ -632,10 +766,17 @@ void CBattleWidget::Update(float DeltaTime)
 			return;
 		}
 
+
+
+
 		return; 
 	}
 
-
+	if (mIntroCryStage != EIntroCryStage::None && mIntroCryStage != EIntroCryStage::Done)
+	{
+		UpdateIntroCry(DeltaTime);
+		return;
+	}
 
 	if (GetAsyncKeyState(VK_UP) & 0x0001)    MoveUp();
 	if (GetAsyncKeyState(VK_DOWN) & 0x0001)  MoveDown();
@@ -655,6 +796,24 @@ void CBattleWidget::SetPlayerPokemon(FPokemonInstance* p)
 	if (mPlayerPokemon && mEnemyPokemon)
 		mBattle.SetCombatants(mPlayerPokemon, mEnemyPokemon);
 
+	if (mPlayerPokemon)
+	{
+
+		auto img = mPlayerSprite.Get(); // <- 이 줄은 네 변수명으로
+		if (img)
+		{
+			const float x = mPlayerPokemon->ImageInfo.Back1.x;
+			const float y = mPlayerPokemon->ImageInfo.Back1.y;
+
+			img->SetBrushAnimation(true);
+			img->ClearBrushFrames();
+			img->AddBrushFrame(x, y, 64.f, 64.f);
+			
+
+			img->SetCurrentFrame(0);
+		}
+	}
+
 	UpdateStatusUI();
 
 	if (mMsgText && mState == EBattleUIState::Root)
@@ -668,11 +827,38 @@ void CBattleWidget::SetPlayerPokemon(FPokemonInstance* p)
 
 }
 
+void CBattleWidget::StartCryAnim(CSharedPtr<CImage> sprite, float duration)
+{
+	if (!sprite) return;
+
+	duration = 0.6f;
+	mCrySprite = sprite;
+	mCryAnim = true;
+	mCryAnimTime = duration;
+	mCryAnimAcc = 0.f;
+	mCryAnimFrame = 0;
+
+	mCrySprite->SetCurrentFrame(0);
+}
+
 void CBattleWidget::SetEnemyPokemon(FPokemonInstance* p)
 {
 	mEnemyPokemon = p;
 
 	if (mPlayerPokemon && mEnemyPokemon)
+	{
+		auto img = mEnemySprite.Get();
+		if (img)
+		{
+			img->SetBrushAnimation(true);
+			img->ClearBrushFrames();
+
+			img->AddBrushFrame(mEnemyPokemon->ImageInfo.Front1.x, mEnemyPokemon->ImageInfo.Front1.y, 64.f, 64.f);
+			img->AddBrushFrame(mEnemyPokemon->ImageInfo.Front2.x, mEnemyPokemon->ImageInfo.Front2.y, 64.f, 64.f);
+
+			img->SetCurrentFrame(0);
+		}
+	}
 		mBattle.SetCombatants(mPlayerPokemon, mEnemyPokemon);
 
 	UpdateStatusUI();
@@ -685,6 +871,8 @@ void CBattleWidget::SetEnemyPokemon(FPokemonInstance* p)
 
 void CBattleWidget::MoveUp()
 {
+	CAssetManager::GetInst()->GetSoundManager()->Play("Button");
+
 	if (mState == EBattleUIState::Root)
 	{
 		if (mRootIndex >= 2)
@@ -706,6 +894,8 @@ void CBattleWidget::MoveUp()
 
 void CBattleWidget::MoveDown()
 {
+	CAssetManager::GetInst()->GetSoundManager()->Play("Button");
+
 	if (mState == EBattleUIState::Root)
 	{
 		if (mRootIndex <= 1)
@@ -727,6 +917,8 @@ void CBattleWidget::MoveDown()
 
 void CBattleWidget::MoveLeft()
 {
+	CAssetManager::GetInst()->GetSoundManager()->Play("Button");
+
 	if (mState == EBattleUIState::Root)
 	{
 		if (mRootIndex % 2 == 1)
@@ -748,6 +940,8 @@ void CBattleWidget::MoveLeft()
 
 void CBattleWidget::MoveRight()
 {
+	CAssetManager::GetInst()->GetSoundManager()->Play("Button");
+
 	if (mState == EBattleUIState::Root)
 	{
 		if (mRootIndex % 2 == 0)
@@ -769,6 +963,8 @@ void CBattleWidget::MoveRight()
 
 void CBattleWidget::Accept()
 {
+	CAssetManager::GetInst()->GetSoundManager()->Play("Button");
+
 	if (mState == EBattleUIState::Root)
 	{
 		switch (mRootIndex)
@@ -795,6 +991,7 @@ void CBattleWidget::Accept()
 
 		case 3:
 			CLog::PrintLog("도망감 선택\n");
+			SwitchToWorldBGM(); // 함수 호출
 			mRequestExitBattle = true;
 			return;
 		}
@@ -881,9 +1078,9 @@ void CBattleWidget::Accept()
 			s.Type = FTurnStep::EType::Faint;
 			s.bFaintEnemy = true;
 			mTurnSteps.push_back(s);
-			mExitAfterTurn = true;
 
-			int gain = (mEnemyPokemon ? mEnemyPokemon->Level * 10 : 0);
+			//int gain = (mEnemyPokemon ? mEnemyPokemon->Level : 0);
+			int gain = 10;
 			int oldExp = mPlayerPokemon ? mPlayerPokemon->CurrentExp : 0;
 			int newExp = oldExp + gain;
 
@@ -902,6 +1099,8 @@ void CBattleWidget::Accept()
 			s.Type = FTurnStep::EType::Faint;
 			s.bFaintEnemy = false;
 			mTurnSteps.push_back(s);
+			mExitAfterTurn = true;
+
 		}
 
 		if (newEnemyHP > 0 && newPlayerHP > 0)
@@ -1089,8 +1288,8 @@ void CBattleWidget::RefreshMoveText()
 			mMoveText[i]->SetText(GetMoveName(moves[i]).c_str());
 		else
 			mMoveText[i]->SetText(L"-");
-		UpdateMoveInfoUI();
 	}
+		UpdateMoveInfoUI();
 }
 
 
@@ -1142,12 +1341,14 @@ void CBattleWidget::UpdateStatusUI()
 
 	if (mPlayerPokemon || mEnemyPokemon)
 	{
-		float expRatio = 0.f;
-		if (mPlayerPokemon && mPlayerPokemon->Exp > 0)
+		if (!mHpAnimating && !mExpAnimating && !mFaintAnimating)
 		{
-			expRatio = (float)mPlayerPokemon->CurrentExp / (float)mPlayerPokemon->Exp;
+			float expRatio = 0.f;
+			if (mPlayerPokemon && mPlayerPokemon->Exp > 0)
+				expRatio = (float)mPlayerPokemon->CurrentExp / (float)mPlayerPokemon->Exp;
+
+			mGaugeUI.Update(mPlayerPokemon, mEnemyPokemon, expRatio); // <- 스냅
 		}
-		mGaugeUI.Update(mPlayerPokemon, mEnemyPokemon, expRatio);
 	}
 
 
@@ -1278,7 +1479,7 @@ void CBattleWidget::AdvanceTurnMessage()
 	// 누가 쓰러졌는지 체크(배틀 엔진 기준)
 	if (mBattle.IsPlayerFainted() || mBattle.IsEnemyFainted())
 	{
-		mRequestExitBattle = true; // 너 전투 종료 루트로
+		mRequestExitBattle = true; 
 		return;
 	}
 
@@ -1299,7 +1500,17 @@ void CBattleWidget::StartNextTurnStep()
 		if (mExitAfterTurn)
 		{
 			mExitAfterTurn = false;
-			mRequestExitBattle = true;
+			mWaitExitConfirm = true;
+
+			if (mBehaviorSelect) mBehaviorSelect->SetEnable(false);
+			for (auto& t : mRootText) if (t) t->SetEnable(false);
+			if (mCursor) mCursor->SetEnable(false);
+
+			if (mBattleUIBack) mBattleUIBack->SetEnable(true);
+			if (mMsgText) mMsgText->SetEnable(true);
+
+			SetMessage(L"계속하려면 D를 누르세요.");
+
 			return;
 		}
 
@@ -1334,7 +1545,7 @@ void CBattleWidget::StartNextTurnStep()
 	}
 }
 
-void CBattleWidget::BeginTyping(const std::wstring& msg)
+void CBattleWidget::BeginTyping(const wstring& msg)
 {
 	mTyping = true;
 	mTypingFull = msg;
@@ -1356,7 +1567,7 @@ bool CBattleWidget::UpdateTyping(float dt)
 
 		if (mTypingIndex < (int)mTypingFull.size())
 		{
-			std::wstring cur = mTypingFull.substr(0, mTypingIndex + 1);
+			wstring cur = mTypingFull.substr(0, mTypingIndex + 1);
 			if (mMsgText) mMsgText->SetText(cur.c_str());
 			++mTypingIndex;
 		}
@@ -1389,29 +1600,84 @@ bool CBattleWidget::IsHpAnimFinished() const
 void CBattleWidget::BeginHpAnim(bool targetEnemy, int targetHP)
 {
 	mHpAnimating = true;
+	mHitSfxPlayed = false;
 	mHpAnimTargetEnemy = targetEnemy;
 	mHpAnimTargetHP = targetHP;
 	mHpAnimElapsed = 0.f; 
+	mHpAnimApplied = false;
 
-	if (targetEnemy)
+	mHpAnimAtkSprite = targetEnemy ? mPlayerSprite : mEnemySprite;
+
+	if (mHpAnimAtkSprite)
 	{
-		if (mEnemyPokemon)
-			const_cast<FPokemonInstance*>(mEnemyPokemon)->CurrentHP = targetHP;
+		mHpAnimAtkStartPos = mHpAnimAtkSprite->GetPos();
 	}
-	else
-	{
-		if (mPlayerPokemon)
-			const_cast<FPokemonInstance*>(mPlayerPokemon)->CurrentHP = targetHP;
-	}
+
+
 
 	UpdateStatusUI();
 }
 
 bool CBattleWidget::UpdateHpAnim(float dt)
 {
+
+	float mAtkAnimDuration = 0.3f;
+	float mAtkAnimOffsetPx = 50.f;
+
 	if (!mHpAnimating) return true;
 
 	mHpAnimElapsed += dt;
+
+	if (!mHpAnimApplied)
+	{
+		if (mHpAnimAtkSprite && mHpAnimElapsed < mAtkAnimDuration)
+		{
+			float t = mHpAnimElapsed / mAtkAnimDuration;
+			if (t > 1.f) t = 1.f;
+
+			if (!mHitSfxPlayed && t >= 0.5f)
+			{
+				mHitSfxPlayed = true;
+				CAssetManager::GetInst()->GetSoundManager()->Play("Fly"); 
+			}
+
+			float tri = (t < 0.5f) ? (t / 0.5f) : ((1.f - t) / 0.5f);
+			float offset = mAtkAnimOffsetPx * tri;
+
+			float dirX = mHpAnimTargetEnemy ? +1.f : -1.f;  // 내 공격이면 +x, 적 공격이면 -x
+			float dirY = mHpAnimTargetEnemy ? +0.f : -1.f;  // 내 공격이면 -y(위), 적 공격이면 +y(아래)
+
+
+			const float diag = 0.7071f; // = 1/sqrt(2)
+
+			mHpAnimAtkSprite->SetPos(
+				mHpAnimAtkStartPos.x + dirX * offset * diag,
+				mHpAnimAtkStartPos.y + dirY * offset * diag);
+		}
+		else
+		{
+			if (mHpAnimAtkSprite)
+				mHpAnimAtkSprite->SetPos(mHpAnimAtkStartPos.x, mHpAnimAtkStartPos.y);
+		}
+
+		if (mHpAnimElapsed < mHpAnimPreDelay)
+			return false;
+
+		if (mHpAnimTargetEnemy)
+		{
+			if (mEnemyPokemon) const_cast<FPokemonInstance*>(mEnemyPokemon)->CurrentHP = mHpAnimTargetHP;
+		}
+		else
+		{
+			if (mPlayerPokemon) const_cast<FPokemonInstance*>(mPlayerPokemon)->CurrentHP = mHpAnimTargetHP;
+		}
+
+		UpdateStatusUI();
+
+		mHpAnimApplied = true;
+		mHpAnimElapsed = 0.f;
+		return false;
+	}
 
 	if (mHpAnimElapsed < mHpAnimMinTime)
 		return false;
@@ -1419,11 +1685,13 @@ bool CBattleWidget::UpdateHpAnim(float dt)
 	if (IsHpAnimFinished())
 	{
 		mHpAnimating = false;
+		UpdateStatusUI();
 		return true;
 	}
 
 	return false;
 }
+
 
 
 void CBattleWidget::BeginFaintAnim(bool enemy)
@@ -1497,11 +1765,211 @@ bool CBattleWidget::UpdateExpAnim(float dt)
 
 	if (t >= 1.f)
 	{
+		if (mPlayerPokemon)
+		{
+			mPlayerPokemon->CurrentExp = mExpAnimTargetExp;
+		}
+
+		int levelUpCount = 0;
+
+		if (mPlayerPokemon && mPlayerPokemon->Exp > 0)
+		{
+			while (mPlayerPokemon->CurrentExp >= mPlayerPokemon->Exp)
+			{
+				mPlayerPokemon->CurrentExp -= mPlayerPokemon->Exp;
+				mPlayerPokemon->Level += 1;
+				levelUpCount++;
+
+				// 다음 레벨 필요 EXP(임시)
+				mPlayerPokemon->Exp = CalcNeedExp_Minimal(mPlayerPokemon->Level);
+
+				CPokemonManager::GetInst()->RecalcCurrentStateForLevel(*mPlayerPokemon);
+			}
+		}
+
+		if (levelUpCount > 0)
+		{
+			wstring myName = Utf8ToWString(mPlayerPokemon->Info.Name);
+
+			int insertPos = mTurnStepIndex + 1;
+			for (int i = 0; i < levelUpCount; ++i)
+			{
+				FTurnStep msg{};
+				msg.Type = FTurnStep::EType::Text;
+				msg.Text = myName + L"의\r\n레벨이 올랐다!";
+				mTurnSteps.insert(mTurnSteps.begin() + insertPos, msg);
+				++insertPos;
+			}
+		}
+
+		UpdateStatusUI();
+
 		mExpAnimating = false;
 		return true;
 	}
 	return false;
 }
+
+void CBattleWidget::OnOpenedFromIntro()
+{
+
+	OpenRoot();
+	mInputBlockFrame = 2;
+	FlushBattleKeys();
+
+	StartIntroCrySequence();
+
+	if (mEnemyPokemon)
+	{
+		CAssetManager::GetInst()->GetSoundManager()->Play(to_string(mEnemyPokemon->SpeciesID));
+	}
+
+	mIntroCryWait = 0.7;
+	mIntroCryPending = true;
+}
+
+void CBattleWidget::StartIntroCrySequence()
+{
+	mEnemyCryFrame = 1;
+	if (mEnemySprite) mEnemySprite->SetCurrentFrame(mEnemyCryFrame);
+
+	if (mEnemySprite)  mEnemyBasePos = mEnemySprite->GetPos();
+	if (mPlayerSprite) mPlayerBasePos = mPlayerSprite->GetPos();
+	
+	mIntroCryStage = EIntroCryStage::EnemyCryShake;
+	mIntroElapsed = 0.f;
+	mShakeAcc = 0.f;
+	mShakeSign = 1;
+	mIntroSoundPlayed = false;
+
+	if (mEnemySprite) mEnemySprite->SetCurrentFrame(1);
+}
+
+bool CBattleWidget::UpdateIntroCry(float dt)
+{
+	if (mIntroCryStage == EIntroCryStage::Done || mIntroCryStage == EIntroCryStage::None)
+		return true;
+
+	mIntroElapsed += dt;
+
+	auto DoShakePosOnly = [&](CSharedPtr<CImage> spr, const FVector2D& basePos)
+		{
+			if (!spr) return;
+
+			mShakeAcc += dt;
+			while (mShakeAcc >= mShakeInterval)
+			{
+				mShakeAcc -= mShakeInterval;
+				mShakeSign = -mShakeSign;
+			}
+			spr->SetPos(basePos.x + (float)mShakeSign * mShakeAmp, basePos.y);
+		};
+
+	auto DoShakeWithFrameToggle = [&](CSharedPtr<CImage> spr, const FVector2D& basePos)
+		{
+			if (!spr) return;
+
+			mShakeAcc += dt;
+			while (mShakeAcc >= mShakeInterval)
+			{
+				mShakeAcc -= mShakeInterval;
+				mShakeSign = -mShakeSign;
+
+				mEnemyCryFrame ^= 1;
+				spr->SetCurrentFrame(mEnemyCryFrame);
+			}
+			spr->SetPos(basePos.x + (float)mShakeSign * mShakeAmp, basePos.y);
+		};
+
+	if (mIntroCryStage == EIntroCryStage::EnemyCryShake)
+	{
+		if (!mIntroSoundPlayed && mEnemyPokemon)
+		{
+			CAssetManager::GetInst()->GetSoundManager()->Play(std::to_string(mEnemyPokemon->SpeciesID));
+			mIntroSoundPlayed = true;
+		}
+
+		DoShakeWithFrameToggle(mEnemySprite, mEnemyBasePos);
+
+		if (mIntroElapsed >= mCryDurationEnemy)
+		{
+			if (mEnemySprite)
+			{
+				mEnemySprite->SetPos(mEnemyBasePos.x, mEnemyBasePos.y);
+				mEnemyCryFrame = 0;
+				mEnemySprite->SetCurrentFrame(0);
+				
+				mCryAnim = false;
+				mCrySprite = nullptr;
+				mShakeAcc = 0.f;
+				mShakeSign = 1;
+				mEnemyCryFrame = 0;
+			}
+
+			mIntroCryStage = EIntroCryStage::PlayerCryShake;
+			mIntroElapsed = 0.f;
+			mShakeAcc = 0.f;
+			mShakeSign = 1;
+			mIntroSoundPlayed = false;
+
+			if (mPlayerSprite) mPlayerSprite->SetCurrentFrame(0);
+		}
+		return false;
+	}
+
+	if (mIntroCryStage == EIntroCryStage::PlayerCryShake)
+	{
+		if (!mIntroSoundPlayed && mPlayerPokemon)
+		{
+			CAssetManager::GetInst()->GetSoundManager()->Play(std::to_string(mPlayerPokemon->SpeciesID));
+			mIntroSoundPlayed = true;
+		}
+
+		DoShakePosOnly(mPlayerSprite, mPlayerBasePos);
+
+		if (mIntroElapsed >= mCryDurationPlayer)
+		{
+			if (mPlayerSprite)
+			{
+				mPlayerSprite->SetPos(mPlayerBasePos.x, mPlayerBasePos.y);
+				mPlayerSprite->SetCurrentFrame(0); // 1번 고정
+			}
+
+			mIntroCryStage = EIntroCryStage::Done;
+			return true;
+		}
+		return false;
+	}
+
+	return false;
+}
+
+void CBattleWidget::ExitBattleScene()
+{
+	// 중복 실행 방지
+	static bool isExiting = false;
+	if (isExiting) return;
+	isExiting = true;
+
+	// 사운드 교체 (반드시 한 번만 호출됨)
+	auto SM = CAssetManager::GetInst()->GetSoundManager();
+	SM->Stop("WildPokemonBattle");
+	SM->Play("LittlerootTown");
+
+	mRequestExitBattle = true;
+}
+
+void CBattleWidget::SwitchToWorldBGM()
+{
+	if (mIsSoundSwitched) return; // 이미 바꿨다면 무시
+
+	auto SM = CAssetManager::GetInst()->GetSoundManager();
+	SM->Stop("WildPokemonBattle");
+	SM->Play("LittlerootTown");
+
+	mIsSoundSwitched = true; // 다신 실행 안 되게 잠금
+}
+
 
 
 

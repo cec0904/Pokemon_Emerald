@@ -14,6 +14,8 @@
 #include "../Asset/Sound/SoundManager.h"
 #include "../Asset/AssetManager.h"
 #include "../Component/TileMapComponent.h"
+#include "../Pokemon/Npc/NpcBase.h"
+#include "../Pokemon/Npc/NpcProfessor.h"
 
 CSceneMain::CSceneMain()
 {
@@ -30,22 +32,6 @@ bool CSceneMain::Init()
 	{
 		return false;
 	}
-
-	///////////// 사용할 머티리얼 미리 만든다!!
-	mAssetManager->CreateMaterial("Monster1");
-
-	CMaterial* material = mAssetManager->FindMaterial("Monster1");
-
-	material->SetPixelShader("DefaultMaterialShader");
-	material->SetSamplerType(ETextureSamplerType::Linear);
-	material->AddTexture("MonsterTex", TEXT("Texture/Porori.png"), 0);
-
-
-
-	///////////// 사용할 사운드도 미리 추가한다.
-	mAssetManager->LoadSound("Hit", "Effect", false, "Sound/Fire1.wav");
-	mAssetManager->LoadSound("SceneMainBack", "BGM", true, "파일");
-	CAssetManager::GetInst()->GetSoundManager()->Play("SceneMainBack");
 
 
 	///////////////////////////////////////////////
@@ -71,6 +57,48 @@ bool CSceneMain::Init()
 
 	mPlayer = Player;
 	Player->SetTileMap(BackTileObject->GetTileMapComponent());
+
+	CSceneAssetManager* AM = GetAssetManager();
+
+	AM->LoadTexture("ProfessorTex", TEXT("Texture/Pokemon/Npc/NpcRealWorld.png"));
+
+	AM->CreateAnimation("ProfessorIdle");
+	AM->SetAnimationTextureType("ProfessorIdle", EAnimationTextureType::SpriteSheet);
+	AM->SetAnimationTexture("ProfessorIdle", "ProfessorTex");
+	AM->AddAnimationFrame("ProfessorIdle", 0.f, 428.f, 18.f, 20.f);
+
+	CNpcProfessor* Professor = CreateObj<CNpcProfessor>("Professor");
+	mProfessor = Professor;
+
+	Professor->SetWorldScale(72.f, 80.f);
+
+
+	const float Cell = 16.f * 4.f;
+
+
+	Professor->SetWorldPos((138.f + 0.5f) * Cell, (41.f + 0.5f) * Cell);
+
+
+	CSpriteComponent* Spr = Professor->GetRootSprite();
+	if (Spr)
+	{
+
+		Spr->SetTexture("NpcProfessor");
+		Spr->SetUseColorKey(true);
+		Spr->SetColorKey(FVector3D(44.f / 255.f, 142.f / 255.f, 96.f / 255.f));
+		Spr->SetKeyThreshold(0.01f);
+		Spr->SetPivot(0.5f, 0.25f);
+
+
+		CAnimation2D* Anim = Spr->CreateAnimation2D<CAnimation2D>(); 
+		if (Anim)
+		{
+			Anim->AddSequence("ProfessorIdle", 1.f, 1.f, true, false);
+			Anim->ChangeAnimation("ProfessorIdle");
+		}
+	}
+
+
 
 	return true;
 }

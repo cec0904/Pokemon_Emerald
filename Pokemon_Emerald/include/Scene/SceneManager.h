@@ -1,6 +1,10 @@
 #pragma once
 
 #include"../Gameinfo.h"
+#include "Scene.h"
+#include <vector>
+
+class CScene;
 
 class CSceneManager
 {
@@ -9,6 +13,10 @@ class CSceneManager
 private:
 	class CScene* mCurrentScene = nullptr;
 	class CScene* mLoadScene = nullptr;
+
+	vector<CScene*> mSceneStack;
+	bool mDeleteCurrentOnLoad = true;
+	bool mCallResumeOnLoad = false;
 
 public:
 	bool Init();
@@ -48,10 +56,59 @@ public:
 			return nullptr;
 		}
 
+		mDeleteCurrentOnLoad = true;
+		mCallResumeOnLoad = false;
+
 		mLoadScene = Scene;
 
 		return Scene;
 	}
 
+
+
+public:
+	template<typename T>
+	void PushScene();
+	void PopScene();
+
+private:
+	template<typename T>
+	CScene* CreateSceneInternal();
+
+
 };
 
+template<typename T>
+inline void CSceneManager::PushScene()
+{
+	if (mCurrentScene)
+	{
+		mCurrentScene->OnPause();
+		mSceneStack.push_back(mCurrentScene);
+	}
+
+	CScene* NewScene = CreateScene<T>();
+	if (!NewScene)
+	{
+		return;
+	}
+
+	mDeleteCurrentOnLoad = false;
+	mCallResumeOnLoad = false;
+
+	mLoadScene = NewScene;
+}
+
+template<typename T>
+inline CScene* CSceneManager::CreateSceneInternal()
+{
+	CScene* NewScene = new T;
+
+	if (!NewScene->Init())
+	{
+		delete NewScene;
+		return nullptr;
+	}
+
+	return NewScene;
+}

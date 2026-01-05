@@ -11,6 +11,7 @@
 #include "../Common/Image.h"
 #include "../../Share/Log.h"
 #include "../../Object/SpriteEffect.h"
+#include "../../Object/SceneObject.h"
 #include "../../Component/SpriteComponent.h"
 #include "../../Asset/Animation/Animation2DData.h"
 #include "../../Asset/Animation/Animation2DManager.h"
@@ -21,6 +22,8 @@
 #include "../../Asset/AssetManager.h"
 #include "../../Asset/Font/Font.h"
 #include "../../Asset/Font/FontManager.h"
+#include "../../Asset/Sound/Sound.h"
+#include "../../Asset/Sound/SoundManager.h"
 
 CStartWidget::CStartWidget()
 {
@@ -44,6 +47,7 @@ bool CStartWidget::Init()
 	mEditorButton = mScene->GetUIManager()->CreateWidget<CButton>("SceneEditorButton");
 
 
+	CAssetManager::GetInst()->GetSoundManager()->Play("StartBGM");
 
 
 	
@@ -136,6 +140,7 @@ bool CStartWidget::Init()
 	mPushText->SetZOrder(5);
 	AddWidget(mPushText);
 
+	
 
 
 	return true;
@@ -145,6 +150,9 @@ bool CStartWidget::Init()
 void CStartWidget::StartButtonClick()
 {
 	CLog::PrintLog("Start Button Click");
+	
+
+	CAssetManager::GetInst()->GetSoundManager()->Stop("StartBGM");
 
 	CSceneManager::GetInst()->CreateLoadScene<CSceneMain>();
 }
@@ -185,11 +193,14 @@ void CStartWidget::Update(float DeltaTime)
 
 void CStartWidget::SelectKey(float DeltaTime)
 {
+	CAssetManager::GetInst()->GetSoundManager()->Play("Button");
 	Select();
+
 }
 
 void CStartWidget::Select()
 {
 	CLog::PrintLog("Select Key Click");
+	CAssetManager::GetInst()->GetSoundManager()->Stop("StartBGM");
 	CSceneManager::GetInst()->CreateLoadScene<CSceneMain>();
 }

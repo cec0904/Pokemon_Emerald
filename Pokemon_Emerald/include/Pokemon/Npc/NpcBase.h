@@ -47,7 +47,10 @@ public:
 	{
 		mState = State;
 	}
-
+	CSpriteComponent* GetRootSprite() const
+	{
+		return mRoot.Get(); 
+	}
 protected:
 	virtual void Idle(float DeltaTime);
 	virtual void Move(float DeltaTime);

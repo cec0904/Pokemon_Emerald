@@ -1,6 +1,7 @@
 #pragma once
 #include "Scene.h"
 #include "../Object/PlayerObject.h"
+#include "../Pokemon/Npc/NpcProfessor.h"
 
 class CSceneMain :
     public CScene
@@ -13,6 +14,7 @@ protected:
 
 private:
 	CPlayerObject* mPlayer = nullptr;
+	CNpcProfessor* mProfessor = nullptr;
 
 public:
 	CPlayerObject* GetPlayer() const

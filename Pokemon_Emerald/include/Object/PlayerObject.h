@@ -2,6 +2,7 @@
 #include "SceneObject.h"
 #include "../Pokemon/Pokemon/PartyData.h"
 #include "../Pokemon/UI/PartyUI.h"
+#include "../Pokemon/UI/StartPokemonUI.h"
 
 enum class ESkill4State
 {
@@ -24,7 +25,7 @@ struct FPortal
 	int SpawnIndex = 1;
 };
 
-
+class CStartPokemonUI;
 class CTileMapComponent;
 
 class CPlayerObject :
@@ -82,6 +83,9 @@ private:
 	CPartyData mPartyData;
 	class CPartyUI* m_pParty;
 
+private:
+	CSharedPtr<CStartPokemonUI> mStartPokemonUI;
+
 public:
 	CPartyUI* GetParty() const
 	{
@@ -124,12 +128,20 @@ private:
 	bool IsPartyOpen = false;
 	CSharedPtr<class CPartyUI> mParty;
 
-
+	bool IsStartSelectOpen = false;
+	CSharedPtr<class CStartPokemonUI> mStartSelect;
 
 	bool Block = false;
 	void IsOnCollision(const FVector3D& HitPoint, class CColliderBase* Dest);
 	void IsOffCollision(class CColliderBase* Dest);
 
+public:
+
+	void OpenPartyUI();
+	void OpenStartPokemonUI();
+
+public:
+	void OpenStartSelectUI();
 
 };
 

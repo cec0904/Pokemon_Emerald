@@ -12,6 +12,8 @@
 #include "../../Asset/AssetManager.h"
 #include "../../Asset/Font/Font.h"
 #include "../../Asset/Font/FontManager.h"
+#include "../../Asset/Sound/Sound.h"
+#include "../../Asset/Sound/SoundManager.h"
 #include "../../UI/Common/TextBlock.h"
 #include "Inventory.h"
 #include "PartyUI.h"
@@ -71,6 +73,7 @@ void CMenuUI::UpdateCursor()
 
 void CMenuUI::Select()
 {
+	CAssetManager::GetInst()->GetSoundManager()->Play("Button");
 	switch (mSelectIndex)
 	{
 	case 0 :
@@ -117,7 +120,7 @@ void CMenuUI::Select()
 bool CMenuUI::Init()
 {
 	CUserWidget::Init();
-
+	CAssetManager::GetInst()->GetSoundManager()->Play("Button");
 	FResolution RS = CDevice::GetInst()->GetResolution();
 	float W = (float)RS.Width;
 	float H = (float)RS.Height;

@@ -62,6 +62,19 @@ struct FTurnStep
 };
 
 
+enum class EBattleIntroState
+{
+	Flash,
+	Split,
+	Grass,
+	EnemySlide,
+	EnemyCryText,
+	EnemyHudSlide,
+	PlayerSlide,
+	PlayerCryText,
+	PlayerHudSlide,
+	Done
+};
 
 class CBattleWidget :
 	public CUserWidget
@@ -119,6 +132,7 @@ public:
 	CSharedPtr<class CTextBlock> mMovePPText;
 
 
+
 	int mInputBlockFrame = 0;
 
 
@@ -131,7 +145,7 @@ public:
 	wstring mTypingFull;
 	int mTypingIndex = 0;
 	float mTypingAcc = 0.f;
-	float mTypingInterval = 0.03f;
+	float mTypingInterval = 0.05f;
 
 	bool mHpAnimating = false;
 	bool mHpAnimTargetEnemy = true;
@@ -145,9 +159,23 @@ public:
 	FVector2D mFaintStartPos{};
 	FVector2D mFaintStartSize{};
 
-	
+	float mIntroCryWait = 0.7f;
+	bool mIntroCryPending = true;
+	bool mHitSfxPlayed = false;
+
+	bool mCryAnim = false;
+	float mCryAnimTime = 0.f;
+	float mCryAnimAcc = 0.f;
+	float mCryAnimInterval = 0.08f;
+	int mCryAnimFrame = 0;
+	CSharedPtr<CImage> mCrySprite;
+	int mEnemyCryFrame = 0;
+
 	CSharedPtr<class CImage> mPlayerSprite;
 	CSharedPtr<class CImage> mEnemySprite;
+
+public:
+	FPokemonInstance* GetEnemyPokemonPtr() const { return (FPokemonInstance*)mEnemyPokemon; }
 
 public:
 	virtual bool Init();
@@ -209,24 +237,46 @@ private:
 	bool UpdateTyping(float dt);
 
 public:
+	float mHpAnimPreDelay = 0.5f;
+	bool mHpAnimApplied = false;
+
+	CSharedPtr<CImage> mHpAnimAtkSprite;
+	FVector2D mHpAnimAtkStartPos;
+
+
 	bool IsHpAnimFinished() const;
 	void BeginHpAnim(bool targetEnemy, int targetHP);
 	bool UpdateHpAnim(float dt);
 	void BeginFaintAnim(bool enemy);
 	bool UpdateFaintAnim(float dt);
 	float mHpAnimElapsed = 0.f;
-	float mHpAnimMinTime = 0.35f;
+	float mHpAnimMinTime = 1.5f;
 
 	// 경험치
 	bool mExpAnimating = false;
 	int mExpAnimTargetExp = 0;
 	int mExpAnimStartExp = 0;
 	float mExpAnimElapsed = 0.f;
-	float mExpAnimMinTime = 0.35f;
+	float mExpAnimMinTime = 1.5f;
 
 	bool  mExitAfterTurn = false;
+	bool mWaitExitConfirm = false;
+
 
 	void BeginExpAnim(int targetExp);
 	bool UpdateExpAnim(float dt);
+
+	void StartCryAnim(CSharedPtr<CImage> sprite, float duration);
+
+public:
+	void OnOpenedFromIntro();
+
+	void StartIntroCrySequence();
+	bool UpdateIntroCry(float dt);
+
+	void ExitBattleScene();
+
+	bool mIsSoundSwitched = false;
+	void SwitchToWorldBGM();
 };
 

@@ -149,6 +149,11 @@ struct FPokemonSpritePos
 	FVector2D Front2;
 	//후면 이미지1
 	FVector2D Back1;
+
+	// 메뉴 스프라이트1
+	FVector2D MenuSprite1;
+	// 메뉴 스프라이트2
+	FVector2D MenuSprite2;
 };
 
 // 런타임 포켓몬 개체

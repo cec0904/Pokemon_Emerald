@@ -243,3 +243,11 @@ void CImage::Render(const FVector3D& Pos)
 {
 	CWidget::Render(Pos);
 }
+
+void CImage::ClearBrushFrames()
+{
+	mBrush.Frames.clear();
+	mBrush.Frame = 0;
+	mBrush.Time = 0.f;
+	mBrush.FrameTime = 0.f; 
+}

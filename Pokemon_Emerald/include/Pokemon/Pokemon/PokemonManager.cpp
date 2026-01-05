@@ -1,6 +1,8 @@
 #include "PokemonManager.h"
 #include "../../PokemonData.h"
 #include "../../Share/Log.h"
+#include "../Pokemon/PartyData.h"
+
 
 CPokemonManager::CPokemonManager()
 {
@@ -92,9 +94,9 @@ void CPokemonManager::LoadSpecies()
 		}
 
 		stringstream ss(line);
-		string row[17];
+		string row[19];
 
-		for (int i = 0; i < 17; i++)
+		for (int i = 0; i < 19; i++)
 		{
 			getline(ss, row[i], ',');
 
@@ -141,6 +143,8 @@ void CPokemonManager::LoadSpecies()
 		pos.Front2.y = (float)stoi(row[14]);
 		pos.Back1.x = (float)stoi(row[15]);
 		pos.Back1.y = (float)stoi(row[16]);
+		pos.MenuSprite1.x = (float)stoi(row[17]);
+		pos.MenuSprite1.y = (float)stoi(row[18]);
 
 		PokemonSpritePosInfoMap.emplace(pid, pos);
 	}
@@ -450,3 +454,30 @@ void CPokemonManager::AddExpAndLevelUp(FPokemonInstance& inst, int gain)
 		LevelChange(inst);
 	}
 }
+
+void CPokemonManager::RecalcCurrentStateForLevel(FPokemonInstance& p)
+{
+	// 기본 스탯 찾기 (네 맵 이름: PokemonDefaultStateMap)
+	auto it = PokemonDefaultStateMap.find((PokemonID)p.SpeciesID);
+	if (it == PokemonDefaultStateMap.end())
+		return;
+
+	const FBaseStats& base = it->second;
+
+	int oldMaxHP = p.CurrentState.HP;
+	int oldCurHP = p.CurrentHP;
+
+	p.CurrentState.HP = ((base.HP * 2 * p.Level) / 100) + p.Level + 10;
+	p.CurrentState.Atk = ((base.Atk * 2 * p.Level) / 100) + 5;
+	p.CurrentState.Def = ((base.Def * 2 * p.Level) / 100) + 5;
+	p.CurrentState.SpAtk = ((base.SpAtk * 2 * p.Level) / 100) + 5;
+	p.CurrentState.SpDef = ((base.SpDef * 2 * p.Level) / 100) + 5;
+	p.CurrentState.Spd = ((base.Spd * 2 * p.Level) / 100) + 5;
+
+	int diff = p.CurrentState.HP - oldMaxHP;
+	p.CurrentHP = oldCurHP + diff;
+
+	if (p.CurrentHP > p.CurrentState.HP) p.CurrentHP = p.CurrentState.HP;
+	if (p.CurrentHP < 0) p.CurrentHP = 0;
+}
+

@@ -68,5 +68,7 @@ public:
 		mKeyThreshold = T;
 	}
 
+public:
+	void ClearBrushFrames();
 };
 

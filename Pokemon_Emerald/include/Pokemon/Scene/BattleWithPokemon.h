@@ -12,7 +12,7 @@ class CBattleWithPokemon :
 private:
 	CSharedPtr<CBattleWidget> mBattleWidget;
 	CSharedPtr<CMainWidget> mMainWidget;
-
+	CSharedPtr<class CPokemonBattleIntro> mIntroWidget;
 
 protected:
 	CBattleWithPokemon();

@@ -1,5 +1,6 @@
 #pragma once
 #include "UserWidget.h"
+#include "../../Component/AudioComponent.h"
 class CStartWidget :
     public CUserWidget
 {
@@ -15,12 +16,14 @@ protected:
 	
 	CSharedPtr<class CTextBlock> mPushText;
 
+
 	float mBlinkTimer = 0.f;
 	bool mBlinkOn = true;
 
 public:
 	virtual bool Init();
 
+	CSharedPtr<class CAudioComponent> mAudio;
 private:
 	void StartButtonClick();
 	void StartEidtButtonClick();

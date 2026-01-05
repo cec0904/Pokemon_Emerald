@@ -76,6 +76,9 @@ public:
 	virtual void RenderUI();
 	virtual void EndFrame();
 
+	virtual void OnPause() {}
+	virtual void OnResume() {}
+
 public:
 	template<typename T>
 	T* CreateObj(const string& Name)

@@ -2,6 +2,8 @@
 #include "../../Gameinfo.h"
 #include "../../PokemonData.h"
 
+class CPartyData;
+
 class CPokemonManager 
 {
 
@@ -18,6 +20,7 @@ private:
 
 public:
 	bool Init();
+	CPartyData* GetPlayerPartyData();
 
 public:
 	void LoadSpecies();
@@ -65,6 +68,15 @@ public:
 
 	void AddExpAndLevelUp(FPokemonInstance& inst, int gain);
 
+
+	void RecalcCurrentStateForLevel(FPokemonInstance& p);
+
+private:
+	int mPendingEnemyID = 0; // 0이면 미설정
+
+public:
+	void SetPendingEnemyID(int id) { mPendingEnemyID = id; }
+	int  GetPendingEnemyID() const { return mPendingEnemyID; }
 
 public:
 	DECLARE_SINGLETON(CPokemonManager)

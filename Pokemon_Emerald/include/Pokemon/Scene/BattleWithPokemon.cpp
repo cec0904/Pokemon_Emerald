@@ -7,6 +7,10 @@
 #include "../UI/BattleWidget.h"
 #include "../Pokemon/PokemonManager.h"
 #include "../../Share/Log.h"
+#include "../Pokemon/PartyData.h"
+#include "../UI/PartyUI.h"
+#include "../UI/PokemonBattleIntro.h"
+
 
 CBattleWithPokemon::CBattleWithPokemon()
 {
@@ -22,19 +26,61 @@ bool CBattleWithPokemon::Init()
         return false;
 
     mBattleWidget = mUIManager->CreateWidget<CBattleWidget>("BattleWithPokemon");
+    if (!mBattleWidget)
+    {
+        CLog::PrintLog("CreateWidget<CBattleWidget> failed");
+        return false;
+    }
     mUIManager->AddToViewport(mBattleWidget.Get());
 
-    static FPokemonInstance sTestPlayer;
+
+    mBattleWidget->SetEnable(false);
+
+    static CPartyData sPlayerParty;
+    static bool sInited = false;
+
+    if (!sInited)
+    {
+        sInited = true;
+        sPlayerParty.AddPokemon(1, 2);
+        sPlayerParty.AddPokemon(2, 5);
+        sPlayerParty.AddPokemon(3, 5);
+        sPlayerParty.AddPokemon(4, 5);
+        sPlayerParty.AddPokemon(7, 5);
+    }
+
+    srand((unsigned int)time(0));
+    int enemyId = CPokemonManager::GetInst()->GetPendingEnemyID();
+    if (enemyId <= 0) enemyId = (rand() % 28 + 1);
+
     static FPokemonInstance sTestEnemy;
+    CPokemonManager::GetInst()->BuildPokemonInstance(sTestEnemy, enemyId, 3);
 
-    if (sTestPlayer.SpeciesID == 0)
-        CPokemonManager::GetInst()->BuildPokemonInstance(sTestPlayer, 1, 5);
+    CSharedPtr<CPartyUI> partyUI = mUIManager->CreateWidget<CPartyUI>("PartyUI");
+    mUIManager->AddToViewport(partyUI.Get());
+    partyUI->SetEnable(false);
 
-    if (sTestEnemy.SpeciesID == 0)
-        CPokemonManager::GetInst()->BuildPokemonInstance(sTestEnemy, 4, 5);
+    partyUI->SetPartyData(&sPlayerParty);
+    partyUI->SetBattleWidget(mBattleWidget.Get());
+    mBattleWidget->SetPartyUI(partyUI.Get());
 
-    mBattleWidget->SetPlayerPokemon(&sTestPlayer);
+    mBattleWidget->SetPlayerPokemon(sPlayerParty.GetActivePokemonPtr());
     mBattleWidget->SetEnemyPokemon(&sTestEnemy);
+
+
+    mIntroWidget = mUIManager->CreateWidget<CPokemonBattleIntro>("BattleIntro");
+    if (!mIntroWidget)
+    {
+        CLog::PrintLog("CreateWidget<CPokemonBattleIntro> failed");
+        return false;
+    }
+    mUIManager->AddToViewport(mIntroWidget.Get());
+
+    mIntroWidget->Start(mBattleWidget.Get(), sPlayerParty.GetActivePokemonPtr(), &sTestEnemy);
+
+    
+    mBattleWidget->SetEnable(true);
+
 
     return true;
 }
@@ -43,17 +89,34 @@ void CBattleWithPokemon::Update(float DeltaTime)
 {
     CScene::Update(DeltaTime);
 
+
+    if (mIntroWidget)
+    {
+        if (mIntroWidget->IsFinished())
+        {
+            mIntroWidget->SetEnable(false);
+            mIntroWidget = nullptr;
+
+            if (mBattleWidget)
+            {
+                mBattleWidget->SetEnable(true); 
+                mBattleWidget->OnOpenedFromIntro();
+            }
+        }
+        return;
+    }
+
     if (!mBattleWidget)
         return;
 
     if (mBattleWidget->IsExitBattleRequested())
     {
         mBattleWidget->ClearExitBattleRequest();
-
         mBattleWidget->SetEnable(false);
         mBattleWidget = nullptr;
 
-        CSceneManager::GetInst()->CreateLoadScene<CSceneMain>();
+        CSceneManager::GetInst()->PopScene();
         return;
     }
+
 }

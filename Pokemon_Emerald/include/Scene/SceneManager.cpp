@@ -1,7 +1,9 @@
 #include "SceneManager.h"
-
+#include "Scene.h"
 #include "SceneMain.h"
 #include "SceneStart.h"
+
+#include "../Share/Log.h"
 
 CSceneManager::CSceneManager()
 {
@@ -10,6 +12,12 @@ CSceneManager::CSceneManager()
 
 CSceneManager::~CSceneManager()
 {
+	for (CScene* s : mSceneStack)
+	{
+		SAFE_DELETE(s);
+	}
+	mSceneStack.clear();
+
 	SAFE_DELETE(mCurrentScene);
 }
 
@@ -44,12 +52,23 @@ void CSceneManager::Update(float DeltaTime)
 	//만약 변경할 Scene 이 있으면 변경해준다.
 	if (mLoadScene)
 	{
-		//기존 씬 제거
-		SAFE_DELETE(mCurrentScene);
+		if (mDeleteCurrentOnLoad)
+		{
+			SAFE_DELETE(mCurrentScene);
+		}
 
 		mCurrentScene = mLoadScene;
-
 		mLoadScene = nullptr;
+
+		if (mCallResumeOnLoad && mCurrentScene)
+		{
+			mCurrentScene->OnResume();
+		}
+
+		// 플래그 원복
+		mDeleteCurrentOnLoad = true;
+		mCallResumeOnLoad = false;
+
 		return;
 	}
 
@@ -73,4 +92,18 @@ void CSceneManager::RenderUI()
 void CSceneManager::EndFrame()
 {
 	mCurrentScene->EndFrame();
+}
+
+void CSceneManager::PopScene()
+{
+	if (mSceneStack.empty())
+		return;
+
+	CScene* Prev = mSceneStack.back();
+	mSceneStack.pop_back();
+
+	mDeleteCurrentOnLoad = true;
+	mCallResumeOnLoad = true;
+
+	mLoadScene = Prev;
 }

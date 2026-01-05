@@ -38,6 +38,7 @@
 #include "../Pokemon/UI/Inventory.h"
 #include "../Pokemon/UI/PartyUI.h"
 #include "../Pokemon/UI/FadeWidget.h"
+#include "../Pokemon/UI/StartPokemonUI.h"
 
 #include "../Component/TileMapComponent.h"
 
@@ -94,19 +95,26 @@ bool CPlayerObject::Init()
 	mScene->GetUIManager()->AddToViewport(mParty.Get());
 	mParty->SetEnable(false);
 
+	mStartSelect = mScene->GetUIManager()->CreateWidget<CStartPokemonUI>("StartPokemonUI");
+	mScene->GetUIManager()->AddToViewport(mStartSelect.Get());
+	mStartSelect->SetEnable(false);
+	mStartSelect->SetOwner(this, &mPartyData);
+	CLog::PrintLog("Player SetOwner StartSelect=" + to_string((uintptr_t)mStartSelect.Get()) +
+		" PartyData=" + to_string((uintptr_t)&mPartyData));
+
+
 	m_pParty = mParty.Get();
 	if (m_pParty)
 	{
-
 		m_pParty->SetPartyData(&mPartyData);
 	}
 
-	mPartyData.AddPokemon(1, 5);
-	mPartyData.AddPokemon(4, 5);
+	//mPartyData.AddPokemon(1, 5);
+	/*mPartyData.AddPokemon(4, 5);
 	mPartyData.AddPokemon(7, 5);
 	mPartyData.AddPokemon(10, 5);
 	mPartyData.AddPokemon(13, 5);
-	mPartyData.AddPokemon(16, 5);
+	mPartyData.AddPokemon(16, 5);*/
 
 
 	// 게임 매니져 -> 씬매니져를 통해 -> 현재 씬을 실행시키고
@@ -138,7 +146,7 @@ bool CPlayerObject::Init()
 	SetRootComponent(mRoot);
 	mRoot->SetUseColorKey(true);
 	mRoot->SetColorKey(FVector3D(44.f / 255.f, 142.f / 255.f, 95.f / 255.f));
-	mRoot->SetKeyThreshold(0.1f);
+	mRoot->SetKeyThreshold(0.01f);
 
 
 	mBody->SetCollisionBeginFunc<CPlayerObject>(this, &CPlayerObject::IsOnCollision);
@@ -249,6 +257,10 @@ void CPlayerObject::Update(float DeltaTime)
 {
 	CSceneObject::Update(DeltaTime);
 
+	
+
+	
+
 	if (mTileMoving)
 	{
 		FVector3D CurPos = mRoot->GetWorldPosition();
@@ -315,6 +327,7 @@ void CPlayerObject::Update(float DeltaTime)
 			Dir.Normalize();
 			mRoot->SetWorldPos(CurPos + Dir * Step);
 		}
+
 
 
 		return;
@@ -431,6 +444,7 @@ void CPlayerObject::MoveRight(float DeltaTime)
 	if (IsMenuOpen || IsPartyOpen) return;
 	if (mTileMoving) return;
 	if (!mTileMap) return;
+	if (IsStartSelectOpen) return;
 
 	FVector3D CurPos = mRoot->GetWorldPosition();
 
@@ -477,6 +491,7 @@ void CPlayerObject::MoveLeft(float DeltaTime)
 	if (IsMenuOpen || IsPartyOpen) return;
 	if (mTileMoving) return;
 	if (!mTileMap) return;
+	if (IsStartSelectOpen) return;
 
 	FVector3D CurPos = mRoot->GetWorldPosition();
 
@@ -543,29 +558,43 @@ void CPlayerObject::Party(float DeltaTime)
 	
 }
 
+
+
 void CPlayerObject::Accept(float DeltaTime)
 {
 	if (!IsMenuOpen)
 		return;
 
-	
+	if (IsPartyOpen)
+	{
+		if (mParty)
+			mParty->SetEnable(false);
+
+		IsPartyOpen = false;
+		return;
+	}
 
 	mMenuUI->Select();
 }
 
 void CPlayerObject::Cancel(float DeltaTime)
 {
+	if (IsPartyOpen)
+	{
+		if (mParty)
+			mParty->SetEnable(false);
+
+		IsPartyOpen = false;
+		return;
+	}
+
 	if (!IsMenuOpen)
 		return;
 
 	mMenuUI->SetEnable(false);
 	IsMenuOpen = false;
-
-	if (mParty)
-	{
-		mParty->SetEnable(false);
-	}
 }
+
 
 void CPlayerObject::MenuUp(float DeltaTime)
 {
@@ -594,6 +623,52 @@ void CPlayerObject::IsOffCollision(CColliderBase* Dest)
 	//mMovement->AddMove(mRootComponent->GetAxis(EAxis::None));
 	Block = false;
 }
+
+void CPlayerObject::OpenPartyUI()
+{
+	if (!mParty) return;
+
+	// Start UI는 확실히 끈다
+	IsStartSelectOpen = false;
+	if (mStartSelect)
+		mStartSelect->SetEnable(false);
+
+	IsPartyOpen = true;
+	mParty->SetEnable(true);
+}
+
+
+void CPlayerObject::OpenStartPokemonUI()
+{
+	if (!mStartSelect.Get())
+		return;
+
+	IsStartSelectOpen = true;
+
+	// StartPokemonUI는 Init에서 만든 mStartSelect 하나만 사용
+	mStartSelect->SetOwner(this, &mPartyData);
+	mStartSelect->SetEnable(true);
+
+	// Start UI 띄울 때 Party는 닫아두는게 안전
+	if (mParty)
+		mParty->SetEnable(false);
+	IsPartyOpen = false;
+}
+
+void CPlayerObject::OpenStartSelectUI()
+{
+	if (!mStartSelect) return;
+
+	IsPartyOpen = false;
+	if (mParty) mParty->SetEnable(false);
+
+	IsStartSelectOpen = true;
+	mStartSelect->SetEnable(true);
+}
+
+
+
+
 
 
 

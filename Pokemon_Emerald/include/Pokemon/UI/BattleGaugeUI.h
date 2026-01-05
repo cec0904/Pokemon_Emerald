@@ -36,7 +36,7 @@ private:
     static float MoveTowards(float cur, float target, float maxDelta)
     {
         float d = target - cur;
-        if (std::fabs(d) <= maxDelta) return target;
+        if (fabs(d) <= maxDelta) return target;
         return cur + (d > 0.f ? maxDelta : -maxDelta);
     }
 
@@ -56,6 +56,14 @@ private:
     float mShownPlayerHp = 0.f;
     float mShownEnemyHp = 0.f;
     float mShownExp = 0.f;
+
+    float mHpSmoothSpeed = 2.0f;
+
+public:
+    void SetHpSmoothSpeed(float s)
+    {
+        mHpSmoothSpeed = s;
+    }
 
 };
 

@@ -56,15 +56,68 @@ bool CSoundManager::Init()
 	CreateChannelGroup("UI");
 
 	//사운드 불러오기
-	LoadSound("SceneMainBGM", "BGM", true, "Sound/MainBgm.mp3");
+	LoadSound("StartBGM", "BGM", true, "Texture/Pokemon/Sound/TitleTheme.mp3");
+
+	LoadSound("LittlerootTown", "BGM", true, "Texture/Pokemon/Sound/LittlerootTown.mp3");
+	LoadSound("PetalburgCity", "BGM", true, "Texture/Pokemon/Sound/PetalburgCity.mp3");
+	LoadSound("PokemonCenter", "BGM", true, "Texture/Pokemon/Sound/PokemonCenter.mp3");
+
+
+	LoadSound("Route1", "BGM", true, "Texture/Pokemon/Sound/Route1.mp3");
+	LoadSound("Route2", "BGM", true, "Texture/Pokemon/Sound/Route2.mp3");
+
+	LoadSound("WildPokemonBattle", "BGM", true, "Texture/Pokemon/Sound/WildPokemonBattle.mp3");
+	LoadSound("WildPokemonDefeated", "BGM", true, "Texture/Pokemon/Sound/WildPokemonDefeated.mp3");
+	LoadSound("LegendaryPokemonBattle", "BGM", true, "Texture/Pokemon/Sound/LegendaryPokemonBattle.mp3");
+
+	LoadSound("HighJumpKick", "Effect", false, "Texture/Pokemon/Sound/HighJumpKick.mp3");
+	LoadSound("Fly", "Effect", false, "Texture/Pokemon/Sound/Fly.mp3");
+	LoadSound("LevelUp", "Effect", false, "Texture/Pokemon/Sound/LevelUp.mp3");
+
+
+	LoadSound("1", "Effect", false, "Texture/Pokemon/Sound/Pokemon/1.mp3");
+	LoadSound("2", "Effect", false, "Texture/Pokemon/Sound/Pokemon/2.mp3");
+	LoadSound("3", "Effect", false, "Texture/Pokemon/Sound/Pokemon/3.mp3");
+	LoadSound("4", "Effect", false, "Texture/Pokemon/Sound/Pokemon/4.mp3");
+	LoadSound("5", "Effect", false, "Texture/Pokemon/Sound/Pokemon/5.mp3");
+	LoadSound("6", "Effect", false, "Texture/Pokemon/Sound/Pokemon/6.mp3");
+	LoadSound("7", "Effect", false, "Texture/Pokemon/Sound/Pokemon/7.mp3");
+	LoadSound("8", "Effect", false, "Texture/Pokemon/Sound/Pokemon/8.mp3");
+	LoadSound("9", "Effect", false, "Texture/Pokemon/Sound/Pokemon/9.mp3");
+	LoadSound("10", "Effect", false, "Texture/Pokemon/Sound/Pokemon/10.mp3");
+	LoadSound("11", "Effect", false, "Texture/Pokemon/Sound/Pokemon/11.mp3");
+	LoadSound("12", "Effect", false, "Texture/Pokemon/Sound/Pokemon/12.mp3");
+	LoadSound("13", "Effect", false, "Texture/Pokemon/Sound/Pokemon/13.mp3");
+	LoadSound("14", "Effect", false, "Texture/Pokemon/Sound/Pokemon/14.mp3");
+	LoadSound("15", "Effect", false, "Texture/Pokemon/Sound/Pokemon/15.mp3");
+	LoadSound("16", "Effect", false, "Texture/Pokemon/Sound/Pokemon/16.mp3");
+	LoadSound("17", "Effect", false, "Texture/Pokemon/Sound/Pokemon/17.mp3");
+	LoadSound("18", "Effect", false, "Texture/Pokemon/Sound/Pokemon/18.mp3");
+	LoadSound("19", "Effect", false, "Texture/Pokemon/Sound/Pokemon/19.mp3");
+	LoadSound("20", "Effect", false, "Texture/Pokemon/Sound/Pokemon/20.mp3");
+	LoadSound("21", "Effect", false, "Texture/Pokemon/Sound/Pokemon/21.mp3");
+	LoadSound("22", "Effect", false, "Texture/Pokemon/Sound/Pokemon/22.mp3");
+	LoadSound("23", "Effect", false, "Texture/Pokemon/Sound/Pokemon/23.mp3");
+	LoadSound("24", "Effect", false, "Texture/Pokemon/Sound/Pokemon/24.mp3");
+	LoadSound("25", "Effect", false, "Texture/Pokemon/Sound/Pokemon/25.mp3");
+	LoadSound("26", "Effect", false, "Texture/Pokemon/Sound/Pokemon/26.mp3");
+	LoadSound("27", "Effect", false, "Texture/Pokemon/Sound/Pokemon/27.mp3");
+	LoadSound("28", "Effect", false, "Texture/Pokemon/Sound/Pokemon/28.mp3");
+
+	LoadSound("Button", "Effect", false, "Texture/Pokemon/Sound/Button.mp3");
+
+
+
+
+
 	LoadSound("Effect1", "Effect", false, "Sound/TeemoSmile.mp3");
 
 	//사운드 플레이
 	//Play("SceneMainBGM");
 	//Play("Effect1");
 
-	SetGroupVolume("BGM", 1);
-	SetGroupVolume("Effect", 1);
+	SetGroupVolume("BGM", 100);
+	SetGroupVolume("Effect", 50);
 	
 	return true;
 }
