@@ -26,45 +26,45 @@ CNpcProfessor::~CNpcProfessor()
 
 bool CNpcProfessor::Init()
 {
-    if (!CNpcBase::Init())
-        return false;
+	if (!CNpcBase::Init())
+		return false;
 
-    SetTarget(mScene->FindObjectFromType<CPlayerObject>());
+	SetTarget(mScene->FindObjectFromType<CPlayerObject>());
 
-    mScene->GetInput()->AddBindKey("ProfessorInteract", 'D');
-    mScene->GetInput()->AddBindFunction("ProfessorInteract", EInputType::Down, this, &CNpcProfessor::Interact);
+	mScene->GetInput()->AddBindKey("ProfessorInteract", 'D');
+	mScene->GetInput()->AddBindFunction("ProfessorInteract", EInputType::Down, this, &CNpcProfessor::Interact);
 
-    return true;
+	return true;
 }
 
 void CNpcProfessor::Update(float DeltaTime)
 {
-    CNpcBase::Update(DeltaTime);
+	CNpcBase::Update(DeltaTime);
 }
 
 void CNpcProfessor::Interact(float DeltaTime)
 {
-    if (mStartOnce)
-        return;
+	if (mStartOnce)
+		return;
 
-    CPlayerObject* Player = mScene->FindObjectFromType<CPlayerObject>();
-    if (!Player)
-        return;
+	CPlayerObject* Player = mScene->FindObjectFromType<CPlayerObject>();
+	if (!Player)
+		return;
 
-    FVector3D P = Player->GetWorldPosition();
-    FVector3D N = GetWorldPosition();
+	FVector3D P = Player->GetWorldPosition();
+	FVector3D N = GetWorldPosition();
 
-    float dx = P.x - N.x;
-    float dy = P.y - N.y;
+	float dx = P.x - N.x;
+	float dy = P.y - N.y;
 
-    const float Range = 100.f;
-    if (dx * dx + dy * dy > Range * Range)
-        return;
+	const float Range = 100.f;
+	if (dx * dx + dy * dy > Range * Range)
+		return;
 
 
 
-    Player->OpenStartSelectUI();
-    mStartOnce = true;
+	Player->OpenStartSelectUI();
+	mStartOnce = true;
 
 }
 
