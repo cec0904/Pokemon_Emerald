@@ -1784,6 +1784,7 @@ bool CBattleWidget::UpdateExpAnim(float dt)
 				mPlayerPokemon->Exp = CalcNeedExp_Minimal(mPlayerPokemon->Level);
 
 				CPokemonManager::GetInst()->RecalcCurrentStateForLevel(*mPlayerPokemon);
+				CPokemonManager::GetInst()->LevelChange(*mPlayerPokemon);
 			}
 		}
 
