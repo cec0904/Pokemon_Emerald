@@ -84,7 +84,7 @@ void CTileMapComponent::CreateTile(int CountX, int CountY, const FVector2D& Tile
 
 			Tile->mSize = mTileSize;
 
-			//타일의 중아
+			//타일의 중앙
 			Tile->mCenter = Tile->mPos + mTileSize * 0.5f;
 
 			Tile->mTextureFrame = TileTextureFrame;
@@ -306,15 +306,14 @@ int CTileMapComponent::GetTileIndexX(const FVector3D& Pos) const
 {
 	//Pos 월드좌표를 타일맵 좌표로 변환이 필요하다.
 	float Convert = Pos.x - mOwnerObject->GetWorldPosition().x;
-
 	float Value = Convert / mTileSize.x;
+	int Index = static_cast<int>(Value);
 
 	if (Value < 0.f)
 	{
 		return -1;
 	}
 
-	int Index = static_cast<int>(Value);
 
 	return (Index < 0 || Index >= mCountX) ? -1 : Index;
 }

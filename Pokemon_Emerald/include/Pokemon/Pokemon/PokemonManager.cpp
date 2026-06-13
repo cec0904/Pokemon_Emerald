@@ -71,8 +71,6 @@ void CPokemonManager::LoadSpecies()
 {
 	string filePath = string(gRootPathMultibyte)
 		+ "Asset/Texture/Pokemon/Data/PokemonSpecies.csv";
-
-
 	ifstream file(filePath);
 
 	if (!file.is_open())

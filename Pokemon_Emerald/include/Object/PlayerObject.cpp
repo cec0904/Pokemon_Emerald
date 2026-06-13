@@ -182,7 +182,8 @@ bool CPlayerObject::Init()
 
 	//입력
 	mScene->GetInput()->AddBindKey("MoveUp", VK_UP);
-	mScene->GetInput()->AddBindFunction("MoveUp", EInputType::Hold, this, &CPlayerObject::MoveUp);
+	mScene->GetInput()->AddBindFunction("MoveUp", 
+		EInputType::Hold, this, &CPlayerObject::MoveUp);
 
 	mScene->GetInput()->AddBindKey("MoveDown", VK_DOWN);
 	mScene->GetInput()->AddBindFunction("MoveDown", EInputType::Hold, this, &CPlayerObject::MoveDown);
@@ -265,7 +266,6 @@ void CPlayerObject::Update(float DeltaTime)
 	{
 		FVector3D CurPos = mRoot->GetWorldPosition();
 		FVector3D Dir = mTileTargetPos - CurPos;
-
 		float Dist = Dir.Length();
 		float Step = mTileMoveSpeed * DeltaTime;
 
@@ -275,7 +275,8 @@ void CPlayerObject::Update(float DeltaTime)
 			mRoot->SetWorldPos(mTileTargetPos);
 			mTileMoving = false;
 
-			int CurrentIndex = mTileMap->GetTileIndex(FVector2D(mTileTargetPos.x, mTileTargetPos.y));
+			int CurrentIndex = mTileMap->GetTileIndex
+			(FVector2D(mTileTargetPos.x, mTileTargetPos.y));
 
 			for (const FPortal& P : mPortals)
 			{

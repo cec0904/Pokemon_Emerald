@@ -177,7 +177,9 @@ public:
 	FVector2D GetTileCenter(int x, int y) const
 	{
 		if (x < 0 || x >= mCountX || y < 0 || y >= mCountY)
+		{
 			return FVector2D(-1.f, -1.f);
+		}
 
 		int Index = y * mCountX + x;
 		return mTileList[Index]->GetCenter();
