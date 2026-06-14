@@ -1665,11 +1665,17 @@ bool CBattleWidget::UpdateHpAnim(float dt)
 
 		if (mHpAnimTargetEnemy)
 		{
-			if (mEnemyPokemon) const_cast<FPokemonInstance*>(mEnemyPokemon)->CurrentHP = mHpAnimTargetHP;
+			if (mEnemyPokemon)
+			{
+				mEnemyPokemon->CurrentHP = mHpAnimTargetHP;
+			}
 		}
 		else
 		{
-			if (mPlayerPokemon) const_cast<FPokemonInstance*>(mPlayerPokemon)->CurrentHP = mHpAnimTargetHP;
+			if (mPlayerPokemon)
+			{
+				mPlayerPokemon->CurrentHP = mHpAnimTargetHP;
+			}
 		}
 
 		UpdateStatusUI();

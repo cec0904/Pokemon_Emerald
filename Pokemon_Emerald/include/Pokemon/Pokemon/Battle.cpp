@@ -50,7 +50,10 @@ bool CBattle::RunTurn(int playerMoveSlot)
 
 	// 적 AI 기술 선택
 	MoveID eMove = 0;
-	if (mAI) eMove = mAI->ChooseMove(*mEnemy);
+	if (mAI)
+	{
+		eMove = mAI->ChooseMove(*mEnemy);
+	}
 	int enemySlot = FindMoveSlot(*mEnemy, eMove);
 
 	int pPrio = GetPriority(pMove);
@@ -70,9 +73,18 @@ bool CBattle::RunTurn(int playerMoveSlot)
 	};
 
 	bool playerFirst = false;
-	if (pPrio != ePrio) playerFirst = (pPrio > ePrio);
-	else if (pSpd != eSpd) playerFirst = (pSpd > eSpd);
-	else playerFirst = (rand() % 2) == 0;
+	if (pPrio != ePrio) 
+	{
+		playerFirst = (pPrio > ePrio);
+	} 
+	else if (pSpd != eSpd)
+	{
+		playerFirst = (pSpd > eSpd);
+	}
+	else 
+	{
+		playerFirst = (rand() % 2) == 0;
+	}
 
 	Action first{}, second{};
 
@@ -90,7 +102,7 @@ bool CBattle::RunTurn(int playerMoveSlot)
 	// 1) 첫 행동
 	ApplyMoveOnce(*first.atk, *first.atkSt, *first.def, *first.defSt, first.move, first.slot);
 
-	// 첫 행동 후 기절이면 두 번째 스킵 (너가 말한 “반영된 채로”)
+	// 첫 행동 후 기절이면 두 번째 스킵
 	if (first.def->CurrentHP <= 0)
 	{
 		// 턴 종료 도트딜은 생존자에게만
@@ -314,9 +326,20 @@ bool CBattle::HasPP(const FPokemonInstance& p, int slot) const
 
 void CBattle::ConsumePP(FPokemonInstance& p, int slot)
 {
-	if (slot < 0) return;
-	if (slot >= (int)p.CurrentPP.size()) return;
-	if (p.CurrentPP[slot] > 0) --p.CurrentPP[slot];
+	if (slot < 0)
+	{
+		return;
+	}
+
+	if (slot >= (int)p.CurrentPP.size()) 
+	{
+		return;
+	}
+
+	if (p.CurrentPP[slot] > 0)
+	{
+		--p.CurrentPP[slot];
+	}
 
 }
 
@@ -495,7 +518,10 @@ void CBattle::ApplyMoveOnce(FPokemonInstance& atk, FBattlerState& atkState, FPok
 	// 데미지
 	int dmg = CalcDamageSimple(atk, def, *mv);
 	def.CurrentHP -= dmg;
-	if (def.CurrentHP < 0) def.CurrentHP = 0;
+	if (def.CurrentHP < 0)
+	{
+		def.CurrentHP = 0;
+	}
 
 	mMsgs.push_back(L"데미지 " + to_wstring(dmg) + L"!");
 
