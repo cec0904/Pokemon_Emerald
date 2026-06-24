@@ -49,13 +49,13 @@ bool CBattleWithPokemon::Init()
 		sPlayerParty.AddPokemon(7, 5);
 	}
 
-	srand((unsigned int)time(0));
+	srand((unsigned int)time(NULL));
 
 	int enemyId = CPokemonManager::GetInst()->GetPendingEnemyID();
 	
 	enemyId = (rand() % 28 + 1);
 	//enemyId = 15;
-	enemyId = 12;
+	//enemyId = 12;
 
 	static FPokemonInstance sTestEnemy;
 	CPokemonManager::GetInst()->BuildPokemonInstance(sTestEnemy, enemyId, 3);

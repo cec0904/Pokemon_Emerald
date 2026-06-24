@@ -10,13 +10,13 @@ class CPokemonManager
 
 private:
 	//포켓몬 도감 
-	unordered_map<PokemonID, FPokemonDefaultInfo> PokemonIDMap;
-	unordered_map<PokemonID, FBaseStats> PokemonDefaultStateMap;
-	unordered_map<PokemonID, FPokemonSpritePos> PokemonSpritePosInfoMap;
+	map<PokemonID, FPokemonDefaultInfo> PokemonIDMap;
+	map<PokemonID, FBaseStats> PokemonDefaultStateMap;
+	map<PokemonID, FPokemonSpritePos> PokemonSpritePosInfoMap;
 
 	// 포켓몬 기술
-	unordered_map<MoveID, FMoveData> MoveDataMap;
-	unordered_map<PokemonID, vector<pair<int, MoveID>>> PokemonSkillSet;
+	map<MoveID, FMoveData> MoveDataMap;
+	map<PokemonID, vector<pair<int, MoveID>>> PokemonSkillSet;
 
 public:
 	bool Init();
@@ -29,17 +29,17 @@ public:
 	void Evolve(FPokemonInstance& inst, PokemonID nextID) const;
 	void LevelChange(FPokemonInstance& inst) const;
 	
-	const unordered_map<int, FPokemonDefaultInfo>& GetIDMap() const
+	const map<int, FPokemonDefaultInfo>& GetIDMap() const
 	{
 		return PokemonIDMap;
 	}
 
-	const unordered_map<int, FBaseStats>& GetDefaultStatMap() const
+	const map<int, FBaseStats>& GetDefaultStatMap() const
 	{
 		return PokemonDefaultStateMap;
 	}
 
-	const unordered_map<int, FPokemonSpritePos>& GetPosMap() const
+	const map<int, FPokemonSpritePos>& GetPosMap() const
 	{
 		return PokemonSpritePosInfoMap;
 	}
@@ -47,7 +47,7 @@ public:
 
 	EPokemonType GetTypeFromString(const string& _typeStr);
 
-	const unordered_map<MoveID, FMoveData>& GetMoveDB() const
+	const map<MoveID, FMoveData>& GetMoveDB() const
 	{
 		return MoveDataMap;
 	}
